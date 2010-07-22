@@ -224,8 +224,8 @@ class FS345(SerialBase):
             raise OutofPaperError(_('No paper'))
         if self.status_check(status, 2, 3):
             raise PrinterOfflineError(_("Offline"))
-        if not self.status_check(status, 2, 2):
-             raise CommError(_("Peripheral is not connected to AUX"))
+        #if not self.status_check(status, 2, 2):
+        #     raise CommError(_("Peripheral is not connected to AUX"))
         if self.status_check(status, 2, 0):
             log.info('Almost out of paper')
 
@@ -239,8 +239,10 @@ class FS345(SerialBase):
         if self.status_check(status, 6, 1):
             raise ReduceZError(_("readZ is already emitted"))
 
-        if self.needs_read_x(status):
-            self.send_command(CMD_GET_X)
+        # FIXME: I am not sure we should be doing this here. This method
+        # should only check the status, and not emit any other command.
+        #if self.needs_read_x(status):
+        #    self.send_command(CMD_GET_X)
 
         return status
 
@@ -634,10 +636,7 @@ class FS345(SerialBase):
         return int(registries[39:42])
 
     def get_tax_constants(self):
-        fiscal_registries = self._get_fiscal_registers()
-
         tax_codes = self.send_command(CMD_GET_TAX_CODES)[1:]
-        print tax_codes
 
         constants = []
         for i in range(14):

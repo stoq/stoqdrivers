@@ -29,9 +29,24 @@ Daruma FS2100 driver
 
 import operator
 from decimal import Decimal
+import time
 
-from stoqdrivers.printers.daruma.FS345 import FS345
-from stoqdrivers.enum import UnitType
+from stoqdrivers.printers.daruma.FS345 import FS345, CMD_GET_TAX_CODES
+from stoqdrivers.enum import UnitType, TaxType
+from stoqdrivers.exceptions import DriverError
+
+from kiwi.log import Logger
+
+log = Logger('stoqdrivers.daruma')
+
+ENQ = 05
+ACK = 06
+LF  = 10
+CR  = 13
+ESC = 27
+FS  = 28
+GS  = 29
+FF  = 255
 
 CMD_ADD_ITEM = 201
 
@@ -42,13 +57,16 @@ class FS2100(FS345):
                         quantity=Decimal("1.0"), unit=UnitType.EMPTY,
                         discount=Decimal("0.0"),
                         surcharge=Decimal("0.0"), unit_desc=""):
-        taxcode = self._consts.get_value(taxcode)
         if surcharge:
             d = 2
             E = surcharge
         else:
             d = 0
             E = discount
+
+        E = int(E)
+        price = float(price)
+        quantity = float(quantity)
 
         # The minimum size of the description, when working with one line for
         # description; if 0, write in multiple lines, if necessary.
@@ -60,24 +78,73 @@ class FS2100(FS345):
             unit = unit_desc
         # XXX: We need test correctly if the price's calcule is right (we
         # don't can do it right now since the manual isn't so clean).
-        data = ('%2s'  # Tributary situation
+        data = ('%02s'  # Tributary situation
                 '%07d' # Quantity
                 '%08d' # Unitary price
                 '%d'   # 0=Discount(%) 1=Discount($) 2=Surcharge(%) 3=Surcharge($)
-                '%03d' # Discount/Surcharge value
+                '%04d' # Discount/Surcharge value
                 '%07d' # *Padding* (since we have discount/surcharge only in %)
                 '%02d' # Description size
                 '%14s' # Code
                 '%3s'  # Unit of measure
-                '%s'   # Product description
+                '%s'   # Product descriptio?!?
                 '\xff' # EOF
-                % (taxcode, int(quantity), int(price * 1e3), d, int(E * 1e3),
+                % (taxcode, int(quantity * 1e3), int(price * 1e2), d, int(E * 1e2),
                    0, desc_size, code, unit, description[:233]))
 
-        value = self.send_new_command(CMD_ADD_ITEM, data)
+        value = self.send_new_command('F', CMD_ADD_ITEM, data)
         return int(value[3:6])
 
-    def send_new_command(self, command, extra=''):
+    def send_command(self, command, extra=''):
+        """As seen on ACBr code
+
+        Nas Darumas com MFD, em algumas situações o ECF pode ficar
+        temporariamente inoperantente, enquanto a compactação da MFD está
+        sendo efetuada. Nessa situação, o ECF retorna os seguintes códigos
+        de erro: 35 - Relogio Inoperante ou 99 (não documentado).
+
+        Segundo o Suporte Técnico da Daruma, quando este problema ocorre,
+        devemos aguardar até que ele consiga responder corretamente.
+
+        Esta rotina irá tentar enviar o comando por 10 vezes. Caso ela
+        recebe os erros 35 ou 99... ele aguarda 100 milisegundos e tenta um
+        novo envio...
+        """
+
+        for t in range(10):
+            try:
+                retval = FS345.send_command(self, command, extra)
+            except DriverError, e:
+                if e.code == 99 or e.code == 35:
+                    log.debug('FS2100 >>> Error 99. Sleeping for 0.1')
+                    time.sleep(0.1)
+                    continue
+
+                raise
+            break
+
+        # After we have tried to send the command T times, we need to read
+        # all the responses. This is really crap
+        for i in range(t):
+            reply = self._read_reply()
+            log.debug('Ignoring reply: %r' % reply)
+
+        return retval
+
+    def _check_response(self, retcode, raw):
+        # Compatible with the fs345/fs2100
+        print retcode
+        compatible_error = retcode[1:3]
+        extended_error = retcode[3:6]
+        warning_code = retcode[6:8]
+        log.debug('FS2100 >>> Error %s - Extended: %s - Warning: %s' %
+                    (compatible_error, extended_error, warning_code))
+        if int(compatible_error):
+            # Mimic FS345 error format
+            error_code = ':E%s' % compatible_error
+            self.handle_error(error_code, raw)
+
+    def send_new_command(self, prefix, command, extra='', ignore_error=False):
         """ This method is used to send especific commands to model FS2100.
         Note that the main differences are the prefix (0x1c + 'F', since we
         will use a function of the FS2100 superset) and the checksum, that
@@ -85,15 +152,51 @@ class FS2100(FS345):
         """
         data = chr(command) + extra
 
-        self.debug('N>>> %r %d' % (data, len(data)))
-        data = '\x1cF' + data
+        log.debug('FS2100 >>> %r %d' % (data, len(data)))
+        data = chr(FS) + prefix + data
 
         checksum = reduce(operator.xor, [ord(d) for d in data], 0)
         self.write(data + chr(checksum))
 
         retval = self.readline()
-        if retval.startswith(':E'):
-            self.handle_error(retval, data)
+        # After the CR, there is still one byte for the checksum
+        retval_checksum = self.read(1)
+
+        if not ignore_error:
+            self._check_response(retval, data)
 
         return retval[1:]
+
+    def _get_compatibility_mode(self):
+        return self.send_new_command('R', 200, '138')
+
+    def get_tax_constants(self):
+        tax_codes = self.send_command(CMD_GET_TAX_CODES)[1:]
+        lower_case = 'abcdefghijklmnop'
+
+        constants = []
+        for i in range(14):
+            reg = tax_codes[i*5]
+            if reg in 'ABCDEFGHIJKLMNOP':
+                tax_type = TaxType.CUSTOM
+            elif reg in lower_case:
+                tax_type = TaxType.SERVICE
+            else:
+                raise AssertionError(reg)
+            value = tax_codes[i*5+1:i*5+5]
+            if value == '////':
+                continue
+            constants.append((tax_type,
+                              #'T' + reg.lower(),
+                              '%02d' % (lower_case.index(reg.lower()) + 1),
+                              Decimal(value.replace('.', '')) / 100))
+
+        # These definitions can be found on Page 60
+        constants.extend([
+            (TaxType.SUBSTITUTION,   '17', None), # F1
+            (TaxType.EXEMPTION,      '19', None), # I1
+            (TaxType.NONE,           '21', None), # N1
+            ])
+
+        return constants
 
