@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Stoqdrivers 0.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-12-15 11:45-0200\n"
+"POT-Creation-Date: 2010-09-01 13:14-0300\n"
 "PO-Revision-Date: 2007-01-26 12:57-0200\n"
 "Last-Translator: Lincol Molica <lincoln@async.com.br>\n"
 "Language-Team: Brazilian portuguese <pt_BR@li.org>\n"
@@ -254,7 +254,7 @@ msgid "There is no such item to cancel in the coupon"
 msgstr "No existe el artículo que se desea eliminar en el comprobante"
 
 #: ../stoqdrivers/printers/sweda/IFS9000I.py:197
-#: ../stoqdrivers/printers/daruma/FS345.py:270
+#: ../stoqdrivers/printers/daruma/FS345.py:272
 msgid "There's no open document to cancel"
 msgstr "No existe un documento abierto que cancelar"
 
@@ -386,58 +386,54 @@ msgstr "Sin papel"
 msgid "Offline"
 msgstr "Desconectado"
 
-#: ../stoqdrivers/printers/daruma/FS345.py:228
-msgid "Peripheral is not connected to AUX"
-msgstr "El periférico no está conectado al puerto"
-
 #: ../stoqdrivers/printers/daruma/FS345.py:240
 msgid "readZ is already emitted"
 msgstr "La lectura Z ya ha sido emitida"
 
-#: ../stoqdrivers/printers/daruma/FS345.py:266
+#: ../stoqdrivers/printers/daruma/FS345.py:268
 msgid "Document is already open"
 msgstr "Documento ya abierto"
 
-#: ../stoqdrivers/printers/daruma/FS345.py:268
-#: ../stoqdrivers/printers/daruma/FS345.py:344
+#: ../stoqdrivers/printers/daruma/FS345.py:270
+#: ../stoqdrivers/printers/daruma/FS345.py:346
 msgid "Coupon is not open"
 msgstr "El comprobante no está abierto"
 
-#: ../stoqdrivers/printers/daruma/FS345.py:273
+#: ../stoqdrivers/printers/daruma/FS345.py:275
 msgid "There is no such item in the coupon"
 msgstr "No existe dicho artículo en el comprobante"
 
-#: ../stoqdrivers/printers/daruma/FS345.py:278
+#: ../stoqdrivers/printers/daruma/FS345.py:280
 #, fuzzy, python-format
 msgid "Printer error %s: No paper"
 msgstr "Impresora en estado de error"
 
-#: ../stoqdrivers/printers/daruma/FS345.py:289
+#: ../stoqdrivers/printers/daruma/FS345.py:291
 msgid "Required field is blank"
 msgstr ""
 
-#: ../stoqdrivers/printers/daruma/FS345.py:412
+#: ../stoqdrivers/printers/daruma/FS345.py:414
 msgid "Coupon already open"
 msgstr "Documento ya abierto"
 
-#: ../stoqdrivers/printers/daruma/FS345.py:486
+#: ../stoqdrivers/printers/daruma/FS345.py:488
 #, fuzzy
 msgid "No client"
 msgstr "Sin cliche"
 
-#: ../stoqdrivers/printers/daruma/FS345.py:487
+#: ../stoqdrivers/printers/daruma/FS345.py:489
 msgid "No document"
 msgstr ""
 
-#: ../stoqdrivers/printers/daruma/FS345.py:488
+#: ../stoqdrivers/printers/daruma/FS345.py:490
 msgid "No address"
 msgstr ""
 
-#: ../stoqdrivers/printers/daruma/FS345.py:503
+#: ../stoqdrivers/printers/daruma/FS345.py:505
 msgid "It is not possible to close the coupon"
 msgstr "No es posible cerrar el comprobante"
 
-#: ../stoqdrivers/printers/daruma/FS345.py:543
+#: ../stoqdrivers/printers/daruma/FS345.py:545
 #, python-format
 msgid "Receipt for method %s is not configured"
 msgstr ""
@@ -585,6 +581,9 @@ msgstr "Recargo al subtotal ya efectuado"
 #: ../stoqdrivers/printers/bematech/MP25.py:198
 msgid "Discount on subtotal already effected"
 msgstr "Descuento al subtotal ya efectuado"
+
+#~ msgid "Peripheral is not connected to AUX"
+#~ msgstr "El periférico no está conectado al puerto"
 
 #~ msgid "readX is not emitted yet"
 #~ msgstr "La lectura X aún no ha sido emitida"

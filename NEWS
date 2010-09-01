@@ -1,4 +1,8 @@
-Release 0.9.8 - 15/12/2009:
+Release 0.9.9 - 01/09/2010:
+    * Fixing issues with FS600/FS2100
+    * remove python2.4 dependency
+
+Release 0.9.8.2 - 15/12/2009:
     * Bugfix release, karmic and dependency updates.
 
 Release 0.9.8 - 14/07/2009:
