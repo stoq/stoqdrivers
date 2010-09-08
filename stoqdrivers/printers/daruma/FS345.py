@@ -308,7 +308,7 @@ class FS345(SerialBase):
 
     def show_document_status(self):
         print '== DOCUMENT STATUS =='
-        value = self.send_command(CMD_GET_DOCUMENT_STATUS, debug=False)
+        value = self.send_command(CMD_GET_DOCUMENT_STATUS)
         assert value[:2] == '\x1b' + chr(CMD_GET_DOCUMENT_STATUS)
         assert len(value) == 59
         print 'ECF:', value[2:6]
@@ -429,6 +429,9 @@ class FS345(SerialBase):
             unit = unit_desc
         else:
             unit = self._consts.get_value(unit)
+
+        if not code:
+            code = "-"
         data = '%2s%13s%d%04d%010d%08d%s%s\xff' % (taxcode, code[:13], d,
                                                    int(float(E) * 1e2),
                                                    int(float(price) * 1e3),
