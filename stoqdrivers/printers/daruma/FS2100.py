@@ -75,7 +75,8 @@ class FS2100(FS345):
         if unit != UnitType.CUSTOM:
             unit = self._consts.get_value(unit)
         else:
-            unit = unit_desc
+            unit = "%2s" % unit_desc[:2] # units must be 2 byte size strings
+
         # XXX: We need test correctly if the price's calcule is right (we
         # don't can do it right now since the manual isn't so clean).
         data = ('%02s'  # Tributary situation
