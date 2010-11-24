@@ -1,3 +1,6 @@
+Release 0.9.10 - 24/11/2010:
+    * Fixing more issues with FS600/FS2100
+
 Release 0.9.9 - 01/09/2010:
     * Fixing issues with FS600/FS2100
     * remove python2.4 dependency
