@@ -32,7 +32,7 @@ from zope.interface import implements
 
 from stoqdrivers.exceptions import InvalidReply
 from stoqdrivers.interfaces import IScale, IScaleInfo
-from stoqdrivers.serialbase import SerialBase
+from stoqdrivers.serialbase import SerialBase, SerialPort
 
 STX = 0x02
 ETX = 0x03
@@ -72,9 +72,10 @@ class PrixIII(SerialBase):
 
     model_name = "Toledo Prix III"
 
-    def __init__(self, device):
-        SerialBase.__init__(self, device, baudrate=9600, bytesize=EIGHTBITS,
-                            stopbits=STOPBITS_ONE, parity=PARITY_EVEN)
+    def __init__(self, device, consts=None):
+        SerialBase.__init__(self, device)
+        device.set_options(baudrate=9600, bytesize=EIGHTBITS,
+                           stopbits=STOPBITS_ONE, parity=PARITY_EVEN)
         self._package = None
 
     def _get_package(self):
@@ -91,8 +92,10 @@ class PrixIII(SerialBase):
     def read_data(self):
         return self._get_package()
 
+
 if __name__ == "__main__":
-    r = PrixIII('/dev/ttyS0')
+    port = SerialPort('/dev/ttyS0')
+    r = PrixIII(port)
     print "*** PRESS THE 'PRINT' BUTTON ON THE SCALE TO READ THE DATA ***"
     data = r.read_data()
 

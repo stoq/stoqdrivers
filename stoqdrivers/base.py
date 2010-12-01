@@ -96,6 +96,7 @@ class BaseDevice:
                                 % (name, class_name))
         if not self._port:
             self._port = SerialPort(self.device)
+
         self._driver = driver_class(self._port, consts=self._driver_constants)
         log.info(("Config data: brand=%s,device=%s,model=%s"
                   % (self.brand, self.device, self.model)))
@@ -120,7 +121,7 @@ class BaseDevice:
         is coming from the serial port.   It is necessary that a gobject main
         loop is already running before calling this method.
         """
-        gobject.io_add_watch(self._driver.fd, gobject.IO_IN,
+        gobject.io_add_watch(self.get_port().fd, gobject.IO_IN,
                              lambda fd, cond: func(self, cond))
 
     def set_port(self, port):
