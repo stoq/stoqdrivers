@@ -545,8 +545,6 @@ class FiscNetECF(SerialBase):
         # doesn't have a command to totalize the coupon, so we just get
         # the discount/surcharge values and applied to the coupon.
         
-        # FIXME: API changed: discount/surcharge was percentage,
-        # now is currency.
         value = discount and (discount * -1) or surcharge
         if value:
             self._send_command('AcresceSubtotal',

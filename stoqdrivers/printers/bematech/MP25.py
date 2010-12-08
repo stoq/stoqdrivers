@@ -558,8 +558,6 @@ class MP25(SerialBase):
     def coupon_totalize(self, discount=currency(0), markup=currency(0),
                         taxcode=TaxType.NONE):
 
-        # FIXME: API changed: discount/surcharge was percentage,
-        # now is currency.
         if discount:
             type = 'd'
             value = discount

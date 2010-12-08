@@ -463,8 +463,6 @@ class FS345(SerialBase):
 
     def coupon_totalize(self, discount=currency(0), surcharge=currency(0),
                         taxcode=TaxType.NONE):
-        # FIXME: API changed: discount/surcharge was percentage,
-        # now is currency
         self._check_status()
         self._verify_coupon_open()
         if surcharge:
