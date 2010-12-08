@@ -27,7 +27,7 @@
 Implementation of Toled Prix III driver.
 """
 
-from serial import EIGHTBITS, STOPBITS_ONE, PARITY_EVEN
+from serial import EIGHTBITS, STOPBITS_ONE, PARITY_NONE
 from zope.interface import implements
 
 from stoqdrivers.exceptions import InvalidReply
@@ -40,8 +40,10 @@ ETX = 0x03
 PRICE_PRECISION = 2
 QUANTITY_PRECISION = 3
 
-class Package:
+class PackagePrt4:
     """ This class implements a parser for the 4a protocol of Toledo Prix III
+
+    This protocol requires the user to press the print button.
     """
     implements(IScaleInfo)
 
@@ -57,12 +59,37 @@ class Package:
     def _parse(self, data):
         if not data:
             return
-        elif ord(data[0]) != STX or len(data) != Package.SIZE:
+        elif ord(data[0]) != STX or len(data) != self.SIZE:
             raise InvalidReply("Received inconsistent data")
         self.code = int(data[1:7])
         self.price_per_kg = float(data[12:18]) / (10 ** PRICE_PRECISION)
         self.weight = float(data[7:12]) / (10 ** QUANTITY_PRECISION)
         self.total_price = float(data[18:24]) / (10 ** PRICE_PRECISION)
+
+
+class PackagePrt1:
+    """ This class implements a parser for the protocol prt1 of Toledo Prix III
+
+    this protocol does not require any interaction from the user. The driver
+    queries the scale for the weight, and the scale replies
+    """
+    implements(IScaleInfo)
+    SIZE = 7
+
+    def __init__(self, raw_data):
+        self.code = None
+        self.price_per_kg = None
+        self.total_price = None
+        self.weight = None
+        self._parse(raw_data)
+
+    def _parse(self, data):
+        if not data:
+            return
+        elif ord(data[0]) != STX or len(data) != self.SIZE:
+            raise InvalidReply("Received inconsistent data")
+        self.weight = float(data[1:6]) / (10 ** QUANTITY_PRECISION)
+
 
 class PrixIII(SerialBase):
     CMD_PREFIX = "\x05"
@@ -75,7 +102,7 @@ class PrixIII(SerialBase):
     def __init__(self, device, consts=None):
         SerialBase.__init__(self, device)
         device.set_options(baudrate=9600, bytesize=EIGHTBITS,
-                           stopbits=STOPBITS_ONE, parity=PARITY_EVEN)
+                           stopbits=STOPBITS_ONE, parity=PARITY_NONE)
         self._package = None
 
     def _get_package(self):
@@ -83,7 +110,7 @@ class PrixIII(SerialBase):
         # The sum is just because readline (called internally by writeline)
         # remove the EOL_DELIMIT from the package received and we need send
         # to Package's constructor the whole data.
-        return Package(reply + PrixIII.EOL_DELIMIT)
+        return PackagePrt1(reply + PrixIII.EOL_DELIMIT)
 
     #
     # IScale implementation
@@ -96,7 +123,6 @@ class PrixIII(SerialBase):
 if __name__ == "__main__":
     port = SerialPort('/dev/ttyS0')
     r = PrixIII(port)
-    print "*** PRESS THE 'PRINT' BUTTON ON THE SCALE TO READ THE DATA ***"
     data = r.read_data()
 
     print "WEIGHT:", data.weight
