@@ -31,6 +31,7 @@ import datetime
 from decimal import Decimal
 import time
 
+from kiwi.datatypes import currency
 from kiwi.log import Logger
 from kiwi.python import Settable
 from zope.interface import implements
@@ -460,26 +461,28 @@ class FS345(SerialBase):
         """Cancel the last non fiscal coupon or the last sale."""
         self.send_command(CMD_CANCEL_COUPON)
 
-    def coupon_totalize(self, discount=Decimal("0.0"), surcharge=Decimal("0.0"),
+    def coupon_totalize(self, discount=currency(0), surcharge=currency(0),
                         taxcode=TaxType.NONE):
+        # FIXME: API changed: discount/surcharge was percentage,
+        # now is currency
         self._check_status()
         self._verify_coupon_open()
         if surcharge:
             value = surcharge
             if taxcode == TaxType.ICMS:
-                mode = 2
+                mode = 3
             else:
                 raise ValueError("tax_code must be TaxType.ICMS")
         elif discount:
             value = discount
-            mode = 0
+            mode = 1
         else:
-            mode = 0
-            value = Decimal("0")
+            mode = 1
+            value = currency(0)
         # Page 33
-        data = '%d%04d00000000' % (mode, int(value * Decimal("1e2")))
+        data = '%s%012d' % (mode, int(value * Decimal("1e2")))
         rv = self.send_command(CMD_TOTALIZE_COUPON, data)
-        return Decimal(rv) / Decimal("1e2")
+        return currency(rv) / Decimal("1e2")
 
     def coupon_close(self, message=''):
         self._check_status()

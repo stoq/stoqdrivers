@@ -35,6 +35,7 @@ import re
 from serial import PARITY_EVEN
 from zope.interface import implements
 
+from kiwi.datatypes import currency
 from kiwi.python import Settable
 
 from stoqdrivers.enum import PaymentMethodType, TaxType, UnitType
@@ -538,16 +539,19 @@ class FiscNetECF(SerialBase):
         """Cancel the last non fiscal coupon or the last sale."""
         self._send_command('CancelaCupom')
 
-    def coupon_totalize(self, discount=Decimal("0.0"),
-                        surcharge=Decimal("0.0"), taxcode=TaxType.NONE):
+    def coupon_totalize(self, discount=currency(0),
+                        surcharge=currency(0), taxcode=TaxType.NONE):
         # The FISCnet protocol (the protocol used in this printer model)
         # doesn't have a command to totalize the coupon, so we just get
         # the discount/surcharge values and applied to the coupon.
+        
+        # FIXME: API changed: discount/surcharge was percentage,
+        # now is currency.
         value = discount and (discount * -1) or surcharge
         if value:
             self._send_command('AcresceSubtotal',
                                Cancelar=False,
-                               ValorPercentual=value)
+                               ValorAcrescimo=value)
         return self._get_coupon_total_value()
 
     def coupon_add_payment(self, payment_method, value, description=u""):

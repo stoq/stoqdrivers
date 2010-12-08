@@ -552,6 +552,9 @@ class EP375(SerialBase, BaseChequePrinter):
 
     def coupon_totalize(self, discount=Decimal("0.0"),
                         surcharge=Decimal("0.0"), taxcode=TaxType.NONE):
+        # FIXME: API changed: discount/surcharge was percentage,
+        # now is currency.
+
         # The callsite must check if discount and charge are used together,
         # if so must raise an exception -- here we have a second check for
         # this.

@@ -561,6 +561,9 @@ class IFS9000I(SerialBase):
         The taxcode argument is useless here and exists only for API
         compatibility
         """
+
+        # FIXME: API changed: discount/surcharge was percentage,
+        # now is currency.
         if discount:
             self.discount_coupon(discount)
         elif surcharge:

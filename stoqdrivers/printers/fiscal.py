@@ -28,6 +28,7 @@
 import datetime
 from decimal import Decimal
 
+from kiwi.datatypes import currency
 from kiwi.argcheck import number, percent
 from kiwi.log import Logger
 
@@ -142,7 +143,7 @@ class FiscalPrinter(BasePrinter):
             unit_desc=self._format_text(unit_desc))
 
     @capcheck(percent, percent, taxcode)
-    def totalize(self, discount=Decimal("0.0"), surcharge=Decimal("0.0"),
+    def totalize(self, discount=currency(0), surcharge=currency(0),
                  taxcode=TaxType.NONE):
         log.info('totalize(discount=%r, surcharge=%r, taxcode=%r)' % (
             discount, surcharge, taxcode))

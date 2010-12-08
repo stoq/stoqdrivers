@@ -31,6 +31,8 @@ Stoqdrivers interfaces specification
 
 from decimal import Decimal
 
+from kiwi.datatypes import currency
+
 from zope.interface import Interface, Attribute
 from serial import EIGHTBITS, PARITY_NONE, STOPBITS_ONE
 
@@ -195,17 +197,18 @@ class ICouponPrinter(IDevice):
         Cancel the last closed non-fiscal coupon or the last sale.
         """
 
-    def coupon_totalize(discount=Decimal("0.0"), surcharge=Decimal("0.0"),
+    def coupon_totalize(discount=currency(0), surcharge=currency(0),
                         taxcode=TaxType.NONE):
         """ Closes the coupon applies addition a discount or surcharge and tax.
         This can only be called when the coupon is open, has items added and
         payments added.
 
-        @param discount:  discount in %
-        @type discount:   Decimal between 0-100
+        @param discount:  discount in value
+        @type discount:   Value must be greater or equal than zero, and less 
+                          than coupon total value
 
-        @param surcharge: surcharge in %
-        @type  surcharge: Decimal between 0-100
+        @param surcharge: surcharge in value
+        @type  surcharge: Value must be greater or equal than zero
 
         @param taxcode:   constant to descrive the tax
         @type  taxcode:   integer constant one of: TaxType.NONE, TaxType.SUBSTITUTION,
