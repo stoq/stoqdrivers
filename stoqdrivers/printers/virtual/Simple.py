@@ -161,6 +161,8 @@ class Simple:
 
     def coupon_totalize(self, discount=Decimal("0.0"),
                         surcharge=Decimal("0.0"), taxcode=TaxType.NONE):
+        # FIXME: API changed: discount/surcharge was percentage,
+        # now is currency.
         self._check_coupon_is_opened()
         if not self.items_quantity:
             raise CouponTotalizeError(_("The coupon can't be totalized, since "

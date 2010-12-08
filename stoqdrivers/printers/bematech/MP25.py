@@ -34,6 +34,7 @@ import datetime
 from decimal import Decimal
 import struct
 
+from kiwi.datatypes import currency
 from kiwi.log import Logger
 from kiwi.python import Settable
 from zope.interface import implements
@@ -554,22 +555,22 @@ class MP25(SerialBase):
             self.remainder_value = Decimal("0.0")
         return self.remainder_value
 
-    def coupon_totalize(self, discount=Decimal("0.0"), markup=Decimal("0.0"),
+    def coupon_totalize(self, discount=currency(0), markup=currency(0),
                         taxcode=TaxType.NONE):
 
         if discount:
-            type = 'D'
+            type = 'd'
             value = discount
         elif markup:
-            type = 'A'
+            type = 'a'
             value = markup
         else:
             # Just to use the StartClosingCoupon in case of no discount/markup
             # be specified.
-            type = 'A'
+            type = 'a'
             value = 0
 
-        self._send_command(CMD_COUPON_TOTALIZE, '%c%04d' % (
+        self._send_command(CMD_COUPON_TOTALIZE, '%s%014d' % (
             type, int(value * Decimal('1e2'))))
 
         totalized_value = self._get_coupon_subtotal()
