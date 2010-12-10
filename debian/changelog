@@ -1,3 +1,9 @@
+stoqdrivers (1:0.9.10.2) lucid; urgency=low
+
+  * Bugfix Release.
+
+ -- Ronaldo Francisco Maia <romaia@async.com.br>  Fri, 10 Dec 2010 14:00:42 -0200
+
 stoqdrivers (1:0.9.10) lucid; urgency=low
 
   * New Release.
