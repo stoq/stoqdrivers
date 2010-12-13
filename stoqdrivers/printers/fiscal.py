@@ -142,7 +142,7 @@ class FiscalPrinter(BasePrinter):
             item_price, taxcode, items_quantity, unit, discount, surcharge,
             unit_desc=self._format_text(unit_desc))
 
-    @capcheck(percent, percent, taxcode)
+    @capcheck(Decimal, Decimal, taxcode)
     def totalize(self, discount=currency(0), surcharge=currency(0),
                  taxcode=TaxType.NONE):
         log.info('totalize(discount=%r, surcharge=%r, taxcode=%r)' % (
