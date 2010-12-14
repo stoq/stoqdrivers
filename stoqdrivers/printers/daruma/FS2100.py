@@ -65,8 +65,8 @@ class FS2100(FS345):
             E = discount
 
         E = int(E)
-        price = float(price)
-        quantity = float(quantity)
+        price = price
+        quantity = quantity
 
         # The minimum size of the description, when working with one line for
         # description; if 0, write in multiple lines, if necessary.
@@ -90,7 +90,9 @@ class FS2100(FS345):
                 '%3s'  # Unit of measure
                 '%s'   # Product descriptio?!?
                 '\xff' # EOF
-                % (taxcode, int(quantity * 1e3), int(price * 1e2), d, int(E * 1e2),
+                % (taxcode, int(quantity * Decimal('1e3')),
+                   int(price * Decimal('1e2')), d,
+                   int(E * Decimal('1e2')),
                    0, desc_size, code, unit, description[:233]))
 
         value = self.send_new_command('F', CMD_ADD_ITEM, data)

@@ -360,17 +360,17 @@ class FS345(SerialBase):
     def _add_payment(self, payment_method, value, description=''):
         rv = self.send_command(CMD_DESCRIBE_PAYMENT_FORM,
                                '%c%012d%s\xff' % (payment_method,
-                                                  int(float(value) * 1e2),
+                                                  int(value * Decimal('1e2')),
                                                   description[:48]))
         # FIXME: Why and when does this happen?
         #        Avoids/Fixes bug 3467 at least
         if rv[0] == 'N':
             rv = rv[8:]
-        return float(rv) / 1e2
+        return Decimal(rv) / Decimal('1e2')
 
     def _add_voucher(self, type, value):
         data = "%s1%s%012d\xff" % (type, "0" * 12, # padding
-                                   int(float(value) * 1e2))
+                                   int(value * Decimal('1e2')))
         self.send_command(CMD_OPEN_VOUCHER, data)
 
     def _configure_taxes(self):
@@ -434,10 +434,10 @@ class FS345(SerialBase):
         if not code:
             code = "-"
         data = '%2s%13s%d%04d%010d%08d%s%s\xff' % (taxcode, code[:13], d,
-                                                   int(float(E) * 1e2),
-                                                   int(float(price) * 1e3),
-                                                   int(float(quantity) * 1e3),
-                                                   unit, description[:174])
+                                               int(E * Decimal('1e2')),
+                                               int(price * Decimal('1e3')),
+                                               int(quantity * Decimal('1e3')),
+                                               unit, description[:174])
         value = self.send_command(CMD_ADD_ITEM_3L13D53U, data)
         return int(value[1:4])
 
