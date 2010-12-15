@@ -106,6 +106,7 @@ class MP25Registers(object):
     LAST_ITEM_ID = 12
     NUMBER_TILL = 14
     EMISSION_DATE = 23
+    TRUNC_FLAG = 28
     TOTALIZERS = 29
     PAYMENT_METHODS = 32
     SERIAL = 40
@@ -124,6 +125,7 @@ class MP25Registers(object):
         LAST_ITEM_ID: ('2s', True),
         NUMBER_TILL: ('2s', True),
         EMISSION_DATE: ('6s', False),
+        TRUNC_FLAG: ('1s', False),
         TOTALIZERS: ('2s', False),
         #  1 + (52 * 16) + (52 * 10) + (52 * 10) + (52 * 1)
         #  1 + 832 + 520 + 520 + 52: 1925
@@ -511,6 +513,11 @@ class MP25(SerialBase):
                         quantity=Decimal("1.0"), unit=UnitType.EMPTY,
                         discount=Decimal("0.0"), markup=Decimal("0.0"),
                         unit_desc=""):
+        """ The ECF must be configured to round instead to truncate.
+        When truncating, the value may be lower then the one calculated
+        by stoq. In this case, the payments added will be higher than the ECF
+        expects, and a cents change will be printed.
+        """
         if unit == UnitType.CUSTOM:
             unit = unit_desc
         else:
