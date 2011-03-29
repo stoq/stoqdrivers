@@ -264,6 +264,18 @@ class FiscalPrinter(BasePrinter):
 
         self._driver.till_read_memory_by_reductions(start, end)
 
+    def gerencial_report_open(self):
+        log.info('gerencial_report_open')
+        return self._driver.gerencial_report_open()
+
+    def gerencial_report_print(self, text):
+        log.info('gerencial_report_print(text=%s)' % text)
+        return self._driver.gerencial_report_print(text)
+
+    def gerencial_report_close(self):
+        log.info('gerencial_report_open')
+        return self._driver.gerencial_report_close()
+
     def payment_receipt_open(self, identifier, coo, method, value):
         log.info('payment_receipt_open(identifier=%s, coo=%s, method=%s, value=%s)'
                   % (identifier, coo, method, value))

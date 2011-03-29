@@ -87,6 +87,8 @@ CMD_ADD_PAYMENT = 72
 CMD_CANCEL_LAST = 81
 CMD_PAYMENT_RECEIPT_PRINT_DUPLICATE = 91
 
+CMD_GERENCIAL_REPORT_PRINT = 20
+CMD_GERENCIAL_REPORT_CLOSE = 21
 
 NAK = 21
 ACK = 6
@@ -593,6 +595,17 @@ class MP25(SerialBase):
         for value, name in constants:
             if value == method_id:
                 return name
+
+    def gerencial_report_open(self):
+        # We dont need to open it. Just start printing
+        return
+
+    def gerencial_report_print(self, text):
+        for line in text.split('\n'):
+            self._send_command(CMD_GERENCIAL_REPORT_PRINT, line + '\n')
+
+    def gerencial_report_close(self):
+        self._send_command(CMD_GERENCIAL_REPORT_CLOSE)
 
     def payment_receipt_open(self, identifier, coo, method_id, value):
         method = self._get_payment_description(method_id)
