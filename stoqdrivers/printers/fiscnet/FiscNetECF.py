@@ -154,7 +154,8 @@ class FiscNetECF(SerialBase):
         }
 
     def __init__(self, port, consts=None):
-        port.set_options(baudrate=115200, parity=PARITY_EVEN)
+        port.set_options(baudrate=115200, parity=PARITY_EVEN,
+                         write_timeout=3, read_timeout=3)
         SerialBase.__init__(self, port)
         self._consts = consts or FiscNetConstants
         self._command_id = 0
@@ -340,7 +341,7 @@ class FiscNetECF(SerialBase):
             if e.code != 8057: # Not configured
                 raise
 
-    def _define_payment_method(self, code, name):
+    def _define_payment_method(self, code, name, vinculated=False):
         try:
             retdict = self._send_command(
                 'LeMeioPagamento', CodMeioPagamentoProgram=code)
@@ -361,7 +362,7 @@ class FiscNetECF(SerialBase):
             self._send_command(
                 'DefineMeioPagamento',
                 CodMeioPagamentoProgram=code, DescricaoMeioPagamento=name,
-                NomeMeioPagamento=name, PermiteVinculado=False)
+                NomeMeioPagamento=name, PermiteVinculado=vinculated)
         except DriverError, e:
             raise
 
@@ -449,8 +450,10 @@ class FiscNetECF(SerialBase):
 
         self._define_payment_method(0, u'Cheque'.encode('cp850'))
         self._define_payment_method(1, u'Boleto'.encode('cp850'))
-        self._define_payment_method(2, u'Cartão credito'.encode('cp850'))
-        self._define_payment_method(3, u'Cartão debito'.encode('cp850'))
+        self._define_payment_method(2, u'Cartão credito'.encode('cp850'),
+                                    vinculated=True)
+        self._define_payment_method(3, u'Cartão debito'.encode('cp850'),
+                                    vinculated=True)
         self._define_payment_method(4, u'Financeira'.encode('cp850'))
         self._define_payment_method(5, u'Vale compra'.encode('cp850'))
         for code in range(6, 15):
@@ -685,7 +688,7 @@ class FiscNetECF(SerialBase):
 
             code = retdict['CodMeioPagamentoProgram']
             name = retdict['NomeMeioPagamento']
-            constants.append((code, name))
+            constants.append((code, name.decode(self.coupon_printer_charset)))
 
         return constants
 
@@ -732,13 +735,29 @@ class FiscNetECF(SerialBase):
                            COO=coo, Valor=value)
 
     def payment_receipt_print(self, text):
-        self._send_command('ImprimeTexto', TextoLivre=text)
+        text = text.encode('cp850')
+        for line in text.split('\n'):
+            line = line.replace('\\', '\\\\') # Vespague sucks
+            print line
+            self._send_command('ImprimeTexto', TextoLivre=line)
 
     def payment_receipt_close(self):
         self._send_command('EncerraDocumento')
 
     def payment_receipt_print_duplicate(self):
         self._send_command('EmiteViaCreditoDebito')
+
+    def gerencial_report_open(self, gerencial_id=0):
+        self._send_command('AbreGerencial', CodGerencial=gerencial_id)
+
+    def gerencial_report_print(self, text):
+        text = text.encode('cp850')
+        for line in text.split('\n'):
+            print line
+            self._send_command('ImprimeTexto', TextoLivre=line)
+
+    def gerencial_report_close(self):
+        self._send_command('EncerraDocumento')
 
 
 class FiscNetChequePrinter(FiscNetECF, BaseChequePrinter):

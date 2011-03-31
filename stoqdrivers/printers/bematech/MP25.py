@@ -81,14 +81,15 @@ CMD_ADD_ITEM = 63
 CMD_PAYMENT_RECEIPT_OPEN = 66 # MP20 suporta somente 3 primeiro parametros
 CMD_PAYMENT_RECEIPT_PRINT = 67
 CMD_PAYMENT_RECEIPT_CLOSE = 21 # Parece o mesmo, mas com nomes diferentes na mp20 e 25
+CMD_GERENCIAL_REPORT_PRINT = 20
+CMD_GERENCIAL_REPORT_CLOSE = 21
+
 CMD_PROGRAM_PAYMENT_METHOD = 71
 CMD_ADD_PAYMENT = 72
+
 # Be carefull with these commands, They are only available for MP25 (not mp20)
 CMD_CANCEL_LAST = 81
 CMD_PAYMENT_RECEIPT_PRINT_DUPLICATE = 91
-
-CMD_GERENCIAL_REPORT_PRINT = 20
-CMD_GERENCIAL_REPORT_CLOSE = 21
 
 NAK = 21
 ACK = 6
@@ -597,8 +598,7 @@ class MP25(SerialBase):
                 return name
 
     def gerencial_report_open(self):
-        # We dont need to open it. Just start printing
-        return
+        self._send_command(CMD_GERENCIAL_REPORT_PRINT)
 
     def gerencial_report_print(self, text):
         for line in text.split('\n'):

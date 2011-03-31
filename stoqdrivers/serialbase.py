@@ -30,6 +30,7 @@ from serial import Serial, EIGHTBITS, PARITY_NONE, STOPBITS_ONE
 from zope.interface import implements
 
 from stoqdrivers.interfaces import ISerialPort
+from stoqdrivers.exceptions import DriverError
 
 log = Logger('stoqdrivers.serial')
 
@@ -109,8 +110,18 @@ class SerialBase(object):
 
     def readline(self):
         out = ''
+        a = 0
+        retries = 10
         while True:
+            if a > retries:
+                raise DriverError("Timeout")
+
             c = self._port.read(1)
+            if not c:
+                a += 1
+                print 'take %s' % a
+                continue
+            a = 0
             if c == self.EOL_DELIMIT:
                 log.debug('<<< %r' % out)
                 return out
