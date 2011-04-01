@@ -738,7 +738,6 @@ class FiscNetECF(SerialBase):
         text = text.encode('cp850')
         for line in text.split('\n'):
             line = line.replace('\\', '\\\\') # Vespague sucks
-            print line
             self._send_command('ImprimeTexto', TextoLivre=line)
 
     def payment_receipt_close(self):
@@ -753,7 +752,7 @@ class FiscNetECF(SerialBase):
     def gerencial_report_print(self, text):
         text = text.encode('cp850')
         for line in text.split('\n'):
-            print line
+            line = line.replace('\\', '\\\\') # Vespague sucks
             self._send_command('ImprimeTexto', TextoLivre=line)
 
     def gerencial_report_close(self):
