@@ -77,6 +77,9 @@ CMD_REDUCE_Z = 208
 CMD_READ_MEMORY = 209
 # [ESC] 210 Emissão de Cupom Adicional
 # [ESC] 211 Abertura de Relatório Gerencial (Leitura X)
+CMD_GERENCIAL_REPORT_OPEN = 211
+CMD_GERENCIAL_REPORT_CLOSE = 212
+CMD_GERENCIAL_REPORT_PRINT = 213
 CMD_CLOSE_NON_FISCAL_BOUND_RECEIPT = 212        # Pg. 37
 CMD_PRINT_LINE_NON_FISCAL_BOUND_RECEIPT = 213   # Pg. 37
 CMD_ADD_ITEM_1L13D = 214
@@ -561,6 +564,16 @@ class FS345(SerialBase):
 
     def payment_receipt_close(self):
         self.send_command(CMD_CLOSE_NON_FISCAL_BOUND_RECEIPT)
+
+    def gerencial_report_open(self):
+        self.send_command(CMD_GERENCIAL_REPORT_OPEN)
+
+    def gerencial_report_print(self, text):
+        for line in text.split('\n'):
+            self.send_command(CMD_GERENCIAL_REPORT_PRINT, line + chr(255))
+
+    def gerencial_report_close(self):
+        self.send_command(CMD_GERENCIAL_REPORT_CLOSE)
 
     def till_add_cash(self, value):
         self._add_voucher(CASH_IN_TYPE, value)
