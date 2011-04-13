@@ -264,11 +264,14 @@ class FiscNetECF(SerialBase):
             cmd = 'LeTexto'
             argname = 'NomeTexto'
             retname = 'ValorTexto'
+        elif regtype == bool:
+            cmd = 'LeIndicador'
+            argname = 'NomeIndicador'
+            retname = 'ValorNumericoIndicador'
         else:
             raise AssertionError
 
         retdict = self._send_command(cmd, **dict([(argname, name)]))
-        assert len(retdict) == 1
         assert retname in retdict
         retval = retdict[retname]
         if regtype == int:
@@ -289,6 +292,8 @@ class FiscNetECF(SerialBase):
         elif regtype == str:
             # '"string"' -> 'string'
             return retval.strip('"')
+        elif regtype == bool:
+            return bool(int(retval))
         else:
             raise AssertionError
 
@@ -495,6 +500,9 @@ class FiscNetECF(SerialBase):
 
     def coupon_is_customer_identified(self):
         return len(self._customer_document) > 0
+
+    def has_open_coupon(self):
+        return self._read_register('DocumentoAberto', bool)
 
     def coupon_open(self):
         status = self._get_status()

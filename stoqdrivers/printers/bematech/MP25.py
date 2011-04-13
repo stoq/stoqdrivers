@@ -108,6 +108,7 @@ class MP25Registers(object):
     CRO = 10
     LAST_ITEM_ID = 12
     NUMBER_TILL = 14
+    FISCAL_FLAGS = 17
     EMISSION_DATE = 23
     TRUNC_FLAG = 28
     TOTALIZERS = 29
@@ -127,6 +128,7 @@ class MP25Registers(object):
         CRO: ('2s', True),
         LAST_ITEM_ID: ('2s', True),
         NUMBER_TILL: ('2s', True),
+        FISCAL_FLAGS: ('1s', False),
         EMISSION_DATE: ('6s', False),
         TRUNC_FLAG: ('1s', False),
         TOTALIZERS: ('2s', False),
@@ -483,6 +485,10 @@ class MP25(SerialBase):
 
     def coupon_is_customer_identified(self):
         return len(self._customer_document) > 0
+
+    def has_open_coupon(self):
+        value = ord(self._read_register(self.registers.FISCAL_FLAGS))
+        return value & 1
 
     def coupon_open(self):
         """ This needs to be called before anything else """

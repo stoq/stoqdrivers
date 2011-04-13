@@ -134,6 +134,9 @@ class ICouponPrinter(IDevice):
         False otherwise.
         """
 
+    def has_open_coupon():
+        """Returns True if the printer currently has an open coupon"""
+
     def coupon_open():
         """ This needs to be called before anything else (except
         identify_customer())
