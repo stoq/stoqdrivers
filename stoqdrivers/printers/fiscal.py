@@ -277,7 +277,7 @@ class FiscalPrinter(BasePrinter):
         return self._driver.gerencial_report_print(text)
 
     def gerencial_report_close(self):
-        log.info('gerencial_report_open')
+        log.info('gerencial_report_close')
         return self._driver.gerencial_report_close()
 
     def payment_receipt_open(self, identifier, coo, method, value):
