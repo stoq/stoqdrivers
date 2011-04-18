@@ -26,18 +26,15 @@
 """
 Generic base class implementation for all printers
 """
-import os
 
 from zope.interface import providedBy, implements
 from kiwi.python import namedAny
 
-from stoqdrivers import printers
 from stoqdrivers.interfaces import (ICouponPrinter,
                                     IDriverConstants,
                                     IChequePrinter)
 from stoqdrivers.base import BaseDevice
 from stoqdrivers.enum import DeviceType
-from stoqdrivers.utils import get_module_list
 from stoqdrivers.translation import stoqdrivers_gettext
 
 _ = stoqdrivers_gettext
@@ -90,17 +87,16 @@ def get_virtual_printer():
     return FiscalPrinter(brand='virtual', model='Simple')
 
 def get_supported_printers():
-    printers_dir = os.path.dirname(printers.__file__)
     result = {}
-
-    for brand in os.listdir(printers_dir):
-        brand_dir = os.path.join(printers_dir, brand)
-        if ((not os.path.isdir(brand_dir)) or brand.startswith(".")
-            or brand.startswith("virtual")):
-            continue
-
+    for brand, module_names in [
+        ('bematech', ['DP20C', 'MP20', 'MP2100', 'MP25']),
+        ('daruma', ['FS2100', 'FS345', 'FS600MFD']),
+        ('dataregis', ['EP375', 'Quick']),
+        ('fiscnet', ['FiscNetECF']),
+        ('perto', ['Pay2023']),
+        ('sweda', ['IFS9000I'])]:
         result[brand] = []
-        for module_name in get_module_list(brand_dir):
+        for module_name in module_names:
             try:
                 obj = namedAny("stoqdrivers.printers.%s.%s.%s"
                                % (brand, module_name, module_name))

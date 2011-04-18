@@ -27,19 +27,7 @@
 Functions for general use.
 """
 
-import os
 import unicodedata
-
-def get_module_list(dirname):
-    """ Given a directory name, returns a list of all Python modules in it
-    """
-    modules = []
-    for entry in os.listdir(dirname):
-        if (not entry.endswith(".py") or entry.startswith("__init__.py")
-            or not os.path.isfile(os.path.join(dirname, entry))):
-            continue
-        modules.append(entry[:-3])
-    return modules
 
 def encode_text(text, encoding):
     """ Converts the string 'text' to encoding 'encoding' and optionally

@@ -24,15 +24,11 @@
 ## Author(s):   Henrique Romano  <henrique@async.com.br>
 ##
 
-import os
-
 from kiwi.python import namedAny
 from zope.interface import implements
 
-from stoqdrivers.readers import barcode
 from stoqdrivers.interfaces import IBarcodeReader
 from stoqdrivers.serialbase import SerialBase
-from stoqdrivers.utils import get_module_list
 
 class BaseBarcodeReader(SerialBase):
     implements(IBarcodeReader)
@@ -46,14 +42,10 @@ class BaseBarcodeReader(SerialBase):
         return self.readline()
 
 def get_supported_barcode_readers():
-    barcode_dir = os.path.dirname(barcode.__file__)
     result = {}
-    for brand in os.listdir(barcode_dir):
-        brand_dir = os.path.join(barcode_dir, brand)
-        if (not os.path.isdir(brand_dir)) or brand.startswith("."):
-            continue
+    for brand, module_names in [('metrologic', ['MC630'])]:
         result[brand] = []
-        for module_name in get_module_list(brand_dir):
+        for module_name in module_names:
             try:
                 obj = namedAny("stoqdrivers.readers.barcode.%s.%s.%s"
                                % (brand, module_name, module_name))

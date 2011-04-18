@@ -27,13 +27,9 @@
 Useful functions related to all scales supported by stoqdrivers
 """
 
-import os
-
 from kiwi.python import namedAny
 from zope.interface import providedBy
 
-from stoqdrivers.utils import get_module_list
-from stoqdrivers import scales
 from stoqdrivers.interfaces import IScale
 from stoqdrivers.base import BaseDevice
 from stoqdrivers.enum import DeviceType
@@ -49,15 +45,11 @@ class BaseScale(BaseDevice):
                             "interface")
 
 def get_supported_scales():
-    scales_dir = os.path.dirname(scales.__file__)
     result = {}
 
-    for brand in os.listdir(scales_dir):
-        brand_dir = os.path.join(scales_dir, brand)
-        if (not os.path.isdir(brand_dir)) or brand.startswith("."):
-            continue
+    for brand, module_names in [('toledo', ['PrixIII'])]:
         result[brand] = []
-        for module_name in get_module_list(brand_dir):
+        for module_name in module_names:
             try:
                 obj = namedAny("stoqdrivers.scales.%s.%s.%s"
                                % (brand, module_name, module_name))
