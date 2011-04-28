@@ -696,7 +696,11 @@ class FS345(SerialBase):
             # XXX V = vinculavel. Why Only These????
             #if method[0] == 'V':
             #    methods.append((method_letter[i], method[1:].strip()))
-            methods.append((method_letter[i], method[1:].strip()))
+            if method[2] == '\xff':
+                continue
+
+            name = method[1:].strip().decode(self.coupon_printer_charset)
+            methods.append((method_letter[i], name))
 
         return methods
 

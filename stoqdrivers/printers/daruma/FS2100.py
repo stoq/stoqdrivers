@@ -79,7 +79,7 @@ class FS2100(FS345):
 
         # XXX: We need test correctly if the price's calcule is right (we
         # don't can do it right now since the manual isn't so clean).
-        data = ('%02s'  # Tributary situation
+        data = ('%02s' # Tributary situation
                 '%07d' # Quantity
                 '%08d' # Unitary price
                 '%d'   # 0=Discount(%) 1=Discount($) 2=Surcharge(%) 3=Surcharge($)
@@ -136,7 +136,6 @@ class FS2100(FS345):
 
     def _check_response(self, retcode, raw):
         # Compatible with the fs345/fs2100
-        print retcode
         compatible_error = retcode[1:3]
         extended_error = retcode[3:6]
         warning_code = retcode[6:8]
