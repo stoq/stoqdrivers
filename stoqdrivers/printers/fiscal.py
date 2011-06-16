@@ -223,6 +223,11 @@ class FiscalPrinter(BasePrinter):
 
         return self._driver.summarize()
 
+    def has_pending_reduce(self):
+        pending = self._driver.has_pending_reduce()
+        log.info('has_pending_reduce() = %s' % pending)
+        return pending
+
     def close_till(self, previous_day=False):
         log.info('close_till(previous_day=%r)' % (previous_day,))
 

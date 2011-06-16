@@ -151,6 +151,8 @@ class MP25Constants(BaseDriverConstants):
 
 
 class MP25Status(object):
+    PENDING_REDUCE_Z = 66
+
     st1_codes = {
         128: (OutofPaperError(_("Printer is out of paper"))),
         # 64: (AlmostOutofPaper(_("Printer almost out of paper"))),
@@ -438,6 +440,10 @@ class MP25(SerialBase):
     def summarize(self):
         """ Prints a summary of all sales of the day """
         self._send_command(CMD_READ_X)
+
+    def has_pending_reduce(self):
+        status = self.get_status()
+        return status.st3 == MP25Status.PENDING_REDUCE_Z
 
     def close_till(self, previous_day=False):
         """ Close the till for the day, no other actions can be done after this

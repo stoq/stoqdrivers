@@ -258,6 +258,10 @@ class ICouponPrinter(IDevice):
         'read X' operation.
         """
 
+    def has_pending_reduce():
+        """ Verify is has pending 'reduce z'
+        """
+
     def close_till(previous_day=False):
         """ Close the till for the day, no other actions can be done after
         this is called. In Brazil this is 'reduce Z' operation

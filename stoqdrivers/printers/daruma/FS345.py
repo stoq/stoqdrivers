@@ -218,7 +218,7 @@ class FS345(SerialBase):
             print 'Raw status code:', status
             print 'Cashier drawer is', ifset(status[1], 3, 'closed', 'open')
 
-        if self.needs_reduce_z():
+        if self.has_pending_reduce():
             raise PendingReduceZ(_('Pending Reduce Z'))
         if self.status_check(status, 1, 2):
             raise HardwareFailure(_('Mechanical failure'))
@@ -250,7 +250,7 @@ class FS345(SerialBase):
 
         return status
 
-    def needs_reduce_z(self, status=None):
+    def has_pending_reduce(self, status=None):
         if not status:
             status = self._get_status()
         return self.status_check(status, 2, 1)
@@ -460,7 +460,7 @@ class FS345(SerialBase):
         # If we need reduce Z don't verify that the coupon is open, instead
         # just cancel the coupon. This avoids a race when you forgot
         # to close a coupon and reduce Z at the same time.
-        if not self.needs_reduce_z():
+        if not self.has_pending_reduce():
             self._check_status()
         self.send_command(CMD_CANCEL_COUPON)
 
