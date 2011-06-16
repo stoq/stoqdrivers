@@ -596,7 +596,7 @@ class FiscNetECF(SerialBase):
 
     def has_pending_reduce(self):
         status = self._get_status()
-        return status & FLAG_Z_PENDENTE:
+        return status & FLAG_Z_PENDENTE
 
     def till_add_cash(self, value):
         status = self._get_status()
