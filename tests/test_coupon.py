@@ -317,7 +317,7 @@ class TestCoupon(object):
         # 3. surcharge with taxcode equals to TaxType.ICMS
         coupon_total = self._device.totalize(surcharge=Decimal("1"),
                                              taxcode=TaxType.ICMS)
-        self.assertEquals(coupon_total, Decimal("10.10"))
+        self.assertEquals(coupon_total, Decimal("11.00"))
         self._device.add_payment(self._payment_method, Decimal("12"))
         self._device.close()
 
@@ -385,10 +385,16 @@ class TestCoupon(object):
 
         return None
 
+    def _get_card_constant(self):
+        return self._get_constant(self._device.get_payment_constants(),
+                                  'Cartao Credito')
+
+    def _get_card_payment_receipt(self):
+        return self._device.get_payment_receipt_identifier(
+                                            'Cartao Credito')
     def test_payment_receipt(self):
-        payment_id = self._get_constant(self._device.get_payment_constants(),
-                                        'Cartao Credito')
-        receipt_id = self._device.get_payment_receipt_identifier('Cartao Credito')
+        payment_id = self._get_card_constant()
+        receipt_id = self._get_card_payment_receipt()
 
         self._open_coupon()
         self._device.add_item(u"987654", u"Monitor LG 775N", Decimal(10),
@@ -423,6 +429,14 @@ class BematechMP2100(TestCoupon, BaseTest):
 class FiscNet(TestCoupon, BaseTest):
     brand = "fiscnet"
     model = "FiscNetECF"
+
+    def _get_card_constant(self):
+        return self._get_constant(self._device.get_payment_constants(),
+                                  u'Cartão Crédito')
+
+    def _get_card_payment_receipt(self):
+        # this driver does not need one.
+        return None
 
 # class DataregisEP375(TestCoupon, BaseTest):
 #     brand = "dataregis"

@@ -691,7 +691,7 @@ class FiscNetECF(SerialBase):
         return constants
 
     def get_payment_constants(self):
-        constants = [('-2', 'Dinheiro')]
+        constants = [('-2', u'Dinheiro')]
 
         for reg in range(16):
             try:
