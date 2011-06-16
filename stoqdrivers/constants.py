@@ -52,6 +52,7 @@ _constant_descriptions = {
     PaymentMethodType.BILL: _(u"Bill Payment Method"),
     PaymentMethodType.FINANCIAL: _(u"Financial Payment Method"),
     PaymentMethodType.GIFT_CERTIFICATE: _(u"Gift certificate Payment Method"),
+    PaymentMethodType.CUSTOM: _(u"Custom Payment Method"),
     PaymentMethodType.MULTIPLE: _(u"Multiple Payment Method"),
     }
 

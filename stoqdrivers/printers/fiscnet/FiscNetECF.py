@@ -314,7 +314,7 @@ class FiscNetECF(SerialBase):
         return result
 
     # This how the printer needs to be configured.
-    def _define_tax_name(self, code, name):
+    def _define_tax_name(self, code, name, entrada=False):
         try:
             retdict = self._send_command(
                 'LeNaoFiscal', CodNaoFiscal=code)
@@ -333,7 +333,7 @@ class FiscNetECF(SerialBase):
         try:
             self._send_command(
                 'DefineNaoFiscal', CodNaoFiscal=code, DescricaoNaoFiscal=name,
-                NomeNaoFiscal=name, TipoNaoFiscal=False)
+                NomeNaoFiscal=name, TipoNaoFiscal=entrada)
         except DriverError, e:
             if e.code != 8036:
                 raise
@@ -448,19 +448,27 @@ class FiscNetECF(SerialBase):
         return taxes
 
     def setup(self):
-        self._define_tax_name(0, "Suprimento".encode('cp850'))
-        self._define_tax_name(1, "Sangria".encode('cp850'))
+        self._define_tax_name(0, 
+            "Suprimento".encode(self.coupon_printer_charset), entrada=True)
+        self._define_tax_name(1,
+            "Sangria".encode(self.coupon_printer_charset), entrada=False)
         for code in range(2, 15):
             self._delete_tax_name(code)
 
-        self._define_payment_method(0, u'Cheque'.encode('cp850'))
-        self._define_payment_method(1, u'Boleto'.encode('cp850'))
-        self._define_payment_method(2, u'Cartão credito'.encode('cp850'),
-                                    vinculated=True)
-        self._define_payment_method(3, u'Cartão debito'.encode('cp850'),
-                                    vinculated=True)
-        self._define_payment_method(4, u'Financeira'.encode('cp850'))
-        self._define_payment_method(5, u'Vale compra'.encode('cp850'))
+        self._define_payment_method(0,
+            u'Cheque'.encode(self.coupon_printer_charset))
+        self._define_payment_method(1,
+            u'Boleto'.encode(self.coupon_printer_charset))
+        self._define_payment_method(2,
+            u'Cartão credito'.encode(self.coupon_printer_charset),
+            vinculated=True)
+        self._define_payment_method(3,
+            u'Cartão debito'.encode(self.coupon_printer_charset),
+            vinculated=True)
+        self._define_payment_method(4,
+            u'Financeira'.encode(self.coupon_printer_charset))
+        self._define_payment_method(5,
+            u'Vale compra'.encode(self.coupon_printer_charset))
         for code in range(6, 15):
             self._delete_payment_method(code)
 
@@ -743,7 +751,7 @@ class FiscNetECF(SerialBase):
                            COO=coo, Valor=value)
 
     def payment_receipt_print(self, text):
-        text = text.encode('cp850')
+        text = text.encode(self.coupon_printer_charset)
         for line in text.split('\n'):
             line = line.replace('\\', '\\\\') # Vespague sucks
             self._send_command('ImprimeTexto', TextoLivre=line)
@@ -758,7 +766,7 @@ class FiscNetECF(SerialBase):
         self._send_command('AbreGerencial', CodGerencial=gerencial_id)
 
     def gerencial_report_print(self, text):
-        text = text.encode('cp850')
+        text = text.encode(self.coupon_printer_charset)
         for line in text.split('\n'):
             line = line.replace('\\', '\\\\') # Vespague sucks
             self._send_command('ImprimeTexto', TextoLivre=line)
