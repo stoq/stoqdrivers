@@ -8,13 +8,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-01 13:14-0300\n"
+"POT-Creation-Date: 2011-07-06 13:53-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
+
+#: ../stoqdrivers/base.py:78
+#, python-format
+msgid "There is no section named `%s'!"
+msgstr ""
 
 #: ../stoqdrivers/configparser.py:77
 #, python-format
@@ -96,155 +102,228 @@ msgid "Gift certificate Payment Method"
 msgstr ""
 
 #: ../stoqdrivers/constants.py:55
+msgid "Custom Payment Method"
+msgstr ""
+
+#: ../stoqdrivers/constants.py:56
 msgid "Multiple Payment Method"
 msgstr ""
 
-#: ../stoqdrivers/base.py:78
-#, python-format
-msgid "There is no section named `%s'!"
+#: ../stoqdrivers/printers/bematech/MP25.py:157
+msgid "Printer is out of paper"
 msgstr ""
 
-#: ../stoqdrivers/printers/fiscal.py:166
-msgid "You must totalize the coupon before add payments."
+#. 64: (AlmostOutofPaper(_("Printer almost out of paper"))),
+#: ../stoqdrivers/printers/bematech/MP25.py:159
+msgid "Printer clock error"
 msgstr ""
 
-#: ../stoqdrivers/printers/fiscal.py:198
-msgid "You must totalize the coupon before closing it"
+#: ../stoqdrivers/printers/bematech/MP25.py:160
+msgid "Printer in error state"
 msgstr ""
 
-#: ../stoqdrivers/printers/fiscal.py:201
+#: ../stoqdrivers/printers/bematech/MP25.py:161
+msgid "First data value in CMD is not ESC (1BH)"
+msgstr ""
+
+#: ../stoqdrivers/printers/bematech/MP25.py:162
+msgid "Nonexistent command"
+msgstr ""
+
+#. 2: (CouponOpenError(_("Printer has a coupon currently open"))),
+#: ../stoqdrivers/printers/bematech/MP25.py:164
+msgid "Invalid number of parameters"
+msgstr ""
+
+#: ../stoqdrivers/printers/bematech/MP25.py:167
+msgid "Invalid CMD parameter"
+msgstr ""
+
+#: ../stoqdrivers/printers/bematech/MP25.py:168
+msgid "Fiscal memory is full"
+msgstr ""
+
+#: ../stoqdrivers/printers/bematech/MP25.py:169
+msgid "Error in CMOS memory"
+msgstr ""
+
+#: ../stoqdrivers/printers/bematech/MP25.py:170
+msgid "Given tax is not programmed on the printer"
+msgstr ""
+
+#: ../stoqdrivers/printers/bematech/MP25.py:171
+msgid "No available tax slot"
+msgstr ""
+
+#: ../stoqdrivers/printers/bematech/MP25.py:172
+msgid "The item wasn't added in the coupon or can't be cancelled"
+msgstr ""
+
+#. 7: (CouponOpenError(_("Coupon already Open"))),
+#. 8: (CouponNotOpenError(_("Coupon is closed"))),
+#: ../stoqdrivers/printers/bematech/MP25.py:184
+msgid "Printer is offline"
+msgstr ""
+
+#: ../stoqdrivers/printers/bematech/MP25.py:185
+msgid "Surcharge or discount greater than coupon totalvalue"
+msgstr ""
+
+#: ../stoqdrivers/printers/bematech/MP25.py:187
+msgid "Coupon with no items"
+msgstr ""
+
+#: ../stoqdrivers/printers/bematech/MP25.py:188
+msgid "Payment method not recognized"
+msgstr ""
+
+#: ../stoqdrivers/printers/bematech/MP25.py:189
 msgid ""
-"It is not possible close the coupon since there are no payments defined."
+"Isn't possible add more payments sincethe coupon total value already was "
+"reached"
 msgstr ""
 
-#: ../stoqdrivers/printers/fiscal.py:204
-#, python-format
-msgid ""
-"Isn't possible close the coupon since the payments total (%.2f) doesn't "
-"match the totalized value (%.2f)."
+#: ../stoqdrivers/printers/bematech/MP25.py:192
+msgid "Coupon isn't totalized yet"
 msgstr ""
 
-#: ../stoqdrivers/printers/virtual/Simple.py:111
-msgid "There is no coupon opened!"
+#: ../stoqdrivers/printers/bematech/MP25.py:193
+msgid "Printer not initialized"
 msgstr ""
 
-#: ../stoqdrivers/printers/virtual/Simple.py:115
-msgid "There is a coupon already open"
+#: ../stoqdrivers/printers/bematech/MP25.py:194
+msgid "Printer without serial number"
 msgstr ""
 
-#: ../stoqdrivers/printers/virtual/Simple.py:139
-msgid "The coupon is already totalized, you can't add items anymore."
+#: ../stoqdrivers/printers/bematech/MP25.py:195
+msgid "Invalid start date"
 msgstr ""
 
-#: ../stoqdrivers/printers/virtual/Simple.py:149
-#, python-format
-msgid "There is no item with this ID (%d)"
+#: ../stoqdrivers/printers/bematech/MP25.py:196
+msgid "Invalid final date"
 msgstr ""
 
-#: ../stoqdrivers/printers/virtual/Simple.py:152
-msgid "The coupon is already totalized, you can't cancel items anymore."
+#: ../stoqdrivers/printers/bematech/MP25.py:197
+msgid "Sale with null value"
 msgstr ""
 
-#: ../stoqdrivers/printers/virtual/Simple.py:166
-msgid "The coupon can't be totalized, since there is no items added"
+#: ../stoqdrivers/printers/bematech/MP25.py:198
+msgid "Surcharge or discount greater than itemvalue"
 msgstr ""
 
-#: ../stoqdrivers/printers/virtual/Simple.py:169
-#: ../stoqdrivers/printers/sweda/IFS9000I.py:191
-msgid "The coupon is already totalized"
+#: ../stoqdrivers/printers/bematech/MP25.py:200
+#: ../stoqdrivers/printers/bematech/MP25.py:209
+msgid "Invalid date"
 msgstr ""
 
-#: ../stoqdrivers/printers/virtual/Simple.py:181
-msgid "Coupon totalized must be greater than zero!"
+#: ../stoqdrivers/printers/bematech/MP25.py:201
+msgid "Item doesn't exists or already was cancelled"
 msgstr ""
 
-#: ../stoqdrivers/printers/virtual/Simple.py:190
-msgid "Isn't possible add payments to the coupon since it isn't totalized"
+#: ../stoqdrivers/printers/bematech/MP25.py:202
+msgid "Surcharge greater than item value"
 msgstr ""
 
-#: ../stoqdrivers/printers/virtual/Simple.py:199
-msgid "Isn't possible close the coupon since it isn't totalized yet!"
+#: ../stoqdrivers/printers/bematech/MP25.py:203
+msgid "Discount greater than item value"
 msgstr ""
 
-#: ../stoqdrivers/printers/virtual/Simple.py:202
-msgid "Isn't possible close the coupon since there is no payments added."
+#: ../stoqdrivers/printers/bematech/MP25.py:204
+msgid "Invalid month"
 msgstr ""
 
-#: ../stoqdrivers/printers/virtual/Simple.py:205
-msgid "The payments total value doesn't match the totalized value."
+#: ../stoqdrivers/printers/bematech/MP25.py:205
+msgid "Coupon already totalized"
 msgstr ""
 
-#: ../stoqdrivers/printers/sweda/IFS9000I.py:154
-msgid "A Read X is pending"
+#: ../stoqdrivers/printers/bematech/MP25.py:206
+msgid "Coupon not totalized yet"
 msgstr ""
 
-#: ../stoqdrivers/printers/sweda/IFS9000I.py:155
-msgid "The command is invalid"
+#: ../stoqdrivers/printers/bematech/MP25.py:207
+msgid "Surcharge on subtotal already effected"
 msgstr ""
 
-#: ../stoqdrivers/printers/sweda/IFS9000I.py:158
-msgid "A coupon already exist"
+#: ../stoqdrivers/printers/bematech/MP25.py:208
+msgid "Discount on subtotal already effected"
 msgstr ""
 
-#: ../stoqdrivers/printers/sweda/IFS9000I.py:160
-msgid "Parameters invalid."
+#: ../stoqdrivers/printers/daruma/FS345.py:222
+#: ../stoqdrivers/printers/dataregis/EP375.py:135
+#: ../stoqdrivers/printers/dataregis/EP375.py:481
+msgid "Pending Reduce Z"
 msgstr ""
 
-#: ../stoqdrivers/printers/sweda/IFS9000I.py:162
-msgid "There is no coupon opened"
+#: ../stoqdrivers/printers/daruma/FS345.py:224
+msgid "Mechanical failure"
 msgstr ""
 
-#: ../stoqdrivers/printers/sweda/IFS9000I.py:163
-msgid "Reduce Z already done."
+#: ../stoqdrivers/printers/daruma/FS345.py:226
+msgid "Not properly authenticated"
 msgstr ""
 
-#: ../stoqdrivers/printers/sweda/IFS9000I.py:165
-#: ../stoqdrivers/printers/sweda/IFS9000I.py:168
-msgid "Printer clock isn't programmed yet."
+#: ../stoqdrivers/printers/daruma/FS345.py:228
+msgid "No paper"
 msgstr ""
 
-#: ../stoqdrivers/printers/sweda/IFS9000I.py:171
-#: ../stoqdrivers/printers/sweda/IFS9000I.py:173
-msgid "Problem in fiscal printer"
+#: ../stoqdrivers/printers/daruma/FS345.py:230
+msgid "Offline"
 msgstr ""
 
-#: ../stoqdrivers/printers/sweda/IFS9000I.py:176
-msgid "There is no items added to coupon"
+#: ../stoqdrivers/printers/daruma/FS345.py:244
+msgid "readZ is already emitted"
 msgstr ""
 
-#: ../stoqdrivers/printers/sweda/IFS9000I.py:178
-msgid "Out of paper"
-msgstr ""
-
-#: ../stoqdrivers/printers/sweda/IFS9000I.py:179
-msgid "A Reduce Z is pending"
-msgstr ""
-
-#: ../stoqdrivers/printers/sweda/IFS9000I.py:182
-msgid "Invalid state for command execution"
-msgstr ""
-
-#: ../stoqdrivers/printers/sweda/IFS9000I.py:185
-msgid "It is not possible cancel the item since it wasn't added yet"
-msgstr ""
-
-#: ../stoqdrivers/printers/sweda/IFS9000I.py:194
-msgid "There is no such item to cancel in the coupon"
-msgstr ""
-
-#: ../stoqdrivers/printers/sweda/IFS9000I.py:197
 #: ../stoqdrivers/printers/daruma/FS345.py:272
+msgid "Document is already open"
+msgstr ""
+
+#: ../stoqdrivers/printers/daruma/FS345.py:274
+#: ../stoqdrivers/printers/daruma/FS345.py:350
+msgid "Coupon is not open"
+msgstr ""
+
+#: ../stoqdrivers/printers/daruma/FS345.py:276
+#: ../stoqdrivers/printers/sweda/IFS9000I.py:197
 msgid "There's no open document to cancel"
 msgstr ""
 
-#. if we catch InvalidState here, probably the printer is with
-#. a read X pending, so..
-#: ../stoqdrivers/printers/sweda/IFS9000I.py:472
-msgid "A read X is pending."
+#: ../stoqdrivers/printers/daruma/FS345.py:279
+msgid "There is no such item in the coupon"
 msgstr ""
 
-#: ../stoqdrivers/printers/fiscnet/FiscNetECF.py:498
-msgid "Coupon already opened."
+#: ../stoqdrivers/printers/daruma/FS345.py:284
+#, python-format
+msgid "Printer error %s: No paper"
+msgstr ""
+
+#: ../stoqdrivers/printers/daruma/FS345.py:295
+msgid "Required field is blank"
+msgstr ""
+
+#: ../stoqdrivers/printers/daruma/FS345.py:422
+msgid "Coupon already open"
+msgstr ""
+
+#: ../stoqdrivers/printers/daruma/FS345.py:499
+msgid "No client"
+msgstr ""
+
+#: ../stoqdrivers/printers/daruma/FS345.py:500
+msgid "No document"
+msgstr ""
+
+#: ../stoqdrivers/printers/daruma/FS345.py:501
+msgid "No address"
+msgstr ""
+
+#: ../stoqdrivers/printers/daruma/FS345.py:516
+msgid "It is not possible to close the coupon"
+msgstr ""
+
+#: ../stoqdrivers/printers/daruma/FS345.py:556
+#, python-format
+msgid "Receipt for method %s is not configured"
 msgstr ""
 
 #: ../stoqdrivers/printers/dataregis/EP375.py:108
@@ -315,12 +394,6 @@ msgstr ""
 msgid "Printer hardware failure"
 msgstr ""
 
-#: ../stoqdrivers/printers/dataregis/EP375.py:135
-#: ../stoqdrivers/printers/dataregis/EP375.py:481
-#: ../stoqdrivers/printers/daruma/FS345.py:218
-msgid "Pending Reduce Z"
-msgstr ""
-
 #: ../stoqdrivers/printers/dataregis/EP375.py:138
 msgid "Discount in subtotal with sale subjects to ICMS and ISSQN isn't allowed"
 msgstr ""
@@ -339,7 +412,7 @@ msgid "No more fiscal memory :("
 msgstr ""
 
 #: ../stoqdrivers/printers/dataregis/EP375.py:153
-#: ../stoqdrivers/printers/dataregis/EP375.py:602
+#: ../stoqdrivers/printers/dataregis/EP375.py:605
 msgid "Reduce Z already done"
 msgstr ""
 
@@ -347,208 +420,140 @@ msgstr ""
 msgid "You have specified an invalid item id to cancel!"
 msgstr ""
 
-#: ../stoqdrivers/printers/daruma/FS345.py:220
-msgid "Mechanical failure"
+#: ../stoqdrivers/printers/fiscal.py:171
+msgid "You must totalize the coupon before add payments."
 msgstr ""
 
-#: ../stoqdrivers/printers/daruma/FS345.py:222
-msgid "Not properly authenticated"
+#: ../stoqdrivers/printers/fiscal.py:203
+msgid "You must totalize the coupon before closing it"
 msgstr ""
 
-#: ../stoqdrivers/printers/daruma/FS345.py:224
-msgid "No paper"
-msgstr ""
-
-#: ../stoqdrivers/printers/daruma/FS345.py:226
-msgid "Offline"
-msgstr ""
-
-#: ../stoqdrivers/printers/daruma/FS345.py:240
-msgid "readZ is already emitted"
-msgstr ""
-
-#: ../stoqdrivers/printers/daruma/FS345.py:268
-msgid "Document is already open"
-msgstr ""
-
-#: ../stoqdrivers/printers/daruma/FS345.py:270
-#: ../stoqdrivers/printers/daruma/FS345.py:346
-msgid "Coupon is not open"
-msgstr ""
-
-#: ../stoqdrivers/printers/daruma/FS345.py:275
-msgid "There is no such item in the coupon"
-msgstr ""
-
-#: ../stoqdrivers/printers/daruma/FS345.py:280
-#, python-format
-msgid "Printer error %s: No paper"
-msgstr ""
-
-#: ../stoqdrivers/printers/daruma/FS345.py:291
-msgid "Required field is blank"
-msgstr ""
-
-#: ../stoqdrivers/printers/daruma/FS345.py:414
-msgid "Coupon already open"
-msgstr ""
-
-#: ../stoqdrivers/printers/daruma/FS345.py:488
-msgid "No client"
-msgstr ""
-
-#: ../stoqdrivers/printers/daruma/FS345.py:489
-msgid "No document"
-msgstr ""
-
-#: ../stoqdrivers/printers/daruma/FS345.py:490
-msgid "No address"
-msgstr ""
-
-#: ../stoqdrivers/printers/daruma/FS345.py:505
-msgid "It is not possible to close the coupon"
-msgstr ""
-
-#: ../stoqdrivers/printers/daruma/FS345.py:545
-#, python-format
-msgid "Receipt for method %s is not configured"
-msgstr ""
-
-#: ../stoqdrivers/printers/bematech/MP25.py:147
-msgid "Printer is out of paper"
-msgstr ""
-
-#. 64: (AlmostOutofPaper(_("Printer almost out of paper"))),
-#: ../stoqdrivers/printers/bematech/MP25.py:149
-msgid "Printer clock error"
-msgstr ""
-
-#: ../stoqdrivers/printers/bematech/MP25.py:150
-msgid "Printer in error state"
-msgstr ""
-
-#: ../stoqdrivers/printers/bematech/MP25.py:151
-msgid "First data value in CMD is not ESC (1BH)"
-msgstr ""
-
-#: ../stoqdrivers/printers/bematech/MP25.py:152
-msgid "Nonexistent command"
-msgstr ""
-
-#. 2: (CouponOpenError(_("Printer has a coupon currently open"))),
-#: ../stoqdrivers/printers/bematech/MP25.py:154
-msgid "Invalid number of parameters"
-msgstr ""
-
-#: ../stoqdrivers/printers/bematech/MP25.py:157
-msgid "Invalid CMD parameter"
-msgstr ""
-
-#: ../stoqdrivers/printers/bematech/MP25.py:158
-msgid "Fiscal memory is full"
-msgstr ""
-
-#: ../stoqdrivers/printers/bematech/MP25.py:159
-msgid "Error in CMOS memory"
-msgstr ""
-
-#: ../stoqdrivers/printers/bematech/MP25.py:160
-msgid "Given tax is not programmed on the printer"
-msgstr ""
-
-#: ../stoqdrivers/printers/bematech/MP25.py:161
-msgid "No available tax slot"
-msgstr ""
-
-#: ../stoqdrivers/printers/bematech/MP25.py:162
-msgid "The item wasn't added in the coupon or can't be cancelled"
-msgstr ""
-
-#. 7: (CouponOpenError(_("Coupon already Open"))),
-#. 8: (CouponNotOpenError(_("Coupon is closed"))),
-#: ../stoqdrivers/printers/bematech/MP25.py:174
-msgid "Printer is offline"
-msgstr ""
-
-#: ../stoqdrivers/printers/bematech/MP25.py:175
-msgid "Surcharge or discount greater than coupon totalvalue"
-msgstr ""
-
-#: ../stoqdrivers/printers/bematech/MP25.py:177
-msgid "Coupon with no items"
-msgstr ""
-
-#: ../stoqdrivers/printers/bematech/MP25.py:178
-msgid "Payment method not recognized"
-msgstr ""
-
-#: ../stoqdrivers/printers/bematech/MP25.py:179
+#: ../stoqdrivers/printers/fiscal.py:206
 msgid ""
-"Isn't possible add more payments sincethe coupon total value already was "
-"reached"
+"It is not possible close the coupon since there are no payments defined."
 msgstr ""
 
-#: ../stoqdrivers/printers/bematech/MP25.py:182
-msgid "Coupon isn't totalized yet"
+#: ../stoqdrivers/printers/fiscal.py:209
+#, python-format
+msgid ""
+"Isn't possible close the coupon since the payments total (%.2f) doesn't "
+"match the totalized value (%.2f)."
 msgstr ""
 
-#: ../stoqdrivers/printers/bematech/MP25.py:183
-msgid "Printer not initialized"
+#: ../stoqdrivers/printers/fiscnet/FiscNetECF.py:518
+msgid "Coupon already opened."
 msgstr ""
 
-#: ../stoqdrivers/printers/bematech/MP25.py:184
-msgid "Printer without serial number"
+#: ../stoqdrivers/printers/sweda/IFS9000I.py:154
+msgid "A Read X is pending"
 msgstr ""
 
-#: ../stoqdrivers/printers/bematech/MP25.py:185
-msgid "Invalid start date"
+#: ../stoqdrivers/printers/sweda/IFS9000I.py:155
+msgid "The command is invalid"
 msgstr ""
 
-#: ../stoqdrivers/printers/bematech/MP25.py:186
-msgid "Invalid final date"
+#: ../stoqdrivers/printers/sweda/IFS9000I.py:158
+msgid "A coupon already exist"
 msgstr ""
 
-#: ../stoqdrivers/printers/bematech/MP25.py:187
-msgid "Sale with null value"
+#: ../stoqdrivers/printers/sweda/IFS9000I.py:160
+msgid "Parameters invalid."
 msgstr ""
 
-#: ../stoqdrivers/printers/bematech/MP25.py:188
-msgid "Surcharge or discount greater than itemvalue"
+#: ../stoqdrivers/printers/sweda/IFS9000I.py:162
+msgid "There is no coupon opened"
 msgstr ""
 
-#: ../stoqdrivers/printers/bematech/MP25.py:190
-#: ../stoqdrivers/printers/bematech/MP25.py:199
-msgid "Invalid date"
+#: ../stoqdrivers/printers/sweda/IFS9000I.py:163
+msgid "Reduce Z already done."
 msgstr ""
 
-#: ../stoqdrivers/printers/bematech/MP25.py:191
-msgid "Item doesn't exists or already was cancelled"
+#: ../stoqdrivers/printers/sweda/IFS9000I.py:165
+#: ../stoqdrivers/printers/sweda/IFS9000I.py:168
+msgid "Printer clock isn't programmed yet."
 msgstr ""
 
-#: ../stoqdrivers/printers/bematech/MP25.py:192
-msgid "Surcharge greater than item value"
+#: ../stoqdrivers/printers/sweda/IFS9000I.py:171
+#: ../stoqdrivers/printers/sweda/IFS9000I.py:173
+msgid "Problem in fiscal printer"
 msgstr ""
 
-#: ../stoqdrivers/printers/bematech/MP25.py:193
-msgid "Discount greater than item value"
+#: ../stoqdrivers/printers/sweda/IFS9000I.py:176
+msgid "There is no items added to coupon"
 msgstr ""
 
-#: ../stoqdrivers/printers/bematech/MP25.py:194
-msgid "Invalid month"
+#: ../stoqdrivers/printers/sweda/IFS9000I.py:178
+msgid "Out of paper"
 msgstr ""
 
-#: ../stoqdrivers/printers/bematech/MP25.py:195
-msgid "Coupon already totalized"
+#: ../stoqdrivers/printers/sweda/IFS9000I.py:179
+msgid "A Reduce Z is pending"
 msgstr ""
 
-#: ../stoqdrivers/printers/bematech/MP25.py:196
-msgid "Coupon not totalized yet"
+#: ../stoqdrivers/printers/sweda/IFS9000I.py:182
+msgid "Invalid state for command execution"
 msgstr ""
 
-#: ../stoqdrivers/printers/bematech/MP25.py:197
-msgid "Surcharge on subtotal already effected"
+#: ../stoqdrivers/printers/sweda/IFS9000I.py:185
+msgid "It is not possible cancel the item since it wasn't added yet"
 msgstr ""
 
-#: ../stoqdrivers/printers/bematech/MP25.py:198
-msgid "Discount on subtotal already effected"
+#: ../stoqdrivers/printers/sweda/IFS9000I.py:191
+#: ../stoqdrivers/printers/virtual/Simple.py:171
+msgid "The coupon is already totalized"
+msgstr ""
+
+#: ../stoqdrivers/printers/sweda/IFS9000I.py:194
+msgid "There is no such item to cancel in the coupon"
+msgstr ""
+
+#. if we catch InvalidState here, probably the printer is with
+#. a read X pending, so..
+#: ../stoqdrivers/printers/sweda/IFS9000I.py:472
+msgid "A read X is pending."
+msgstr ""
+
+#: ../stoqdrivers/printers/virtual/Simple.py:111
+msgid "There is no coupon opened!"
+msgstr ""
+
+#: ../stoqdrivers/printers/virtual/Simple.py:115
+msgid "There is a coupon already open"
+msgstr ""
+
+#: ../stoqdrivers/printers/virtual/Simple.py:139
+msgid "The coupon is already totalized, you can't add items anymore."
+msgstr ""
+
+#: ../stoqdrivers/printers/virtual/Simple.py:149
+#, python-format
+msgid "There is no item with this ID (%d)"
+msgstr ""
+
+#: ../stoqdrivers/printers/virtual/Simple.py:152
+msgid "The coupon is already totalized, you can't cancel items anymore."
+msgstr ""
+
+#: ../stoqdrivers/printers/virtual/Simple.py:168
+msgid "The coupon can't be totalized, since there is no items added"
+msgstr ""
+
+#: ../stoqdrivers/printers/virtual/Simple.py:183
+msgid "Coupon totalized must be greater than zero!"
+msgstr ""
+
+#: ../stoqdrivers/printers/virtual/Simple.py:192
+msgid "Isn't possible add payments to the coupon since it isn't totalized"
+msgstr ""
+
+#: ../stoqdrivers/printers/virtual/Simple.py:201
+msgid "Isn't possible close the coupon since it isn't totalized yet!"
+msgstr ""
+
+#: ../stoqdrivers/printers/virtual/Simple.py:204
+msgid "Isn't possible close the coupon since there is no payments added."
+msgstr ""
+
+#: ../stoqdrivers/printers/virtual/Simple.py:207
+msgid "The payments total value doesn't match the totalized value."
 msgstr ""

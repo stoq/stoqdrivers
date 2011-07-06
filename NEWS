@@ -1,3 +1,8 @@
+Release 0.9.12 - 06/07/2011:
+    * Better ferencial report support.
+    * Method to check if there is an open coupon.
+    * Pending reduce Z check.
+
 Release 0.9.11 - 08/02/2011:
     * Discounts as currency and use Decimal instead of float in drivers
 
