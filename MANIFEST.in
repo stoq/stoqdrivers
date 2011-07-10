@@ -8,4 +8,3 @@ include debian/changelog debian/compat debian/copyright debian/control debian/ru
 include debian/pyversions debian/pycompat
 recursive-include stoqdrivers/conf *.ini
 recursive-include po POTFILES.list stoqdrivers.pot *.po
-recursive-include locale stoqdrivers.mo

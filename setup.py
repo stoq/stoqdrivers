@@ -10,7 +10,7 @@
 dependencies = [('ZopeInterface', 'zope.interface', '3.0',
                  'http://www.zope.org/Products/ZopeInterface',
                  None),
-                ('kiwi', 'kiwi', (1, 9, 6),
+                ('kiwi', 'kiwi', (1, 9, 28),
                  'http://www.async.com.br/projects/kiwi/',
                  lambda x: x.kiwi_version),
                 ('PySerial', 'serial', '2.1',

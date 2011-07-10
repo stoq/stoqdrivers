@@ -5,7 +5,7 @@
 
 Summary: Fiscal driver collection
 Name: stoqdrivers
-Version: 0.9.6
+Version: 0.9.12
 Release: 1
 License: LGPL
 Group: System Environment/Libraries
@@ -14,7 +14,7 @@ Source: http://download.stoq.com.br/sources/LATEST/stoqdrivers-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 Requires: pygobject2 >= 2.8.0, python-zope-interface >= 3.0.1, pyserial >= 2.2, python-kiwi >= 1.9.24
 Requires: python-abi = %(%{__python} -c "import sys; print sys.version[:3]")
-BuildRequires: python-kiwi >= 1.9.24
+BuildRequires: python-kiwi >= 1.9.28
 BuildArch: noarch
 
 %description
@@ -39,10 +39,14 @@ like fiscal printers which makes it easy to embed in many applications.
 %defattr(-, root, root, 0755)
 %doc AUTHORS ChangeLog COPYING NEWS README
 %{python_sitelib}/stoqdrivers
+%{_libdir}/python*/site-packages/*.egg-info
 %{_datadir}/locale/*/LC_MESSAGES/stoqdrivers.mo
 %{_datadir}/stoqdrivers/conf/*.ini
 
 %changelog
+* Thu Jul 14 2011 Johan Dahlin <jdahlin@async.com.br> 0.9.12-1
+- New Release.
+
 * Thu Nov 08 2007 Fabio Morbec <fabio@async.com.br> 0.9.1-2
 - New Release.
 
