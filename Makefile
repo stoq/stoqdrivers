@@ -2,8 +2,7 @@ VERSION=$(shell egrep ^__version__ stoqdrivers/__init__.py|perl -pe 's/[\(\)]/\"
 PACKAGE=stoqdrivers
 WEBDOC_DIR=/mondo/htdocs/stoq.com.br/doc/devel
 TESTDLDIR=/mondo/htdocs/stoq.com.br/download/test
-
-include common/async.mk
+TARBALL=$(PACKAGE)-$(VERSION).tar.gz
 
 stoqdrivers.pickle:
 	pydoctor --project-name="Stoqdrivers" \
@@ -20,6 +19,12 @@ web: apidocs
 	rm -fr $(WEBDOC_DIR)/stoqdrivers
 	mv $(WEBDOC_DIR)/stoqdrivers-tmp $(WEBDOC_DIR)/stoqdrivers
 	cp stoqdrivers.pickle $(WEBDOC_DIR)/stoqdrivers
+
+sdist:
+	python setup.py -q sdist
+
+rpm: sdist
+	rpmbuild -ta dist/$(TARBALL)
 
 clean:
 	debclean
