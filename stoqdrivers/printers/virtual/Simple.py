@@ -1,9 +1,9 @@
-# -*- Mode: Python; coding: iso-8859-1 -*-
+# -*- Mode: Python; coding: utf-8 -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
 ##
 ## Stoqdrivers
-## Copyright (C) 2005-2007 Async Open Source <http://www.async.com.br>
+## Copyright (C) 2005-2011 Async Open Source <http://www.async.com.br>
 ## All rights reserved
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -21,8 +21,7 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
 ## USA.
 ##
-## Author(s):   Henrique Romano  <henrique@async.com.br>
-##              Johan Dahlin     <jdahlin@async.com.br>
+## Author(s):   Stoq Team  <stoq-devel@async.com.br>
 ##
 ##
 """
@@ -31,6 +30,8 @@ A simple implementation of a virtual printer.
 import datetime
 from decimal import Decimal
 
+import gtk
+import pango
 from kiwi.python import Settable
 from zope.interface import implements
 
@@ -38,7 +39,7 @@ from stoqdrivers.enum import PaymentMethodType, TaxType, UnitType
 from stoqdrivers.exceptions import (CouponTotalizeError, PaymentAdditionError,
                                     CloseCouponError, CouponOpenError,
                                     CancelItemError, ItemAdditionError,
-                                    DriverError)
+                                    DriverError, PrinterOfflineError)
 from stoqdrivers.interfaces import ICouponPrinter, IChequePrinter
 from stoqdrivers.printers.base import BaseDriverConstants
 from stoqdrivers.printers.capabilities import Capability
@@ -59,7 +60,9 @@ class FakeConstants(BaseDriverConstants):
         UnitType.METERS:      'G ',
         UnitType.LITERS:      'H',
         UnitType.EMPTY:       'I',
+        }
 
+    _payment_constants = {
         PaymentMethodType.MONEY: 'M',
         PaymentMethodType.CHECK: 'C',
         PaymentMethodType.BILL: 'B',
@@ -80,22 +83,114 @@ class FakeConstants(BaseDriverConstants):
         (TaxType.SERVICE,      'S0', Decimal(3)),
         ]
 
+class OutputWindow(gtk.Window):
+    columns = 60
+    def __init__(self, printer):
+        self._printer = printer
+        gtk.Window.__init__(self)
+        self.set_title("ECF Emulator")
+        self.set_size_request(420, 500)
+        self.vbox = gtk.VBox(0, False)
+        self.add(self.vbox)
 
-class Simple:
+        self._create_ui()
+
+    def _create_ui(self):
+        sw = gtk.ScrolledWindow()
+        self.vbox.pack_start(sw, True, True)
+        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_ALWAYS)
+
+        self.textview = gtk.TextView()
+        self.textview.modify_font(pango.FontDescription("Monospace 9"))
+        sw.add(self.textview)
+        self.buffer = self.textview.get_buffer()
+
+        buttonbox = gtk.HBox()
+        self.vbox.pack_start(buttonbox, False, False)
+
+        self.b = gtk.ToggleButton(_("Turn off"))
+        self.b.set_active(True)
+        buttonbox.pack_start(self.b)
+        self.b.connect("toggled", self._on_onoff__toggled)
+
+    def _on_onoff__toggled(self, button):
+        if button.get_active():
+            self.b.set_label(_("Turn off"))
+            self._printer.set_off(False)
+        else:
+            self.b.set_label(_("Turn on"))
+            self._printer.set_off(True)
+
+    def feed(self, text):
+        self.buffer.props.text += text
+
+    def feed_line(self, text=None):
+        if not text:
+            self.buffer.props.text += ('-' * self.columns) + '\n'
+            return
+
+        length = (self.columns - len(text) - 2) / 2
+        self.buffer.props.text += '%s %s %s' % (
+            '-' * length, text, '-' * length)
+
+
+class Simple(object):
     implements(IChequePrinter, ICouponPrinter)
 
     model_name = "Virtual Printer"
-    cheque_printer_charset = "latin-1"
-    coupon_printer_charset = "latin-1"
+    cheque_printer_charset = "utf-8"
+    coupon_printer_charset = "utf-8"
 
-    def __init__(self, port, consts):
-        self._till_closed = False
+    identify_customer_at_end = True
+    supported = False
+
+    def __init__(self, port, consts=None):
         self._consts = consts or FakeConstants()
+        self._customer_document = None
+
+        self._off = False
+        self.output = OutputWindow(self)
+        self.output.show_all()
+
+        # Internal state
+        self.till_closed = False
+        self.opening_date = datetime.date.today()
+        self.serial = 'Serial'
+        self.serial_id = 'Serial ID'
+        self.coupon_start = 0
+        self.coupon_end = 10
+        self.cro = 0
+        self.crz = 0
+        self.coo = 0
+        self.gnf = 0
+        self.ccf = 0
+        self.period_total = 0
+        self.total = 0
+        self.taxes = []
+
         self._reset_flags()
+
+        self.output.feed(
+            "Virtual Printer\n"
+            "Test Company\n"
+            "CNPJ: 00.000.000/0000-00 IE: ISENTO\n"
+            "IM: 012345\n")
+        self.output.feed_line()
+        self.output.feed("%s  COO:%s\n" % (
+            datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+            self.coo))
+        self.output.feed_line()
 
     #
     # Helper methods
     #
+
+    def set_off(self, off):
+        self._off = off
+
+    def _check(self):
+        if self._off:
+            raise PrinterOfflineError
 
     def _reset_flags(self):
         self.is_coupon_opened = False
@@ -119,14 +214,25 @@ class Simple:
     #
 
     def coupon_identify_customer(self, customer, address, document):
+        self._check()
+        if document not in ['160.618.061-40',
+                            '335.728.854-00',
+                            '804.727.615-87',
+                            '871.007.004-42']:
+            raise ItemAdditionError(_("Not allowed to sell to a client not created by the demo"))
+
         self._customer_name = customer
         self._customer_document = document
         self._customer_address = address
 
     def coupon_is_customer_identified(self):
-        return len(self._customer_document) > 0
+        return self._customer_document is not None
 
     def coupon_open(self):
+        self._check()
+        self.output.feed("CUPOM FISCAL\n")
+
+        self.output.feed("ITEM CODIGO DESCRICAO QTD.UN.VL. UNIT R$ ST A/T VL ITEM R$\n")
         self._check_coupon_is_closed()
         self.is_coupon_opened = True
 
@@ -134,16 +240,27 @@ class Simple:
                         quantity=Decimal("1.0"), unit=UnitType.EMPTY,
                         discount=Decimal("0.0"),
                         surcharge=Decimal("0.0"), unit_desc=""):
+        self._check()
+        if code not in ['2368694135945', '6234564656756', '6985413595971',
+                        '2692149835416', '1595843695465', '8596458216412',
+                        '9586249534513', '7826592136954', '5892458629421',
+                        '1598756984265', '1598756984265']:
+            raise ItemAdditionError(_("Not allowed to sale an item not created by the demo"))
+
         self._check_coupon_is_opened()
         if self.is_coupon_totalized:
             raise ItemAdditionError(_("The coupon is already totalized, "
                                       "you can't add items anymore."))
         self.items_quantity += 1
         item_id = self.items_quantity
-        self._items[item_id] = CouponItem(item_id, quantity, price)
+        item = CouponItem(item_id, quantity, price)
+        self._items[item_id] = item
+        self.output.feed("%03d %s %s\n" % (self.items_quantity, code, description))
+        self.output.feed("  %d %f %s\n" % (quantity, price, taxcode))
         return item_id
 
     def coupon_cancel_item(self, item_id):
+        self._check()
         self._check_coupon_is_opened()
         if not item_id in self._items:
             raise CancelItemError(_("There is no item with this ID (%d)")
@@ -151,9 +268,11 @@ class Simple:
         elif self.is_coupon_totalized:
             raise CancelItemError(_("The coupon is already totalized, "
                                     "you can't cancel items anymore."))
-        del self._items[item_id]
+        item = self._items.pop(item_id)
+        self.output.feed('cancel_item %r\n' % (item, ))
 
     def coupon_cancel(self):
+        self._check()
         # FIXME: If we don't have a coupon open, verify that
         #        we've opened at least one
         #self._check_coupon_is_opened()
@@ -163,6 +282,7 @@ class Simple:
                         surcharge=Decimal("0.0"), taxcode=TaxType.NONE):
         # FIXME: API changed: discount/surcharge was percentage,
         # now is currency.
+        self._check()
         self._check_coupon_is_opened()
         if not self.items_quantity:
             raise CouponTotalizeError(_("The coupon can't be totalized, since "
@@ -184,19 +304,24 @@ class Simple:
                                         "than zero!"))
 
         self.is_coupon_totalized = True
+        print 'totalize coupon'
         return self.totalized_value
 
     def coupon_add_payment(self, payment_method, value, description=u"",
                            custom_pm=""):
+        self._check()
         if not self.is_coupon_totalized:
             raise PaymentAdditionError(_("Isn't possible add payments to the "
                                          "coupon since it isn't totalized"))
         self.payments_total += value
         self.has_payments = True
+        print 'add payment'
         return self.totalized_value - self.payments_total
 
     def coupon_close(self, message=''):
+        self._check()
         self._check_coupon_is_opened()
+        print 'close coupon'
         if not self.is_coupon_totalized:
             raise CloseCouponError(_("Isn't possible close the coupon "
                                      "since it isn't totalized yet!"))
@@ -210,6 +335,7 @@ class Simple:
         return 0
 
     def get_capabilities(self):
+        self._check()
         # fake values
         return dict(item_code=Capability(max_len=48),
                     item_id=Capability(max_size=32767),
@@ -227,49 +353,109 @@ class Simple:
                     cheque_city=Capability(max_len=27))
 
     def get_constants(self):
+        self._check()
         return self._consts
 
     def summarize(self):
-        return
+        self._check()
+        self.output.feed("    LEITURA X\n")
+        self.output.feed_line("CONTADORES")
 
     def close_till(self, previous_day=False):
-        if self._till_closed:
+        self._check()
+        if self.till_closed:
             raise DriverError(
                 "Reduce Z was already sent today, try again tomorrow")
-        self._till_closed = True
-
-        # Sintegra is disabled until we solve connection problems in stoqlib
-        return None
-        total = sum(i.get_total_value() for i in self._items.values())
-        if self._items:
-            last_item = max(self._items.keys())
-        else:
-            last_item = 1
-
-        return Settable(
-            opening_date=datetime.date.today(),
-            serial='Stoq Virtual Printer',
-            serial_id=000,
-            coupon_start=1,
-            coupon_end=last_item,
-            crz=1,
-            cro=1,
-            period_total=total,
-            total=total,
-            tax_total=total)
+        self.till_closed = True
+        self.output.feed("    REDUÇÃO Z\n")
+        self.output.feed_line("CONTADORES")
+        self.output.feed("Geral de Operação Não-Fiscal:        %s" % (self.gnf, ))
+        self.output.feed("Contador de Reinício de Operação:    %s" % (self.cro, ))
+        self.output.feed("Contador de Reduções Z:              %s" % (self.crz, ))
+        self.output.feed("Contador de Cupon Fiscal:            %s" % (self.ccf, ))
+        self.output.feed_line("TOTALIZADORES")
+        self.output.feed("Totalizador Geral:                   %s" % (self.goo, ))
+        self.output.feed_line("ICMS")
+        self.output.feed_line("ISSQN")
+        self.output.feed_line("TOTALIZADORES NÃO FISCAIS")
+        self.output.feed_line("RELATORIO GERENCIAL")
+        self.output.feed_line("MEIOS DE PAGAMENTO")
 
     def till_add_cash(self, value):
-        pass
+        print 'add cash'
+        self._check()
 
     def till_remove_cash(self, value):
-        pass
+        print 'remove cash'
+        self._check()
 
     def till_read_memory(self, start, end):
-        pass
+        print 'read memory'
+        self._check()
 
     def till_read_memory_by_reductions(self, start, end):
-        pass
+        print 'read memory by reduction'
+        self._check()
 
+    def query_status(self):
+        self._check()
+        return None
+
+    def get_serial(self):
+        self._check()
+        return 'Virtual'
+
+    def get_tax_constants(self):
+        self._check()
+        return self._consts._tax_constants
+
+    def get_payment_constant(self, payment):
+        self._check()
+        print 'payment', payment
+
+    def get_payment_constants(self):
+        self._check()
+        return [('M', 'dinheiro'),
+                ('C', 'cheque'),
+                ('B', 'boleto')]
+
+    def get_port(self):
+        self._check()
+        return None
+
+    def has_pending_reduce(self):
+        self._check()
+        return False
+
+    def get_coo(self):
+        self._check()
+        return self.coo
+
+    def get_gnf(self):
+        self._check()
+        return self.gnf
+
+    def get_ccf(self):
+        self._check()
+        return self.ccf
+
+    def identify_customer_at_end(self):
+        self._check()
+        return False
+
+    def get_sintegra(self):
+        self._check()
+        return Settable(opening_date=self.opening_date,
+                        serial=self.serial,
+                        serial_id=self.serial_id,
+                        coupon_start=self.coupon_start,
+                        coupon_end=self.coupon_end,
+                        cro=self.cro,
+                        crz=self.crz,
+                        coo=self.coo,
+                        period_total=self.period_total,
+                        total=self.total,
+                        taxes=self.taxes)
 
     #
     # IChequePrinter implementation
@@ -277,3 +463,4 @@ class Simple:
 
     def print_cheque(self, value, thirdparty, city, date=None):
         return
+
