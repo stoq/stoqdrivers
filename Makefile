@@ -20,16 +20,6 @@ web: apidocs
 	mv $(WEBDOC_DIR)/stoqdrivers-tmp $(WEBDOC_DIR)/stoqdrivers
 	cp stoqdrivers.pickle $(WEBDOC_DIR)/stoqdrivers
 
-sdist:
-	python setup.py -q sdist
-
-rpm: sdist
-	rpmbuild -ta dist/$(TARBALL)
-
-clean:
-	debclean
-	rm -fr $(BUILDDIR)
-	rm -f MANIFEST
-	rm -fr stoqdrivers.pickle
+include async.mk
 
 .PHONY: clean stoqdrivers.pickle
