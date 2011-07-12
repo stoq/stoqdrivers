@@ -31,6 +31,9 @@ from zope.interface import implements
 
 from stoqdrivers.interfaces import ISerialPort
 from stoqdrivers.exceptions import DriverError
+from stoqdrivers.translation import stoqdrivers_gettext
+
+_ = stoqdrivers_gettext
 
 log = Logger('stoqdrivers.serial')
 
@@ -114,7 +117,8 @@ class SerialBase(object):
         retries = 10
         while True:
             if a > retries:
-                raise DriverError("Timeout")
+                raise DriverError(_("Timeout communicating with fiscal "
+                                    "printer"))
 
             c = self._port.read(1)
             if not c:

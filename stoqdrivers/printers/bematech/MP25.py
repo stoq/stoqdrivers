@@ -324,7 +324,8 @@ class MP25(SerialBase):
         data = ''
         while True:
             if a > RETRIES_BEFORE_TIMEOUT:
-                raise DriverError("Timeout")
+                raise DriverError(_("Timeout communicating with fiscal "
+                                    "printer"))
 
             a += 1
             reply = self.read(size)

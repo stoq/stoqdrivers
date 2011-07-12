@@ -185,7 +185,8 @@ class FS345(SerialBase):
 
         while True:
             if timeouts > RETRIES_BEFORE_TIMEOUT:
-                raise DriverError('Timeout')
+                raise DriverError(_("Timeout communicating with fiscal "
+                                    "printer"))
 
             c = self.read(1)
             if len(c) != 1:
