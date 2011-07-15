@@ -135,10 +135,9 @@ class OutputWindow(gtk.Window):
 
 
 class Simple(object):
-    implements(IChequePrinter, ICouponPrinter)
+    implements(ICouponPrinter)
 
     model_name = "Virtual Printer"
-    cheque_printer_charset = "utf-8"
     coupon_printer_charset = "utf-8"
 
     identify_customer_at_end = True
@@ -276,6 +275,7 @@ class Simple(object):
         # FIXME: If we don't have a coupon open, verify that
         #        we've opened at least one
         #self._check_coupon_is_opened()
+        self.output.feed('Cupom Cancelado')
         self._reset_flags()
 
     def coupon_totalize(self, discount=Decimal("0.0"),
@@ -417,7 +417,10 @@ class Simple(object):
         self._check()
         return [('M', 'dinheiro'),
                 ('C', 'cheque'),
-                ('B', 'boleto')]
+                ('B', 'boleto'),
+                ('D', u'cartão crédito'),
+                ('E', u'cartão débito'),
+                ]
 
     def get_port(self):
         self._check()
@@ -456,6 +459,32 @@ class Simple(object):
                         period_total=self.period_total,
                         total=self.total,
                         taxes=self.taxes)
+
+    # Receipt
+    def get_payment_receipt_identifier(self, method_name):
+        self._check()
+        return None
+
+    def payment_receipt_open(self, identifier, coo, method, value):
+        self.output.feed("    RECIBO DE PAGAMENTO coo=%s\n" % coo)
+
+    def payment_receipt_print(self, text):
+        self._check()
+        self.output.feed(text)
+
+    def payment_receipt_close(self):
+        self._check()
+        self.output.feed("=" * 80)
+
+    def gerencial_report_open(self, gerencial_id=0):
+        self._check()
+
+    def gerencial_report_print(self, text):
+        self._check()
+
+    def gerencial_report_close(self):
+        self._check()
+
 
     #
     # IChequePrinter implementation
