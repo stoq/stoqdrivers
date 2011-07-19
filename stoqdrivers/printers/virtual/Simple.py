@@ -89,7 +89,9 @@ class OutputWindow(gtk.Window):
         self._printer = printer
         gtk.Window.__init__(self)
         self.set_title("ECF Emulator")
-        self.set_size_request(420, 500)
+        self.set_size_request(220, 320)
+        self.move(0, 0)
+        self.set_deletable(False)
         self.vbox = gtk.VBox(0, False)
         self.add(self.vbox)
 
@@ -101,7 +103,7 @@ class OutputWindow(gtk.Window):
         sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_ALWAYS)
 
         self.textview = gtk.TextView()
-        self.textview.modify_font(pango.FontDescription("Monospace 9"))
+        self.textview.modify_font(pango.FontDescription("Monospace 7"))
         sw.add(self.textview)
         self.buffer = self.textview.get_buffer()
 
@@ -123,6 +125,8 @@ class OutputWindow(gtk.Window):
 
     def feed(self, text):
         self.buffer.props.text += text
+        mark = self.buffer.get_insert()
+        self.textview.scroll_mark_onscreen(mark)
 
     def feed_line(self, text=None):
         if not text:
@@ -130,8 +134,10 @@ class OutputWindow(gtk.Window):
             return
 
         length = (self.columns - len(text) - 2) / 2
-        self.buffer.props.text += '%s %s %s' % (
+        self.buffer.props.text += '%s %s %s\n' % (
             '-' * length, text, '-' * length)
+        mark = self.buffer.get_insert()
+        self.debug_view.scroll_mark_onscreen(mark)
 
 
 class Simple(object):
@@ -155,14 +161,14 @@ class Simple(object):
         self.till_closed = False
         self.opening_date = datetime.date.today()
         self.serial = 'Serial'
-        self.serial_id = 'Serial ID'
+        self.serial_id = '1234567890'
         self.coupon_start = 0
         self.coupon_end = 10
-        self.cro = 0
-        self.crz = 0
-        self.coo = 0
-        self.gnf = 0
-        self.ccf = 0
+        self.cro = 1
+        self.crz = 1
+        self.coo = 1
+        self.gnf = 1
+        self.ccf = 1
         self.period_total = 0
         self.total = 0
         self.taxes = []
@@ -229,7 +235,7 @@ class Simple(object):
 
     def coupon_open(self):
         self._check()
-        self.output.feed("CUPOM FISCAL\n")
+        self.output.feed("CUPOM SIMULADO\n")
 
         self.output.feed("ITEM CODIGO DESCRICAO QTD.UN.VL. UNIT R$ ST A/T VL ITEM R$\n")
         self._check_coupon_is_closed()
@@ -268,14 +274,16 @@ class Simple(object):
             raise CancelItemError(_("The coupon is already totalized, "
                                     "you can't cancel items anymore."))
         item = self._items.pop(item_id)
-        self.output.feed('cancel_item %r\n' % (item, ))
+        self.output.feed('cancel_item %r\n' % (item_id, ))
 
     def coupon_cancel(self):
         self._check()
         # FIXME: If we don't have a coupon open, verify that
         #        we've opened at least one
         #self._check_coupon_is_opened()
-        self.output.feed('Cupom Cancelado')
+        self.output.feed_line()
+        self.output.feed('    Cupom Cancelado\n')
+        self.output.feed_line()
         self._reset_flags()
 
     def coupon_totalize(self, discount=Decimal("0.0"),
@@ -332,6 +340,8 @@ class Simple(object):
             raise CloseCouponError(_("The payments total value doesn't "
                                      "match the totalized value."))
         self._reset_flags()
+        self.output.feed('Cupom Finalizado\n')
+        self.output.feed_line()
         return 0
 
     def get_capabilities(self):
@@ -359,7 +369,6 @@ class Simple(object):
     def summarize(self):
         self._check()
         self.output.feed("    LEITURA X\n")
-        self.output.feed_line("CONTADORES")
 
     def close_till(self, previous_day=False):
         self._check()
@@ -367,26 +376,20 @@ class Simple(object):
             raise DriverError(
                 "Reduce Z was already sent today, try again tomorrow")
         self.till_closed = True
-        self.output.feed("    REDUÇÃO Z\n")
-        self.output.feed_line("CONTADORES")
-        self.output.feed("Geral de Operação Não-Fiscal:        %s" % (self.gnf, ))
-        self.output.feed("Contador de Reinício de Operação:    %s" % (self.cro, ))
-        self.output.feed("Contador de Reduções Z:              %s" % (self.crz, ))
-        self.output.feed("Contador de Cupon Fiscal:            %s" % (self.ccf, ))
-        self.output.feed_line("TOTALIZADORES")
-        self.output.feed("Totalizador Geral:                   %s" % (self.goo, ))
-        self.output.feed_line("ICMS")
-        self.output.feed_line("ISSQN")
-        self.output.feed_line("TOTALIZADORES NÃO FISCAIS")
-        self.output.feed_line("RELATORIO GERENCIAL")
-        self.output.feed_line("MEIOS DE PAGAMENTO")
+        self.output.feed_line()
+        self.output.feed_line("REDUÇÃO Z")
+        self.output.feed_line()
 
     def till_add_cash(self, value):
-        print 'add cash'
+        self.output.feed_line()
+        self.output.feed('Suprimento: %s\n' % value)
+        self.output.feed_line()
         self._check()
 
     def till_remove_cash(self, value):
-        print 'remove cash'
+        self.output.feed_line()
+        self.output.feed('Sangria: %s\n' % value)
+        self.output.feed_line()
         self._check()
 
     def till_read_memory(self, start, end):
@@ -460,7 +463,11 @@ class Simple(object):
                         total=self.total,
                         taxes=self.taxes)
 
+    def get_crz(self):
+        return self.crz
+
     # Receipt
+
     def get_payment_receipt_identifier(self, method_name):
         self._check()
         return None
@@ -474,7 +481,7 @@ class Simple(object):
 
     def payment_receipt_close(self):
         self._check()
-        self.output.feed("=" * 80)
+        self.output.feed_line()
 
     def gerencial_report_open(self, gerencial_id=0):
         self._check()
