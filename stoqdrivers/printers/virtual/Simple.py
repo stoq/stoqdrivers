@@ -70,8 +70,17 @@ class FakeConstants(BaseDriverConstants):
         PaymentMethodType.DEBIT_CARD: 'D',
         PaymentMethodType.FINANCIAL: 'F',
         PaymentMethodType.GIFT_CERTIFICATE: 'G',
-
         }
+
+    _payment_descriptions = {
+        'M': 'Dinheiro',
+        'C': 'Cheque',
+        'B': 'Boleto',
+        'R': u'Cartão Crédito',
+        'D': u'Cartão Débito',
+        'F': u'Financeira',
+        'G': u'Vale Compras',
+    }
 
     _tax_constants = [
         (TaxType.SUBSTITUTION, 'TS', None),
@@ -235,6 +244,7 @@ class Simple(object):
 
     def coupon_open(self):
         self._check()
+        self.output.feed('\n')
         self.output.feed("CUPOM SIMULADO\n")
 
         self.output.feed("ITEM CODIGO DESCRICAO QTD.UN.VL. UNIT R$ ST A/T VL ITEM R$\n")
@@ -312,7 +322,8 @@ class Simple(object):
                                         "than zero!"))
 
         self.is_coupon_totalized = True
-        print 'totalize coupon'
+        self.output.feed('\n')
+        self.output.feed('Pagamentos:\n')
         return self.totalized_value
 
     def coupon_add_payment(self, payment_method, value, description=u"",
@@ -323,13 +334,13 @@ class Simple(object):
                                          "coupon since it isn't totalized"))
         self.payments_total += value
         self.has_payments = True
-        print 'add payment'
+        self.output.feed('  %s - %s\n' % (
+                self._consts._payment_descriptions[payment_method], value))
         return self.totalized_value - self.payments_total
 
     def coupon_close(self, message=''):
         self._check()
         self._check_coupon_is_opened()
-        print 'close coupon'
         if not self.is_coupon_totalized:
             raise CloseCouponError(_("Isn't possible close the coupon "
                                      "since it isn't totalized yet!"))
@@ -339,9 +350,12 @@ class Simple(object):
         elif self.totalized_value > self.payments_total:
             raise CloseCouponError(_("The payments total value doesn't "
                                      "match the totalized value."))
-        self._reset_flags()
-        self.output.feed('Cupom Finalizado\n')
+        troco = self.payments_total - self.totalized_value
+        if troco:
+            self.output.feed('Troco: %0.2f\n' % troco)
         self.output.feed_line()
+        self.output.feed('\n')
+        self._reset_flags()
         return 0
 
     def get_capabilities(self):
@@ -418,12 +432,8 @@ class Simple(object):
 
     def get_payment_constants(self):
         self._check()
-        return [('M', 'dinheiro'),
-                ('C', 'cheque'),
-                ('B', 'boleto'),
-                ('D', u'cartão crédito'),
-                ('E', u'cartão débito'),
-                ]
+        return [(key, value) for key, value in
+                        self._payment_descriptions.items()]
 
     def get_port(self):
         self._check()
