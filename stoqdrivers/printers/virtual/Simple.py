@@ -146,7 +146,7 @@ class OutputWindow(gtk.Window):
         self.buffer.props.text += '%s %s %s\n' % (
             '-' * length, text, '-' * length)
         mark = self.buffer.get_insert()
-        self.debug_view.scroll_mark_onscreen(mark)
+        self.textview.scroll_mark_onscreen(mark)
 
 
 class Simple(object):
@@ -382,7 +382,8 @@ class Simple(object):
 
     def summarize(self):
         self._check()
-        self.output.feed("    LEITURA X\n")
+        self.output.feed('LEITURA X\n')
+        self.output.feed_line()
 
     def close_till(self, previous_day=False):
         self._check()
@@ -390,28 +391,27 @@ class Simple(object):
             raise DriverError(
                 "Reduce Z was already sent today, try again tomorrow")
         self.till_closed = True
-        self.output.feed_line()
-        self.output.feed_line("REDUÇÃO Z")
+        self.output.feed("REDUÇÃO Z\n")
         self.output.feed_line()
 
     def till_add_cash(self, value):
-        self.output.feed_line()
-        self.output.feed('Suprimento: %s\n' % value)
+        self.output.feed('SUPRIMENTO: %s\n' % value)
         self.output.feed_line()
         self._check()
 
     def till_remove_cash(self, value):
-        self.output.feed_line()
-        self.output.feed('Sangria: %s\n' % value)
+        self.output.feed('SANGRIA: %s\n' % value)
         self.output.feed_line()
         self._check()
 
     def till_read_memory(self, start, end):
-        print 'read memory'
+        self.output.feed('LEITURA MF\n')
+        self.output.feed_line()
         self._check()
 
     def till_read_memory_by_reductions(self, start, end):
-        print 'read memory by reduction'
+        self.output.feed('LEITURA MF\n')
+        self.output.feed_line()
         self._check()
 
     def query_status(self):
