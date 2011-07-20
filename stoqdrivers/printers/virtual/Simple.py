@@ -433,7 +433,7 @@ class Simple(object):
     def get_payment_constants(self):
         self._check()
         return [(key, value) for key, value in
-                        self._payment_descriptions.items()]
+                        self._consts._payment_descriptions.items()]
 
     def get_port(self):
         self._check()
