@@ -164,7 +164,6 @@ class Simple(object):
 
         self._off = False
         self.output = OutputWindow(self)
-        self.output.show_all()
 
         # Internal state
         self.till_closed = False
@@ -419,6 +418,7 @@ class Simple(object):
         return None
 
     def get_serial(self):
+        self.output.show_all()
         self._check()
         return 'Virtual'
 
