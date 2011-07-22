@@ -1,3 +1,6 @@
+Release 0.9.13 - 22/07/2011:
+    * Update the emulator and add a Gtk UI
+
 Release 0.9.12 - 06/07/2011:
     * Better ferencial report support.
     * Method to check if there is an open coupon.
