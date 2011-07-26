@@ -299,7 +299,10 @@ class Simple(object):
                         '2692149835416', '1595843695465', '8596458216412',
                         '9586249534513', '7826592136954', '5892458629421',
                         '1598756984265', '1598756984265']:
-            raise ItemAdditionError(_("Not allowed to sell an item not created by the demo"))
+            # Allow deliveries as well
+            if code != '' and taxcode != 'S0':
+                raise ItemAdditionError(
+                    _("Not allowed to sell an item not created by the demo"))
 
         self._check_coupon_is_opened()
         if self.is_coupon_totalized:
