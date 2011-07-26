@@ -97,7 +97,7 @@ class OutputWindow(gtk.Window):
     def __init__(self, printer):
         self._printer = printer
         gtk.Window.__init__(self)
-        self.set_title("ECF Emulator")
+        self.set_title(_("ECF Emulator"))
         self.set_size_request(220, 320)
         self.move(0, 0)
         self.set_deletable(False)
@@ -232,7 +232,8 @@ class Simple(object):
                             '335.728.854-00',
                             '804.727.615-87',
                             '871.007.004-42']:
-            raise ItemAdditionError(_("Not allowed to sell to a client not created by the demo"))
+            raise ItemAdditionError(
+                _("Not allowed to sell to a client not created by the demo"))
 
         self._customer_name = customer
         self._customer_document = document
@@ -259,7 +260,7 @@ class Simple(object):
                         '2692149835416', '1595843695465', '8596458216412',
                         '9586249534513', '7826592136954', '5892458629421',
                         '1598756984265', '1598756984265']:
-            raise ItemAdditionError(_("Not allowed to sale an item not created by the demo"))
+            raise ItemAdditionError(_("Not allowed to sell an item not created by the demo"))
 
         self._check_coupon_is_opened()
         if self.is_coupon_totalized:
