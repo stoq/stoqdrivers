@@ -29,6 +29,8 @@ A simple implementation of a virtual printer.
 """
 import datetime
 from decimal import Decimal
+import json
+import os
 
 import gtk
 import pango
@@ -182,6 +184,7 @@ class Simple(object):
         self.taxes = []
 
         self._reset_flags()
+        self._load_state()
 
         self.output.feed(
             "Virtual Printer\n"
@@ -197,6 +200,42 @@ class Simple(object):
     #
     # Helper methods
     #
+
+    def _get_state_filename(self):
+        dirname = os.path.join(os.environ['HOME'], '.stoq')
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+        filename = os.path.join(dirname, 'virtual-printer.json')
+        return filename
+
+    def _load_state(self):
+        filename = self._get_state_filename()
+        try:
+            fp = open(filename, 'r')
+        except (OSError, IOError):
+            return
+        try:
+            state = json.load(fp)
+        except ValueError:
+            return
+
+        self.till_closed = state['till-closed']
+
+        fp.close()
+
+    def _save_state(self):
+        filename = self._get_state_filename()
+        try:
+            fp = open(filename, 'w')
+        except (OSError, IOError):
+            return
+
+        state = {}
+        state['till-closed'] = self.till_closed
+
+        json.dump(state, fp)
+        fp.write('\n')
+        fp.close()
 
     def set_off(self, off):
         self._off = off
@@ -384,6 +423,8 @@ class Simple(object):
         self._check()
         self.output.feed('LEITURA X\n')
         self.output.feed_line()
+        self.till_closed = False
+        self._save_state()
 
     def close_till(self, previous_day=False):
         self._check()
@@ -391,6 +432,7 @@ class Simple(object):
             raise DriverError(
                 "Reduce Z was already sent today, try again tomorrow")
         self.till_closed = True
+        self._save_state()
         self.output.feed("REDUÇÃO Z\n")
         self.output.feed_line()
 
