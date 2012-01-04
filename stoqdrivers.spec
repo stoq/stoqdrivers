@@ -3,7 +3,8 @@
 
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
-Summary: Fiscal driver collection
+Summary: Python fiscal printer (ECF) drivers
+
 Name: stoqdrivers
 Version: 0.9.14
 Release: 1
@@ -18,9 +19,11 @@ BuildRequires: python-kiwi >= 1.9.28
 BuildArch: noarch
 
 %description
-This is a powerful collection of device drivers written in Python and totally
-focused on retail systems. Stoqdrivers also offers an unified API for devices
-like fiscal printers which makes it easy to embed in many applications.
+This package provices device drivers
+for fiscal printers, ECF (Emissor de Coupon Fiscal)
+written in Python. Supports printers from Bematech,
+Daruma, Dataregis, Perto, Sweda and the generic
+FiscNET protocol.
 
 %prep
 

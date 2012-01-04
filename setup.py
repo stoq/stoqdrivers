@@ -46,12 +46,12 @@ setup(
     version= ".".join(map(str, __version__)),
     author="Async Open Source",
     author_email="stoq-devel@async.com.br",
-    description="Useful drivers for Stoq and retail systems",
-    long_description=("This is a powerful collection of device drivers "
-                      "written in Python and totally focused on retail "
-                      "systems. Stoqdrivers also offers an unified API "
-                      "for devices like fiscal printers which makes it "
-                      "easy to embed in many applications."),
+    description="Python fiscal printer (ECF) drivers",
+    long_description=("This package provices device drivers "
+                      "for fiscal printers, ECF (Emissor de Coupon Fiscal) "
+                      "written in Python. Supports printers from Bematech, "
+                      "Daruma, Dataregis, Perto, Sweda and the generic "
+                      "FiscNET protocol."),
     url="http://www.stoq.com.br",
     license="GNU LGPL 2.1 (see COPYING)",
     packages=listpackages('stoqdrivers'),
@@ -59,5 +59,6 @@ setup(
     ("$datadir/conf", listfiles("stoqdrivers/conf", "*.ini"))],
     global_resources=dict(conf="$datadir/conf"),
     resources=dict(locale="$prefix/share/locale"),
+    install_requires="kiwi-gtk >= 1.9.28",
     )
 
