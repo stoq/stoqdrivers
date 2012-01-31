@@ -1,3 +1,9 @@
+stoqdrivers (1:0.9.15) natty; urgency=low
+
+  * New Release
+
+ -- Ronaldo Maia <romaia@async.com.br>  Tue, 31 Jan 2012 11:28:36 -0200
+
 stoqdrivers (1:0.9.14) natty; urgency=low
 
   * New Release

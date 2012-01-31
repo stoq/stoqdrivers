@@ -448,7 +448,7 @@ class FiscNetECF(SerialBase):
         return taxes
 
     def setup(self):
-        self._define_tax_name(0, 
+        self._define_tax_name(0,
             "Suprimento".encode(self.coupon_printer_charset), entrada=True)
         self._define_tax_name(1,
             "Sangria".encode(self.coupon_printer_charset), entrada=False)
