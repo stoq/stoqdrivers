@@ -92,6 +92,7 @@ def get_supported_printers():
         ('bematech', ['DP20C', 'MP20', 'MP2100', 'MP25']),
         ('daruma', ['FS2100', 'FS345', 'FS600MFD']),
         ('dataregis', ['EP375', 'Quick']),
+        ('epson', ['FBII']),
         ('fiscnet', ['FiscNetECF']),
         ('perto', ['Pay2023']),
         ('sweda', ['IFS9000I'])]:
