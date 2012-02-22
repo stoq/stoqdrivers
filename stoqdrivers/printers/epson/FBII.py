@@ -31,6 +31,7 @@ Epson FB II ECF driver
 #import time
 import struct
 from decimal import Decimal
+from kiwi.datatypes import currency
 
 from zope.interface import implements
 
@@ -222,8 +223,10 @@ class FBII(SerialBase):
         return reply
 
     #
-    # Printer Quering
+    # ICouponPrinter implementation
     #
+
+    # Printer Quering
 
     def query_status(self):
         cmd = self._get_package('0001', '0000')
@@ -235,8 +238,9 @@ class FBII(SerialBase):
             self.write(ACK)
         return complete
 
+
     #
-    # ICouponPrinter implementation
+    #   Till Operations
     #
 
     def summarize(self):
@@ -244,6 +248,95 @@ class FBII(SerialBase):
 
     def open_till(self):
         self._send_command('0805')
+
+    def close_till(self, previous_day=False):
+        # Nesse momento é possível realizar ajustes no horário da ECF (como
+        # entrar e sair do horário de verão. Podemos estudar implementar isso no
+        # stoq.
+        self._send_command('0801', '0000', '', '')
+
+    def _add_voucher(self, type, value):
+        # Abre comprovante não fiscal
+        self._send_command('0E01', '0000', '')
+
+        # Adiciona item
+        value = '%d' % (value * 100)
+        self._send_command('0E15', '0000', type, value)
+
+        # Fecha
+        self._send_command('0E06')
+
+    def till_add_cash(self, value):
+        self._add_voucher('02', value)
+
+    def till_remove_cash(self, value):
+        self._add_voucher('01', value)
+
+    def get_sintegra(self):
+        return None
+
+
+    #
+    # Coupon related commands
+    #
+
+    def coupon_open(self):
+        self._send_command('0A01', '0000', '', '')
+
+    def coupon_cancel(self):
+        self._send_command('0A18', '0008', '1')
+
+    def coupon_add_item(self, code, description, price, taxcode,
+                        quantity=Decimal("1.0"), unit=UnitType.EMPTY,
+                        discount=Decimal("0.0"), markup=Decimal("0.0"),
+                        unit_desc=""):
+        # FIXME
+        qtd = '%d' % (quantity * 1000)
+        un = 'UN'
+        value = '%d' % (price * 100)
+        st = taxcode
+        reply = self._send_command('0A02', '0000', code, description, qtd, un, value, st)
+        # FIXME: return id of added item
+        id = reply.fields[0]
+        print 'XXX', id
+        return int(id)
+
+    def coupon_totalize(self, discount=currency(0), markup=currency(0),
+                        taxcode=TaxType.NONE):
+        if discount:
+            extension = '0006'
+            value = discount
+        else:
+            extension = '0007'
+            value = markup
+
+        # Podemos somente mandar o comando de desconto/acrescimo se realmente
+        # tivermos um valor.
+        if value:
+            value = '%d' % (value * 100)
+            reply = self._send_command('0A04', extension, value)
+            subtotal = reply.fields[0]
+        else:
+            # Ainda precisamos pegar o subtotal, para retornar.
+            reply = self._send_command('0A03')
+            subtotal = reply.fields[0]
+        return currency(subtotal) / Decimal('1e2')
+
+    def coupon_add_payment(self, payment_method, value, description=u""):
+        desc = description[:40]
+        value = '%d' % (value * 100)
+        reply = self._send_command('0A05', '0000', payment_method, value, desc,
+                                    '')
+        # Return the still missing value
+        return currency(reply.fields[0]) / Decimal('1e2')
+
+    def coupon_close(self, message=""):
+        reply = self._send_command('0A06', '0000')
+        return int(reply.fields[0])
+
+    #
+    #   General information
+    #
 
     def get_serial(self):
         reply = self._get_ecf_details()
@@ -314,24 +407,14 @@ class FBII(SerialBase):
         reply = self._send_command('0907')
         return int(reply.fields[3])
 
-    def coupon_open(self):
-        self._send_command('0A01', '0000', '', '')
+    def get_ccf(self):
+        reply = self._send_command('0907')
+        return int(reply.fields[7])
 
-    def coupon_cancel(self):
-        self._send_command('0A18', '0008', '1')
+    def get_crz(self):
+        reply = self._send_command('0907')
+        return int(reply.fields[1])
 
-    def coupon_add_item(self, code, description, price, taxcode,
-                        quantity=Decimal("1.0"), unit=UnitType.EMPTY,
-                        discount=Decimal("0.0"), markup=Decimal("0.0"),
-                        unit_desc=""):
-        # FIXME
-        qtd = '%d' % (quantity * 1000)
-        un = 'UN'
-        value = '%d' % (price * 100)
-        st = taxcode
-        self._send_command('0A02', '0000', code, description, qtd, un, value, st)
-        # FIXME: return id of added item
-        return 1
 
 
 
