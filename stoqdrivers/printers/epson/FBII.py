@@ -36,6 +36,7 @@ from zope.interface import implements
 
 from stoqdrivers.serialbase import SerialBase
 from stoqdrivers.interfaces import ICouponPrinter
+from stoqdrivers.exceptions import DriverError
 #from stoqdrivers.exceptions import (DriverError, PendingReduceZ, PendingReadX,
 #                                    PrinterError, CommError, CommandError,
 #                                    CommandParametersError, ReduceZError,
@@ -87,7 +88,13 @@ class Reply(object):
 
         # Verifica header & tail
         assert self.pop() == STX, 'STX'
-        assert self.pop() == chr(command_id), 'command_id'
+        frame_id = self.pop()
+        if frame_id == '0x80':
+            self.intermediate = True
+            return
+
+        self.intermediate = False
+        assert frame_id == chr(command_id), ('command_id', command_id)
         assert self.string[-1] == ETX, 'ETX'
 
         # Retira statuses
@@ -101,8 +108,7 @@ class Reply(object):
 
         r = self.pop(2)
         self.reply_status = '%02X%02X' % (ord(r[0]), ord(r[1]))
-        print 'reply_status', self.reply_status
-        # FIXME: Verificar erros
+
 
         assert self.pop() == FLD, 'FLD 3'
         # reserved
@@ -116,6 +122,11 @@ class Reply(object):
         self.fields = fields.split(FLD)
         #for f in self.fields: print f
 
+    def check_error(self):
+        # FIXME: Verificar erros
+        if self.reply_status != '0000':
+            print 'reply_status', self.reply_status
+            raise DriverError('')
 
     def pop(self, size=1):
         """Remove size bites from the begining of self.string and returns it
@@ -148,7 +159,7 @@ class FBII(SerialBase):
 
     def __init__(self, port, consts=None):
         SerialBase.__init__(self, port)
-        self._command_id = 137 #0x80
+        self._command_id = 138 #0x80
 
     #
     # Helper methods
@@ -200,7 +211,15 @@ class FBII(SerialBase):
         cmd = self._get_package(command, extension, args)
         print '> ', repr(cmd)
         self.write(cmd)
-        return self._read_reply()
+
+        # Keep reading while printer sends intermediate replies.
+        while True:
+            reply = self._read_reply()
+            if not reply.intermediate:
+                break
+
+        reply.check_error()
+        return reply
 
     #
     # Printer Quering
@@ -221,8 +240,10 @@ class FBII(SerialBase):
     #
 
     def summarize(self):
-        READ_X = '0802'
-        self._send_command(READ_X)
+        self._send_command('0802')
+
+    def open_till(self):
+        self._send_command('0805')
 
     def get_serial(self):
         reply = self._get_ecf_details()
@@ -320,9 +341,9 @@ if __name__ == '__main__':
     port = Serial('/tmp/fpii')
     p  = FBII(port)
     #p.summarize()
-    #print p.get_serial()
+    print p.get_serial()
     #constants = p.get_tax_constants()
     #for i in constants:
     #    print i
     #p._send_command('0001')
-    print p.get_gnf()
+    print p.open_till()

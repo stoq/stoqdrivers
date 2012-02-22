@@ -258,6 +258,13 @@ class ICouponPrinter(IDevice):
         'read X' operation.
         """
 
+    def open_till():
+        """ Open the till so fiscal documents can be emitted.
+
+        Some printers simply emit a read X document, but some printers may
+        require an special command
+        """
+
     def has_pending_reduce():
         """ Verify is has pending 'reduce z'
         """

@@ -563,7 +563,7 @@ class FiscNetECF(SerialBase):
         # The FISCnet protocol (the protocol used in this printer model)
         # doesn't have a command to totalize the coupon, so we just get
         # the discount/surcharge values and applied to the coupon.
-        
+
         value = discount and (discount * -1) or surcharge
         if value:
             self._send_command('AcresceSubtotal',
@@ -586,6 +586,9 @@ class FiscNetECF(SerialBase):
 
     def summarize(self):
         self._send_command('EmiteLeituraX')
+
+    def open_till(self):
+        self.summarize()
 
     def close_till(self, previous_day=False):
         status = self._get_status()

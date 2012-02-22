@@ -442,6 +442,9 @@ class MP25(SerialBase):
         """ Prints a summary of all sales of the day """
         self._send_command(CMD_READ_X)
 
+    def open_till(self):
+        self.summary()
+
     def has_pending_reduce(self):
         status = self.get_status()
         return status.st3 == MP25Status.PENDING_REDUCE_Z

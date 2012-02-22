@@ -522,6 +522,9 @@ class FS345(SerialBase):
     def summarize(self):
         self.send_command(CMD_GET_X)
 
+    def open_till(self):
+        self.summarize()
+
     def close_till(self, previous_day=False):
         status = self._get_status()
         if self._is_open(status):
