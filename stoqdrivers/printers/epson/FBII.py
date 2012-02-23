@@ -90,7 +90,7 @@ class Reply(object):
         # Verifica header & tail
         assert self.pop() == STX, 'STX'
         frame_id = self.pop()
-        if frame_id == '0x80':
+        if frame_id == '\x80':
             self.intermediate = True
             return
 
@@ -160,7 +160,7 @@ class FBII(SerialBase):
 
     def __init__(self, port, consts=None):
         SerialBase.__init__(self, port)
-        self._command_id = 138 #0x80
+        self._command_id = 128 #0x80
 
     #
     # Helper methods
@@ -168,6 +168,7 @@ class FBII(SerialBase):
 
     def _get_next_command_id(self):
         self._command_id += 1
+        # FIXME: Loop
         return chr(self._command_id)
 
     def _get_package(self, command, extension, args=None):
@@ -188,11 +189,6 @@ class FBII(SerialBase):
         return package + '%04X' % checksum
 
     def _read_reply(self):
-        # 06 02 bb 00 00 1c c0 00 1c 1c 00 00 1c 1c '3' | 03 | '0' '2' '3' 'F'
-
-        ack = self.read(1)
-        assert ack == ACK, repr(ack)
-
         reply = ''
         while True:
             c = self.read(1)
@@ -203,9 +199,7 @@ class FBII(SerialBase):
 
         reply += self.read(4)
         print '< ', repr(reply)
-        self.write(ACK)
 
-        # TODO: Detectar pacote intermediário
         return Reply(reply, self._command_id)
 
     def _send_command(self, command, extension='0000', *args):
@@ -213,11 +207,19 @@ class FBII(SerialBase):
         print '> ', repr(cmd)
         self.write(cmd)
 
+        # Printer should reply with an ACK imediataly
+        ack = self.read(1)
+        assert ack == ACK, repr(ack)
+
+        reply = self._read_reply()
+
         # Keep reading while printer sends intermediate replies.
-        while True:
+        while reply.intermediate:
+            print 'intermediate'
             reply = self._read_reply()
-            if not reply.intermediate:
-                break
+
+        # send our ACK
+        self.write(ACK)
 
         reply.check_error()
         return reply
@@ -347,19 +349,18 @@ class FBII(SerialBase):
         constants = []
 
         fields = reply.fields
-        # FIXME: Handle when there are no contants
+        if len(fields) > 2:
+            for i in range(0, len(fields), 3):
+                name, value = fields[i], fields[i+1]
 
-        for i in range(0, len(fields), 3):
-            name, value = fields[i], fields[i+1]
+                if name.startswith('T'):
+                    type = TaxType.CUSTOM
+                elif name.startswith('S'):
+                    type = TaxType.SERVICE
+                else:
+                    assert False, (name, value)
 
-            if name.startswith('T'):
-                type = TaxType.CUSTOM
-            elif name.startswith('S'):
-                type = TaxType.SERVICE
-            else:
-                assert False, (name, value)
-
-            constants.append((type, name, Decimal(value) / 100))
+                constants.append((type, name, Decimal(value) / 100))
 
         constants.extend([
             (TaxType.SUBSTITUTION, 'F', None),
@@ -373,8 +374,11 @@ class FBII(SerialBase):
         methods = []
 
         for i in range(20):
-            reply = self._send_command('050D', '0000', '%d' % (i+1))
-            if reply.reply_status == '090C':
+            try:
+                reply = self._send_command('050D', '0000', '%d' % (i+1))
+            except DriverError:
+                # TODO:
+                #if reply.reply_status == '090C':
                 break
             name, vinculado = reply.fields
             methods.append(('%d' % (i+1), name.strip()))
@@ -415,6 +419,43 @@ class FBII(SerialBase):
         reply = self._send_command('0907')
         return int(reply.fields[1])
 
+    #
+    #   Printer configuration
+    #
+
+    def _define_payment_method(self, id, name, vinculated=False):
+        if vinculated:
+            extension = '0001'
+        else:
+            extension = '0000'
+
+        id = '%02d' % id
+        self._send_command('050C', extension, id, name)
+
+    def _define_tax_code(self, value, service=False):
+        if service:
+            extension = '0001'
+        else:
+            extension = '0000'
+
+        self._send_command('0540', extension, value)
+
+    def _setup_constants(self):
+        self._define_payment_method(2, 'Cheque')
+        self._define_payment_method(3, 'Boleto')
+        self._define_payment_method(4, 'Cartao credito', vinculated=True)
+        self._define_payment_method(5, 'Cartao debito', vinculated=True)
+        self._define_payment_method(6, 'Financeira')
+        self._define_payment_method(7, 'Vale compra')
+
+        self._define_tax_code("1700")
+        self._define_tax_code("1200")
+        self._define_tax_code("2500")
+        self._define_tax_code("0800")
+        self._define_tax_code("0500")
+        self._define_tax_code("0300", service=True)
+        self._define_tax_code("0900", service=True)
+        return
 
 
 
@@ -425,8 +466,12 @@ if __name__ == '__main__':
     p  = FBII(port)
     #p.summarize()
     print p.get_serial()
-    #constants = p.get_tax_constants()
-    #for i in constants:
-    #    print i
-    #p._send_command('0001')
-    print p.open_till()
+    print
+    #p._setup_constants()
+    constants = p.get_tax_constants()
+    for i in constants:
+        print i
+
+    constants = p.get_payment_constants()
+    for i in constants:
+        print i
