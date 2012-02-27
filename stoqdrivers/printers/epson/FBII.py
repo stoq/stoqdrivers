@@ -251,6 +251,14 @@ class FBII(SerialBase):
     def open_till(self):
         self._send_command('0805')
 
+    def has_pending_reduce(self):
+        # Dia encerrado e NÃO reduzido.
+        pending_reduce_z = 4
+
+        # Estado da jornada fiscal.
+        reply = self._send_command('0810')
+        return int(reply.fields[0]) == pending_reduce_z
+
     def close_till(self, previous_day=False):
         # Nesse momento é possível realizar ajustes no horário da ECF (como
         # entrar e sair do horário de verão. Podemos estudar implementar isso no
@@ -274,6 +282,13 @@ class FBII(SerialBase):
     def till_remove_cash(self, value):
         self._add_voucher('01', value)
 
+    def till_read_memory(self, start, end):
+        self._send_command('0910', '0001', '', '', start.strftime('%d%m%Y'),
+                           end.strftime('%d%m%Y'))
+
+    def till_read_memory_by_reductions(self, start, end):
+        self._send_command('0910', '0000', str(start), str(end), '', '')
+
     def get_sintegra(self):
         return None
 
@@ -286,7 +301,7 @@ class FBII(SerialBase):
         self._send_command('0A01', '0000', '', '')
 
     def coupon_cancel(self):
-        self._send_command('0A18', '0008', '1')
+        self._cancel_coupon(coupon_id='1')
 
     def coupon_add_item(self, code, description, price, taxcode,
                         quantity=Decimal("1.0"), unit=UnitType.EMPTY,
@@ -297,11 +312,20 @@ class FBII(SerialBase):
         un = 'UN'
         value = '%d' % (price * 100)
         st = taxcode
-        reply = self._send_command('0A02', '0000', code, description, qtd, un, value, st)
-        # FIXME: return id of added item
+        reply = self._send_command('0A02', '0000', code,
+                                   description, qtd, un, value, st)
         id = reply.fields[0]
-        print 'XXX', id
         return int(id)
+
+    def _cancel_coupon(self, coupon_id):
+        self._send_command('0A18', '0008', coupon_id)
+
+    def cancel_last_coupon(self):
+        # Detalhe sobre último cupom fiscal se encontra nas informações da
+        # jornada fiscal.
+        reply = self._send_command('080A', '0000')
+        last_coupon = reply.fields[9]
+        self._cancel_coupon(last_coupon)
 
     def coupon_totalize(self, discount=currency(0), markup=currency(0),
                         taxcode=TaxType.NONE):
@@ -398,10 +422,6 @@ class FBII(SerialBase):
 
     def _get_ecf_details(self):
         return self._send_command('0402')
-
-    def has_pending_reduce(self):
-        #FIXME
-        return False
 
     def get_coo(self):
         reply = self._send_command('0907')
