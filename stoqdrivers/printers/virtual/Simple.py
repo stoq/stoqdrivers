@@ -429,6 +429,9 @@ class Simple(object):
         self.till_closed = False
         self._save_state()
 
+    def open_till(self):
+        self.summarize()
+
     def close_till(self, previous_day=False):
         self._check()
         if self.till_closed:
