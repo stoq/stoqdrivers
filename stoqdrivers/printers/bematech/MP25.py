@@ -65,6 +65,7 @@ CMD_COUPON_OPEN = 0 # MP25 aceita 2 parametros opcionais a mais
 CMD_CLOSE_TILL = 5
 CMD_REDUCE_Z = 5
 CMD_READ_X = 6
+CMD_ADD_TAX = 7
 CMD_READ_MEMORY = 8
 CMD_COUPON_CANCEL = 14 # MP25 aceita 3 parametros opicionais
 CMD_STATUS = 19
@@ -425,14 +426,22 @@ class MP25(SerialBase):
 
         self._send_command(CMD_ADD_VOUCHER, type, "%014d" % int(value * Decimal('1e2')))
 
-    def _configure_payment_methods(self):
+    def _setup_constants(self):
+        return
         # Do one at a time, if you need it.
-        ret = self._send_command(CMD_PROGRAM_PAYMENT_METHOD,
-                                 '%-16s1' % 'Cartao Credito', raw=True)
-        #ret = self._send_command(CMD_PROGRAM_PAYMENT_METHOD,
+        #self._send_command(CMD_PROGRAM_PAYMENT_METHOD,
+        #                         '%-16s1' % 'Cartao Credito', raw=True)
+        #self._send_command(CMD_PROGRAM_PAYMENT_METHOD,
         #                         '%-16s1' % 'Cartao Debito', raw=True)
-        #ret = self._send_command(CMD_PROGRAM_PAYMENT_METHOD,
-        #                         '%-16s1' % 'Cheque', raw=True)
+        #self._send_command(CMD_PROGRAM_PAYMENT_METHOD,
+        #                         '%-16s0' % 'Cheque', raw=True)
+
+        #self._send_command(CMD_ADD_TAX, '25000', raw=True) # ICMS
+        #self._send_command(CMD_ADD_TAX, '17000', raw=True) # ICMS
+        #self._send_command(CMD_ADD_TAX, '12000', raw=True) # ICMS
+        #self._send_command(CMD_ADD_TAX, '08000', raw=True) # ICMS
+        #self._send_command(CMD_ADD_TAX, '05000', raw=True) # ICMS
+        #self._send_command(CMD_ADD_TAX, '03001', raw=True) # ISS
 
     #
     # This implements the ICouponPrinter Interface
@@ -788,3 +797,12 @@ class MP25(SerialBase):
         ret = '%0*d' % (6, ret)
         firmware = "%s:%s:%s" % (ret[0:2], ret[2:4], ret[4:6])
         return firmware
+
+
+if __name__ == "__main__":
+    from stoqdrivers.serialbase import SerialPort
+    #port = Serial('/dev/pts/5')
+    port = SerialPort('/tmp/com2')
+    p  = MP25(port)
+
+    p._setup_constants()
