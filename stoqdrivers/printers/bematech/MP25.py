@@ -443,7 +443,7 @@ class MP25(SerialBase):
         self._send_command(CMD_READ_X)
 
     def open_till(self):
-        self.summary()
+        self.summarize()
 
     def has_pending_reduce(self):
         status = self.get_status()
