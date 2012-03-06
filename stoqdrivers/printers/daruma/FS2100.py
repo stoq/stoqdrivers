@@ -53,6 +53,17 @@ CMD_ADD_ITEM = 201
 class FS2100(FS345):
     model_name = "Daruma FS 2100"
 
+    def __init__(self, port, consts=None):
+        FS345.__init__(self, port, consts)
+        self._setup()
+
+    def _setup(self):
+        # Check printer to see how may decimal places it uses for price and
+        # quantity
+        data = self.send_new_command('R', 200, '139', ignore_error=True)
+        self._decimals_qtd = Decimal('1e%s' % data[-2])
+        self._decimals_price = Decimal('1e%s' % data[-1])
+
     def coupon_add_item(self, code, description, price, taxcode,
                         quantity=Decimal("1.0"), unit=UnitType.EMPTY,
                         discount=Decimal("0.0"),
@@ -90,8 +101,8 @@ class FS2100(FS345):
                 '%3s'  # Unit of measure
                 '%s'   # Product descriptio?!?
                 '\xff' # EOF
-                % (taxcode, int(quantity * Decimal('1e3')),
-                   int(price * Decimal('1e2')), d,
+                % (taxcode, int(quantity * self._decimals_qtd),
+                   int(price * self._decimals_price), d,
                    int(E * Decimal('1e2')),
                    0, desc_size, code, unit, description[:233]))
 
