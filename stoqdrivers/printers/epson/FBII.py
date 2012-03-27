@@ -27,26 +27,26 @@
 Epson FB II ECF driver
 """
 
-#import datetime
+import datetime
 #import time
 import struct
 from decimal import Decimal
 from kiwi.datatypes import currency
+from kiwi.python import Settable
 
 from zope.interface import implements
 
 from stoqdrivers.serialbase import SerialBase
 from stoqdrivers.interfaces import ICouponPrinter
-from stoqdrivers.exceptions import DriverError
-#from stoqdrivers.exceptions import (DriverError, PendingReduceZ, PendingReadX,
-#                                    PrinterError, CommError, CommandError,
-#                                    CommandParametersError, ReduceZError,
-#                                    HardwareFailure, OutofPaperError,
-#                                    CouponNotOpenError, CancelItemError,
-#                                    CouponOpenError)
+from stoqdrivers.exceptions import (DriverError, PendingReduceZ, PendingReadX,
+                                    PrinterError, CommError, CommandError,
+                                    CommandParametersError, ReduceZError,
+                                    HardwareFailure, OutofPaperError,
+                                    CouponNotOpenError, CancelItemError,
+                                    CouponOpenError, AlmostOutofPaper)
 from stoqdrivers.enum import TaxType, UnitType
 #from stoqdrivers.printers.capabilities import Capability
-#from stoqdrivers.printers.base import BaseDriverConstants
+from stoqdrivers.printers.base import BaseDriverConstants
 from stoqdrivers.translation import stoqdrivers_gettext
 
 ACK = '\x06'
@@ -76,6 +76,18 @@ class Reply(object):
     #
     #   Printer flags
     #
+
+    error_codes = {
+        '0101': (CommandError(_("Invalid command for current state."))),
+        '0102': (CommandError(_("Invalid command for current document."))),
+        '0203': (CommandError(_("Excess fields"))),
+        '0204': (CommandError(_("Missing fields"))),
+        '0205': (CommandParametersError(_("Field not optional."))),
+        '020E': (CommandParametersError(_("Fields with print invalid "
+                                          "attributes."))),
+        '0A12': (PrinterError(_("Was not possible cancel the last fiscal "
+                                "coupon."))),
+    }
 
     def __init__(self, string, command_id):
         checksum = string[-4:]
@@ -124,10 +136,17 @@ class Reply(object):
         #for f in self.fields: print f
 
     def check_error(self):
-        # FIXME: Verificar erros
-        if self.reply_status != '0000':
-            print 'reply_status', self.reply_status
-            raise DriverError('')
+        print 'reply_status', self.reply_status
+        error_code = self.reply_status
+        # Success, do nothing
+        if error_code == '0000':
+            return
+
+        if error_code in self.error_codes:
+            raise self.error_codes[error_code]
+
+        raise DriverError(error="unhandled driver error",
+                          code=int(error_code, 16))
 
     def pop(self, size=1):
         """Remove size bites from the begining of self.string and returns it
@@ -292,10 +311,17 @@ class FBII(SerialBase):
     def get_sintegra(self):
         return None
 
+    def payment_receipt_close(self):
+        self._send_command('0E06')
 
     #
     # Coupon related commands
     #
+
+    def coupon_identify_customer(self, customer, address, document):
+        self._customer_name = customer
+        self._customer_document = document
+        self._customer_address = address
 
     def coupon_open(self):
         self._send_command('0A01', '0000', '', '')
