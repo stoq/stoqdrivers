@@ -58,7 +58,7 @@ class FS2100(FS345):
         self._setup()
 
     def _setup(self):
-        # Check printer to see how may decimal places it uses for price and
+        # Check printer to see how many decimal places it uses for price and
         # quantity
         data = self.send_new_command('R', 200, '139', ignore_error=True)
         self._decimals_qtd = Decimal('1e%s' % data[-2])
@@ -182,6 +182,14 @@ class FS2100(FS345):
 
     def _get_compatibility_mode(self):
         return self.send_new_command('R', 200, '138')
+
+    def till_add_cash(self, value):
+        data = '%011d\xff' % (int(value * Decimal('1e2')))
+        self.send_new_command('F', 236, data)
+
+    def till_remove_cash(self, value):
+        data = '%011d\xff' % (int(value * Decimal('1e2')))
+        self.send_new_command('F', 227, data)
 
     def get_tax_constants(self):
         tax_codes = self.send_command(CMD_GET_TAX_CODES)[1:]
