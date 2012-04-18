@@ -32,6 +32,7 @@ import datetime
 import struct
 from decimal import Decimal
 from kiwi.datatypes import currency
+from kiwi.log import Logger
 from kiwi.python import Settable
 
 from zope.interface import implements
@@ -68,8 +69,16 @@ def unescape(string):
         string = string.replace(ESC+i, i)
     return string
 
+FIRST_COMMAND_ID = 0x81
+RETRIES_BEFORE_TIMEOUT = 1
+
+# When cancel the last coupon. This values are used to define the coupon type.
+FISCAL_COUPON = '1'
+NON_FISCAL_COUPON = '24'
 
 _ = stoqdrivers_gettext
+
+log = Logger('stoqdrivers.epson')
 
 class Reply(object):
 
@@ -83,19 +92,28 @@ class Reply(object):
         '0203': (CommandError(_("Excess fields"))),
         '0204': (CommandError(_("Missing fields"))),
         '0205': (CommandParametersError(_("Field not optional."))),
+        '0206': (CommandParametersError(_("Invalid alphanumeric field."))),
         '020E': (CommandParametersError(_("Fields with print invalid "
                                           "attributes."))),
-        '0A12': (PrinterError(_("Was not possible cancel the last fiscal "
+
+        '0304': (OutofPaperError(_("Out of paper."))),
+        '0305': (AlmostOutofPaper(_("Almost out of paper."))),
+
+        '0A12': (PrinterError(_("It was not possible cancel the last fiscal "
                                 "coupon."))),
+        '0A15': (PrinterError(_("Requires CDC cancellation."))),
+        '0E0A': (PrinterError(_("Last non-fiscal coupon not found."))),
+        '0E0B': (PrinterError(_("Payment method not found."))),
     }
 
     def __init__(self, string, command_id):
         checksum = string[-4:]
         self.string = string[:-4]
 
-        #print 'reply', repr(string)
+        log.debug('reply %s' % repr(string))
         cs = '%04X' % sum([ord(i) for i in self.string])
-        assert cs == checksum, 'checksum'
+        if cs != checksum:
+            raise DriverError('Erro de checksum')
 
         self.string = unescape(self.string)
 
@@ -137,6 +155,7 @@ class Reply(object):
 
     def check_error(self):
         print 'reply_status', self.reply_status
+        log.debug("reply_status %s" % self.reply_status)
         error_code = self.reply_status
         # Success, do nothing
         if error_code == '0000':
@@ -156,10 +175,23 @@ class Reply(object):
         return head
 
     def check_printer_status(self):
-        pass
+        status = bin(self.printer_status)
+        printer_status = status[2:]
+        return printer_status
 
     def check_fiscal_status(self):
-        pass
+        status = bin(self.fiscal_status)
+        fiscal_status = status[2:]
+        return fiscal_status
+
+
+class FBIIConstants(BaseDriverConstants):
+    _constants = {
+        UnitType.WEIGHT:      'Kg',
+        UnitType.METERS:      'm',
+        UnitType.LITERS:      'Lt',
+        UnitType.EMPTY:       ' ',
+        }
 
 
 #
@@ -176,18 +208,42 @@ class FBII(SerialBase):
     model_name = "FBII"
     cheque_printer_charset = "ascii"
     coupon_printer_charset = "ascii"
+    
 
     def __init__(self, port, consts=None):
+        port.set_options(baudrate=115200)
         SerialBase.__init__(self, port)
-        self._command_id = 128 #0x80
+        self._consts = consts or FBIIConstants
+        self._command_id = FIRST_COMMAND_ID-1 #0x80
+        self._reset()
+        self._setup()
+
+    def _setup(self):
+        """
+        Obtain the ECF configuration, to perform changes in received and
+        sent commands.
+        """
+
+        # Quantidade de casas decimais para serem utilizadas no preço
+        # e quantidade.
+        data = self._send_command('0585')
+        self._decimals_quantity = Decimal('1e' + data.fields[0])
+        self._decimals_price = Decimal('1e' + data.fields[1])
+
+    def _reset(self):
+        self._customer_name = ''
+        self._customer_document = ''
+        self._customer_address = ''
 
     #
     # Helper methods
     #
 
     def _get_next_command_id(self):
+        if self._command_id == 256:
+            self._command_id = FIRST_COMMAND_ID-1
+
         self._command_id += 1
-        # FIXME: Loop
         return chr(self._command_id)
 
     def _get_package(self, command, extension, args=None):
@@ -209,8 +265,24 @@ class FBII(SerialBase):
 
     def _read_reply(self):
         reply = ''
+        timeouts = 0
+
         while True:
+            if timeouts > RETRIES_BEFORE_TIMEOUT:
+                raise DriverError(_("Timeout communicating with fiscal "
+                                    "printer"))
+
             c = self.read(1)
+            if len(c) != 1:
+                timeouts += 1
+                continue
+
+            # STX is always the first char in the reply. Ignore garbage
+            # until STX is received.
+            if len(reply) == 0 and c != STX:
+                log.info('ignoring garbage in reply: %r' % c)
+                continue
+
             reply += c
 
             if c == ETX and reply[-2] != ESC:
@@ -218,23 +290,27 @@ class FBII(SerialBase):
 
         reply += self.read(4)
         print '< ', repr(reply)
+        log.debug("<<< %s" % repr(reply))
 
         return Reply(reply, self._command_id)
 
     def _send_command(self, command, extension='0000', *args):
         cmd = self._get_package(command, extension, args)
         print '> ', repr(cmd)
+#        log.debug("> %s" % repr(cmd))
         self.write(cmd)
 
         # Printer should reply with an ACK imediataly
         ack = self.read(1)
-        assert ack == ACK, repr(ack)
+        # This assert block the timeout verification.
+        #assert ack == ACK, repr(ack)
 
         reply = self._read_reply()
 
         # Keep reading while printer sends intermediate replies.
         while reply.intermediate:
             print 'intermediate'
+            log.debug("intermediate")
             reply = self._read_reply()
 
         # send our ACK
@@ -242,6 +318,10 @@ class FBII(SerialBase):
 
         reply.check_error()
         return reply
+
+    def _parse_price(self, value):
+        # Valor retirado da ECF (string) convertido para decimal.
+        return currency(value) / Decimal('1e2')
 
     #
     # ICouponPrinter implementation
@@ -258,7 +338,6 @@ class FBII(SerialBase):
         if complete:
             self.write(ACK)
         return complete
-
 
     #
     #   Till Operations
@@ -289,8 +368,8 @@ class FBII(SerialBase):
         self._send_command('0E01', '0000', '')
 
         # Adiciona item
-        value = '%d' % (value * 100)
-        self._send_command('0E15', '0000', type, value)
+        value = int(value * self._decimals_price)
+        self._send_command('0E15', '0000', type, str(value))
 
         # Fecha
         self._send_command('0E06')
@@ -309,7 +388,55 @@ class FBII(SerialBase):
         self._send_command('0910', '0000', str(start), str(end), '', '')
 
     def get_sintegra(self):
+        # Informações da jornada fiscal.
+        reply = self._send_command('080A')
+        # Data de abertura.
+        date = reply.fields[0]
+        d, m, y = map(int, [date[:2], date[3:4], date[4:8]])
+        opening_date = datetime.date(y, m, d)
+        # COO inicial.
+        coupon_start = int(reply.fields[4])
+
+        #Número sequencial da ECF.
+        fiscal_data = self._send_command('0507')
+        serial_id = int(fiscal_data.fields[8])
+
+        # Obter totalizadores.
+        ecf_totals = self._send_command('0906')
+        # Totalizador venda bruta diária.
+        value = ecf_totals.fields[1]
+        period_total = currency(value) / Decimal('1e2')
+        # Total Geral.
+        geral = ecf_totals.fields[0]
+        total = currency(geral) / Decimal('1e2')
+
+        data = Settable(
+            opening_date=opening_date,
+            serial=self.get_serial(),
+            serial_id=serial_id,
+            coupon_start=coupon_start,
+            coupon_end=self.get_coo(),
+            cro=self.get_cro(),
+            crz=self.get_crz(),
+            coo=self.get_coo(),
+            period_total=period_total,
+            total=total,
+            taxes=self._get_taxes(),
+        )
+        return data
+
+    def get_payment_receipt_identifier(self, method_name):
+        # We don't need a identifier. Just return None.
         return None
+
+    def payment_receipt_open(self, identifier, coo, method, value):
+        # FIXME: Verificar possibilidade de se implementar a utilização de
+        # quantidade de parcelas.
+        value = int(value * Decimal('1e2'))
+        self._send_command('0E30', '0000', method, str(value), '1', str(coo))
+
+    def payment_receipt_print(self, text):
+        self._print_report_text(text)
 
     def payment_receipt_close(self):
         self._send_command('0E06')
@@ -323,35 +450,57 @@ class FBII(SerialBase):
         self._customer_document = document
         self._customer_address = address
 
+    def coupon_is_customer_identified(self):
+        return len(self._customer_document) > 0
+
+    def has_open_coupon(self):
+        # Valor representa cupom fechado.
+        coupon_closed = '0000'
+        # Quatro últimos dígitos do estado fiscal,demonstram o estado do cupom.
+        check_coupon = self._get_fiscal_status()[12:16]
+        return check_coupon != coupon_closed
+
     def coupon_open(self):
         self._send_command('0A01', '0000', '', '')
 
+    def _cancel_coupon(self):
+        self._send_command('0A18', '0008', '1')
+
     def coupon_cancel(self):
-        self._cancel_coupon(coupon_id='1')
+        self._cancel_coupon()
 
     def coupon_add_item(self, code, description, price, taxcode,
                         quantity=Decimal("1.0"), unit=UnitType.EMPTY,
                         discount=Decimal("0.0"), markup=Decimal("0.0"),
                         unit_desc=""):
-        # FIXME
-        qtd = '%d' % (quantity * 1000)
-        un = 'UN'
-        value = '%d' % (price * 100)
+        if unit == UnitType.CUSTOM:
+            unit = unit_desc
+        else:
+            unit = self._consts.get_value(unit)
+        qtd = str(quantity * self._decimals_quantity)
+        value = int(price * self._decimals_price)
         st = taxcode
-        reply = self._send_command('0A02', '0000', code,
-                                   description, qtd, un, value, st)
+        reply = self._send_command('0A02', '0000', code, description,
+                                   qtd, unit, str(value), st)
         id = reply.fields[0]
         return int(id)
 
-    def _cancel_coupon(self, coupon_id):
-        self._send_command('0A18', '0008', coupon_id)
+    def coupon_cancel_item(self, item_id):
+        self._send_command('0A18', '0004', str(item_id))
 
     def cancel_last_coupon(self):
-        # Detalhe sobre último cupom fiscal se encontra nas informações da
-        # jornada fiscal.
-        reply = self._send_command('080A', '0000')
-        last_coupon = reply.fields[9]
-        self._cancel_coupon(last_coupon)
+        # Informações sobre último documento.
+        reply = self._send_command('0908')
+        last_coupon = reply.fields[0]
+        # Cancelar último cupom fiscal.
+        if last_coupon == FISCAL_COUPON:
+            self._cancel_coupon()
+        # Cancelar último cupom não-fiscal.
+        elif last_coupon == NON_FISCAL_COUPON:
+            self._send_command('0E18', '0008', '1')
+        else:
+            raise DriverError(_("Attempt to cancel after emission of another "
+                                "DOC"))
 
     def coupon_totalize(self, discount=currency(0), markup=currency(0),
                         taxcode=TaxType.NONE):
@@ -365,8 +514,8 @@ class FBII(SerialBase):
         # Podemos somente mandar o comando de desconto/acrescimo se realmente
         # tivermos um valor.
         if value:
-            value = '%d' % (value * 100)
-            reply = self._send_command('0A04', extension, value)
+            value = int(value * Decimal('1e2'))
+            reply = self._send_command('0A04', extension, str(value))
             subtotal = reply.fields[0]
         else:
             # Ainda precisamos pegar o subtotal, para retornar.
@@ -376,15 +525,53 @@ class FBII(SerialBase):
 
     def coupon_add_payment(self, payment_method, value, description=u""):
         desc = description[:40]
-        value = '%d' % (value * 100)
-        reply = self._send_command('0A05', '0000', payment_method, value, desc,
-                                    '')
+        value = int(value * Decimal('1e2'))
+        reply = self._send_command('0A05', '0000', payment_method, str(value),
+                                   desc, '')
         # Return the still missing value
         return currency(reply.fields[0]) / Decimal('1e2')
 
     def coupon_close(self, message=""):
+        if self._customer_document:
+            self._send_command('0A20', '0002', self._customer_document[:20],
+                               self._customer_name[:30],
+                               self._customer_address[:40],
+                               self._customer_address[41:79])
+            self._reset()
+
         reply = self._send_command('0A06', '0000')
         return int(reply.fields[0])
+
+    def gerencial_report_open(self):
+        return self._send_command('0E01', '0004', '1')
+
+    def gerencial_report_print(self, text):
+        self._print_report_text(text)
+
+    def gerencial_report_close(self):
+        self._send_command('0E06')
+
+    def _print_report_text(self, text):
+        """ Format the text according to limit of collumns number.
+        """
+
+        # Number of characters per line must be less than 56.
+        for line in text.split('\n'):
+            if line == '':
+                self._print_line(line)
+            for pos in range(0, len(line), 56):
+                data = line[pos:pos+56]
+                self._print_line(data)
+
+    def _print_line(self, line):
+        """
+        As seen on ACBr code.
+        Remove char '\r'. When the ECF receives the character \r,
+        the error, 020E(invalid attribute) is emitted.
+        """
+        line = line.strip('\r')
+        self._send_command('0E02', '0000', line)
+
 
     #
     #   General information
@@ -426,10 +613,11 @@ class FBII(SerialBase):
         for i in range(20):
             try:
                 reply = self._send_command('050D', '0000', '%d' % (i+1))
-            except DriverError:
-                # TODO:
-                #if reply.reply_status == '090C':
-                break
+            except DriverError, e:
+                if e.code == 0x090C: # Tipo de pagamento não definido
+                    continue
+                else:
+                    raise
             name, vinculado = reply.fields
             methods.append(('%d' % (i+1), name.strip()))
 
@@ -446,6 +634,9 @@ class FBII(SerialBase):
             customer_address=Capability(max_len=79),
             )
 
+    def get_constants(self):
+        return self._consts
+
     def _get_ecf_details(self):
         return self._send_command('0402')
 
@@ -461,9 +652,58 @@ class FBII(SerialBase):
         reply = self._send_command('0907')
         return int(reply.fields[7])
 
+    def get_cro(self):
+        reply = self._send_command('0907')
+        return int(reply.fields[2])
+
     def get_crz(self):
         reply = self._send_command('0907')
         return int(reply.fields[1])
+
+    def _get_taxes(self):
+        reply = self._send_command('0542')
+        tax_codes = reply.fields
+
+        taxes = []
+        for i in range(20):
+            reg = tax_codes[i*3:i*3+3]
+            if not reg:
+                continue
+
+            name = reg[0]
+            if name.startswith('T'):
+                tax_type = 'ICMS'
+            else:
+                tax_type =  'ISS'
+
+            sold = reg[2]
+            value = reg[1]
+            taxes.append((value, self._parse_price(sold), tax_type))
+        tax_totals = self._send_command('0906')
+
+        taxes.append(('I', self._parse_price(tax_totals.fields[16]), 'ICMS'))
+        taxes.append(('F', self._parse_price(tax_totals.fields[15]), 'ICMS'))
+        taxes.append(('N', self._parse_price(tax_totals.fields[17]), 'ICMS'))
+        taxes.append(('DESC', self._parse_price(tax_totals.fields[3]), 'ICMS'))
+        taxes.append(('CANC', self._parse_price(tax_totals.fields[2]), 'ICMS'))
+
+        test = self._send_command('090D', '0000', '19')
+        print test.fields
+        print ''
+
+        return taxes
+
+    #
+    # Status
+    #
+
+    def _get_fiscal_status(self):
+        reply = self._send_command('0001')
+        return reply.check_fiscal_status()
+
+    def _get_printer_status(self):
+        reply = self._send_command('0001')
+        return reply.check_printer_status()
 
     #
     #   Printer configuration
@@ -501,23 +741,22 @@ class FBII(SerialBase):
         self._define_tax_code("0500")
         self._define_tax_code("0300", service=True)
         self._define_tax_code("0900", service=True)
-        return
 
 
 
 if __name__ == '__main__':
-    from serial import Serial
+    from stoqdrivers.serialbase import SerialPort
     #port = Serial('/dev/pts/5')
-    port = Serial('/tmp/fpii')
+    port = SerialPort('/dev/ttyUSB0')
     p  = FBII(port)
-    #p.summarize()
-    print p.get_serial()
-    print
-    #p._setup_constants()
-    constants = p.get_tax_constants()
-    for i in constants:
-        print i
 
-    constants = p.get_payment_constants()
-    for i in constants:
-        print i
+#    p._send_command('0754', '0000') Desativar corte do papel
+
+#    p._setup_constants()
+#    constants = p.get_tax_constants()
+#    for i in constants:
+#        print i
+
+#    constants = p.get_payment_constants()
+#    for i in constants:
+#        print i
