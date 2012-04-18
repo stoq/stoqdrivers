@@ -3,7 +3,7 @@
 
 ##
 ## Stoqdrivers
-## Copyright (C) 2005 Async Open Source <http://www.async.com.br>
+## Copyright (C) 2012 Async Open Source <http://www.async.com.br>
 ## All rights reserved
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -99,8 +99,8 @@ class Reply(object):
         '0304': (OutofPaperError(_("Out of paper."))),
         '0305': (AlmostOutofPaper(_("Almost out of paper."))),
 
-        '0A12': (PrinterError(_("It was not possible cancel the last fiscal "
-                                "coupon."))),
+        '0A12': (CancelItemError(_("It was not possible cancel the last "
+                                   "fiscal coupon."))),
         '0A15': (PrinterError(_("Requires CDC cancellation."))),
         '0E0A': (PrinterError(_("Last non-fiscal coupon not found."))),
         '0E0B': (PrinterError(_("Payment method not found."))),
