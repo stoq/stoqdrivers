@@ -186,11 +186,13 @@ class Reply(object):
 
 
 class FBIIConstants(BaseDriverConstants):
+    # The 'unit' field is mandatory in ECF.
+    # If unit is EMPTY, set the value 'UN' to avoid errors.
     _constants = {
         UnitType.WEIGHT:      'Kg',
         UnitType.METERS:      'm',
         UnitType.LITERS:      'Lt',
-        UnitType.EMPTY:       ' ',
+        UnitType.EMPTY:       'UN',
         }
 
 
