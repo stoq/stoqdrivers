@@ -154,7 +154,6 @@ class Reply(object):
         #for f in self.fields: print f
 
     def check_error(self):
-        print 'reply_status', self.reply_status
         log.debug("reply_status %s" % self.reply_status)
         error_code = self.reply_status
         # Success, do nothing
@@ -291,15 +290,13 @@ class FBII(SerialBase):
                 break
 
         reply += self.read(4)
-        print '< ', repr(reply)
         log.debug("<<< %s" % repr(reply))
 
         return Reply(reply, self._command_id)
 
     def _send_command(self, command, extension='0000', *args):
         cmd = self._get_package(command, extension, args)
-        print '> ', repr(cmd)
-#        log.debug("> %s" % repr(cmd))
+        #log.debug("> %s" % repr(cmd))
         self.write(cmd)
 
         # Printer should reply with an ACK imediataly
@@ -311,7 +308,6 @@ class FBII(SerialBase):
 
         # Keep reading while printer sends intermediate replies.
         while reply.intermediate:
-            print 'intermediate'
             log.debug("intermediate")
             reply = self._read_reply()
 
@@ -370,7 +366,7 @@ class FBII(SerialBase):
         self._send_command('0E01', '0000', '')
 
         # Adiciona item
-        value = int(value * self._decimals_price)
+        value = int(value * Decimal('1e2'))
         self._send_command('0E15', '0000', type, str(value))
 
         # Fecha
@@ -688,10 +684,6 @@ class FBII(SerialBase):
         taxes.append(('N', self._parse_price(tax_totals.fields[17]), 'ICMS'))
         taxes.append(('DESC', self._parse_price(tax_totals.fields[3]), 'ICMS'))
         taxes.append(('CANC', self._parse_price(tax_totals.fields[2]), 'ICMS'))
-
-        test = self._send_command('090D', '0000', '19')
-        print test.fields
-        print ''
 
         return taxes
 
