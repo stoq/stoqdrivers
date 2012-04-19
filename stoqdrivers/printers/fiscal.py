@@ -93,7 +93,7 @@ class FiscalPrinter(BasePrinter):
 
     def setup(self):
         log.info('setup()')
-        return self._driver.setup()
+        self._driver.setup()
 
     @capcheck(basestring, basestring, basestring)
     def identify_customer(self, customer_name, customer_address, customer_id):
