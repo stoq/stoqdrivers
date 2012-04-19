@@ -265,6 +265,9 @@ class Simple(object):
     # ICouponPrinter implementation
     #
 
+    def setup(self):
+        pass
+
     def coupon_identify_customer(self, customer, address, document):
         self._check()
         if document not in ['160.618.061-40',

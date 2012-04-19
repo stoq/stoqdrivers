@@ -83,12 +83,17 @@ class FiscalPrinter(BasePrinter):
         self.totalized_value = Decimal("0.0")
         self._capabilities = self._driver.get_capabilities()
         self._charset = self._driver.coupon_printer_charset
+        self.setup()
 
     def get_capabilities(self):
         return self._capabilities
 
     def _format_text(self, text):
         return encode_text(text, self._charset)
+
+    def setup(self):
+        log.info('setup()')
+        return self._driver.setup()
 
     @capcheck(basestring, basestring, basestring)
     def identify_customer(self, customer_name, customer_address, customer_id):
@@ -186,6 +191,7 @@ class FiscalPrinter(BasePrinter):
 
     def cancel_last_coupon(self):
         """Cancel the last non fiscal coupon or the last sale."""
+        log.info('cancel_last_coupon()')
         self._driver.cancel_last_coupon()
 
     @capcheck(int)

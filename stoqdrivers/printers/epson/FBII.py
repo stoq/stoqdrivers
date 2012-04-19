@@ -206,10 +206,8 @@ class FBII(SerialBase):
     supported = True
     identify_customer_at_end = True
 
-    model_name = "FBII"
-    cheque_printer_charset = "ascii"
+    model_name = "Epson FBII"
     coupon_printer_charset = "ascii"
-    
 
     def __init__(self, port, consts=None):
         port.set_options(baudrate=115200)
@@ -217,9 +215,8 @@ class FBII(SerialBase):
         self._consts = consts or FBIIConstants
         self._command_id = FIRST_COMMAND_ID-1 #0x80
         self._reset()
-        self._setup()
 
-    def _setup(self):
+    def setup(self):
         """
         Obtain the ECF configuration, to perform changes in received and
         sent commands.

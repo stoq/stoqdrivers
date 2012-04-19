@@ -447,7 +447,7 @@ class FiscNetECF(SerialBase):
                 taxes.append(('%04d' % int(desc), value, type))
         return taxes
 
-    def setup(self):
+    def _configure_printer(self):
         self._define_tax_name(0,
             "Suprimento".encode(self.coupon_printer_charset), entrada=True)
         self._define_tax_name(1,
@@ -500,6 +500,9 @@ class FiscNetECF(SerialBase):
     #
     # ICouponPrinter implementation
     #
+
+    def setup(self):
+        pass
 
     def coupon_identify_customer(self, customer, address, document):
         self._customer_name = customer

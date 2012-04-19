@@ -114,6 +114,14 @@ class ICouponPrinter(IDevice):
     # Common API
     #
 
+    def setup():
+        """Setup printer for use.
+
+        This method should do any logic required for the correct functioning of
+        the printer, like checking if it uses 2 or 3 decimal places for product
+        prices and quantity, and using this properties when necessary.
+        """
+
     def coupon_identify_customer(customer, address, document):
         """ Identify the customer.  This method doesn't have mandatory
         execution (you can identify the customer only if you like), but when

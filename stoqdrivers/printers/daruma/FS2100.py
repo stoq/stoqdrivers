@@ -55,9 +55,8 @@ class FS2100(FS345):
 
     def __init__(self, port, consts=None):
         FS345.__init__(self, port, consts)
-        self._setup()
 
-    def _setup(self):
+    def setup(self):
         # Check printer to see how many decimal places it uses for price and
         # quantity
         data = self.send_new_command('R', 200, '139', ignore_error=True)

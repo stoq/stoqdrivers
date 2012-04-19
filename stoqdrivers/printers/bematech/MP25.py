@@ -447,6 +447,9 @@ class MP25(SerialBase):
     # This implements the ICouponPrinter Interface
     #
 
+    def setup(self):
+        pass
+
     def summarize(self):
         """ Prints a summary of all sales of the day """
         self._send_command(CMD_READ_X)

@@ -405,6 +405,9 @@ class FS345(SerialBase):
     # API implementation
     #
 
+    def setup(self):
+        pass
+
     def coupon_identify_customer(self, customer, address, document):
         self._customer_name = customer
         self._customer_document = document
