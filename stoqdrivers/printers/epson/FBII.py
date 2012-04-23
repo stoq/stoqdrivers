@@ -472,11 +472,11 @@ class FBII(SerialBase):
             unit = unit_desc
         else:
             unit = self._consts.get_value(unit)
-        qtd = str(quantity * self._decimals_quantity)
+        qtd = int(quantity * self._decimals_quantity)
         value = int(price * self._decimals_price)
         st = taxcode
         reply = self._send_command('0A02', '0000', code, description,
-                                   qtd, unit, str(value), st)
+                                   str(qtd), unit, str(value), st)
         id = reply.fields[0]
         return int(id)
 
