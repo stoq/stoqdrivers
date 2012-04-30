@@ -301,7 +301,6 @@ class FBII(SerialBase):
 
         # Printer should reply with an ACK imediataly
         ack = self.read(1)
-        # This assert block the timeout verification.
         if not ack:
             raise DriverError(_("Timeout communicating with fiscal "
                                         "printer"))
