@@ -39,12 +39,10 @@ from zope.interface import implements
 
 from stoqdrivers.serialbase import SerialBase
 from stoqdrivers.interfaces import ICouponPrinter
-from stoqdrivers.exceptions import (DriverError, PendingReduceZ, PendingReadX,
-                                    PrinterError, CommError, CommandError,
-                                    CommandParametersError, ReduceZError,
-                                    HardwareFailure, OutofPaperError,
-                                    CouponNotOpenError, CancelItemError,
-                                    CouponOpenError, AlmostOutofPaper)
+from stoqdrivers.exceptions import (DriverError, PrinterError, CommandError,
+                                    CommandParametersError, OutofPaperError,
+                                    CancelItemError, AlmostOutofPaper,
+                                    ItemAdditionError)
 from stoqdrivers.enum import TaxType, UnitType
 #from stoqdrivers.printers.capabilities import Capability
 from stoqdrivers.printers.base import BaseDriverConstants
@@ -70,11 +68,16 @@ def unescape(string):
     return string
 
 FIRST_COMMAND_ID = 0x81
-RETRIES_BEFORE_TIMEOUT = 1
+RETRIES_BEFORE_TIMEOUT = 5
 
 # When cancel the last coupon. This values are used to define the coupon type.
 FISCAL_COUPON = '1'
 NON_FISCAL_COUPON = '24'
+
+# Coupons status
+CLOSED_COUPON = '0000'
+OPENED_FISCAL_COUPON = '0001'
+OPENED_NON_FISCAL_COUPON = '1000'
 
 _ = stoqdrivers_gettext
 
@@ -93,11 +96,17 @@ class Reply(object):
         '0204': (CommandError(_("Missing fields"))),
         '0205': (CommandParametersError(_("Field not optional."))),
         '0206': (CommandParametersError(_("Invalid alphanumeric field."))),
+        '0207': (CommandParametersError(_("Invalid alphabetic field."))),
+        '0208': (CommandParametersError(_("Invalid numeric field."))),
         '020E': (CommandParametersError(_("Fields with print invalid "
                                           "attributes."))),
 
         '0304': (OutofPaperError(_("Out of paper."))),
         '0305': (AlmostOutofPaper(_("Almost out of paper."))),
+
+        '090C': (ItemAdditionError(_("Payment method not defined."))),
+        '090F': (ItemAdditionError(_("Tax not found."))),
+        '0910': (ItemAdditionError(_("Invalid tax."))),
 
         '0A12': (CancelItemError(_("It was not possible cancel the last "
                                    "fiscal coupon."))),
@@ -217,13 +226,7 @@ class FBII(SerialBase):
         self._reset()
 
     def setup(self):
-        """
-        Obtain the ECF configuration, to perform changes in received and
-        sent commands.
-        """
-
-        # Quantidade de casas decimais para serem utilizadas no preço
-        # e quantidade.
+        # Get the decimal places from printer to use in price and quantity.
         data = self._send_command('0585')
         self._decimals_quantity = Decimal('1e' + data.fields[0])
         self._decimals_price = Decimal('1e' + data.fields[1])
@@ -299,7 +302,10 @@ class FBII(SerialBase):
         # Printer should reply with an ACK imediataly
         ack = self.read(1)
         # This assert block the timeout verification.
-        #assert ack == ACK, repr(ack)
+        if not ack:
+            raise DriverError(_("Timeout communicating with fiscal "
+                                        "printer"))
+        assert ack == ACK, repr(ack)
 
         reply = self._read_reply()
 
@@ -449,20 +455,24 @@ class FBII(SerialBase):
         return len(self._customer_document) > 0
 
     def has_open_coupon(self):
-        # Valor representa cupom fechado.
-        coupon_closed = '0000'
-        # Quatro últimos dígitos do estado fiscal,demonstram o estado do cupom.
-        check_coupon = self._get_fiscal_status()[12:16]
-        return check_coupon != coupon_closed
+        checked_coupon = self._get_coupon_status()
+        return checked_coupon != CLOSED_COUPON
 
     def coupon_open(self):
         self._send_command('0A01', '0000', '', '')
 
-    def _cancel_coupon(self):
+    def _cancel_fiscal_coupon(self):
         self._send_command('0A18', '0008', '1')
 
+    def _cancel_non_fiscal_coupon(self):
+        self._send_command('0E18', '0008', '1')
+
     def coupon_cancel(self):
-        self._cancel_coupon()
+        checked_coupon = self._get_coupon_status()
+        if checked_coupon == OPENED_FISCAL_COUPON:
+            self._cancel_fiscal_coupon()
+        elif checked_coupon == OPENED_NON_FISCAL_COUPON:
+            self._cancel_non_fiscal_coupon()
 
     def coupon_add_item(self, code, description, price, taxcode,
                         quantity=Decimal("1.0"), unit=UnitType.EMPTY,
@@ -487,12 +497,10 @@ class FBII(SerialBase):
         # Informações sobre último documento.
         reply = self._send_command('0908')
         last_coupon = reply.fields[0]
-        # Cancelar último cupom fiscal.
         if last_coupon == FISCAL_COUPON:
-            self._cancel_coupon()
-        # Cancelar último cupom não-fiscal.
+            self._cancel_fiscal_coupon()
         elif last_coupon == NON_FISCAL_COUPON:
-            self._send_command('0E18', '0008', '1')
+            self._cancel_non_fiscal_coupon()
         else:
             raise DriverError(_("Attempt to cancel after emission of another "
                                 "DOC"))
@@ -567,7 +575,6 @@ class FBII(SerialBase):
         line = line.strip('\r')
         self._send_command('0E02', '0000', line)
 
-
     #
     #   General information
     #
@@ -618,7 +625,6 @@ class FBII(SerialBase):
 
         return methods
 
-
     def get_capabilities(self):
         from stoqdrivers.printers.capabilities import Capability
         return dict(
@@ -634,6 +640,10 @@ class FBII(SerialBase):
 
     def _get_ecf_details(self):
         return self._send_command('0402')
+
+    def get_firmware_version(self):
+        reply = self._get_ecf_details()
+        return reply.fields[5]
 
     def get_coo(self):
         reply = self._send_command('0907')
@@ -695,6 +705,10 @@ class FBII(SerialBase):
     def _get_printer_status(self):
         reply = self._send_command('0001')
         return reply.check_printer_status()
+
+    def _get_coupon_status(self):
+        # Last four digits of fiscal status, show coupon status
+        return self._get_fiscal_status()[12:16]
 
     #
     #   Printer configuration
