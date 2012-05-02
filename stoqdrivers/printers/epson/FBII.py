@@ -104,7 +104,7 @@ class Reply(object):
         '0304': (OutofPaperError(_("Out of paper."))),
         '0305': (AlmostOutofPaper(_("Almost out of paper."))),
 
-        '090C': (ItemAdditionError(_("Payment method not defined."))),
+        '090C': (DriverError(_("Payment method not defined."))),
         '090F': (ItemAdditionError(_("Tax not found."))),
         '0910': (ItemAdditionError(_("Invalid tax."))),
 
@@ -170,7 +170,9 @@ class Reply(object):
             return
 
         if error_code in self.error_codes:
-            raise self.error_codes[error_code]
+            error = self.error_codes[error_code]
+            error.code = int(error_code, 16)
+            raise error
 
         raise DriverError(error="unhandled driver error",
                           code=int(error_code, 16))
@@ -219,7 +221,7 @@ class FBII(SerialBase):
     coupon_printer_charset = "ascii"
 
     def __init__(self, port, consts=None):
-        port.set_options(baudrate=115200)
+        port.set_options(baudrate=38400)
         SerialBase.__init__(self, port)
         self._consts = consts or FBIIConstants
         self._command_id = FIRST_COMMAND_ID-1 #0x80
