@@ -123,6 +123,10 @@ CASH_OUT_TYPE = 'A'
 
 RETRIES_BEFORE_TIMEOUT = 5
 
+# Document status
+OPENED_FISCAL_COUPON = '1'
+CLOSED_COUPON = '2'
+
 def isbitset(value, bit):
     # BCD crap
     return (int(value, 16) >> bit) & 1 == 1
@@ -313,14 +317,12 @@ class FS345(SerialBase):
 
     def show_document_status(self):
         print '== DOCUMENT STATUS =='
-        value = self.send_command(CMD_GET_DOCUMENT_STATUS)
-        assert value[:2] == '\x1b' + chr(CMD_GET_DOCUMENT_STATUS)
-        assert len(value) == 59
+        value = self._get_document_status()
         print 'ECF:', value[2:6]
         document_type = value[6]
-        if document_type == '2':
+        if document_type == CLOSED_COUPON:
             print 'No open coupon'
-        elif document_type == '1':
+        elif document_type == OPENED_FISCAL_COUPON:
             print 'Document is a coupon (%s)' % value[7:12]
         else:
             print 'Document type:', value[6]
@@ -330,6 +332,12 @@ class FS345(SerialBase):
 
         print 'Sum', int(value[27:41]) / 100.0
         print 'GT atual', value[41:59]
+
+    def _get_document_status(self):
+        status = self.send_command(CMD_GET_DOCUMENT_STATUS)
+        assert status[:2] == '\x1b' + chr(CMD_GET_DOCUMENT_STATUS)
+        assert len(status) == 59
+        return status
 
     def get_firmware_version(self):
         """Return the firmware version."""
@@ -417,8 +425,9 @@ class FS345(SerialBase):
         return len(self._customer_document) > 0
 
     def has_open_coupon(self):
-        # FIXME: gerga, help me out here :)
-        return False
+        status = self._get_document_status()
+        coupon_status = status[6]
+        return coupon_status != CLOSED_COUPON
 
     def coupon_open(self):
         status = self._check_status()
