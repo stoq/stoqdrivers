@@ -31,6 +31,7 @@ import operator
 from decimal import Decimal
 import time
 
+from stoqdrivers.printers.base import BaseDriverConstants
 from stoqdrivers.printers.daruma.FS345 import FS345, CMD_GET_TAX_CODES
 from stoqdrivers.enum import UnitType, TaxType
 from stoqdrivers.exceptions import DriverError
@@ -50,10 +51,20 @@ FF  = 255
 
 CMD_ADD_ITEM = 201
 
+class FS2100Constants(BaseDriverConstants):
+    _constants = {
+        UnitType.WEIGHT:      'Kg',
+        UnitType.METERS:      'm ',
+        UnitType.LITERS:      'Lt',
+        UnitType.EMPTY:       'UN',
+        }
+
+
 class FS2100(FS345):
     model_name = "Daruma FS 2100"
 
     def __init__(self, port, consts=None):
+        consts = consts or FS2100Constants
         FS345.__init__(self, port, consts)
 
     def setup(self):
