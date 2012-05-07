@@ -62,6 +62,7 @@ class MP20Registers(object):
     CRO = 10
     LAST_ITEM_ID = 12
     NUMBER_TILL = 14
+    FISCAL_FLAGS = 17
     EMISSION_DATE = 23
     TOTALIZERS = 29
     PAYMENT_METHODS = 32
@@ -79,6 +80,7 @@ class MP20Registers(object):
         CRO: ('2s', True),
         LAST_ITEM_ID: ('2s', True),
         NUMBER_TILL: ('2s', True),
+        FISCAL_FLAGS: ('1s', False),
         EMISSION_DATE: ('6s', False),
         TOTALIZERS: ('2s', False),
         #  1 + (52 * 16) + (52 * 10) + (52 * 10) + (52 * 1)
