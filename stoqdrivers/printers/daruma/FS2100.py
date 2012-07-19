@@ -179,11 +179,21 @@ class FS2100(FS345):
         data = chr(FS) + prefix + data
 
         checksum = reduce(operator.xor, [ord(d) for d in data], 0)
-        self.write(data + chr(checksum))
 
-        retval = self.readline()
+        for t in range(10):
+            self.write(data + chr(checksum))
+            retval = self.readline()
+
+            # See send_command for more details
+            if retval == ':E99' or retval == ':E35':
+                log.debug('FS2100 >>> Error 99. Sleeping for 0.1')
+                time.sleep(0.1)
+            else:
+                break
+
         # After the CR, there is still one byte for the checksum
         retval_checksum = self.read(1)
+        retval_checksum # pyflakes
 
         if not ignore_error:
             self._check_response(retval, data)
