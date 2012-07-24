@@ -31,10 +31,10 @@ import datetime
 #import time
 import struct
 from decimal import Decimal
-from kiwi.datatypes import currency
+
+from kiwi.currency import currency
 from kiwi.log import Logger
 from kiwi.python import Settable
-
 from zope.interface import implements
 
 from stoqdrivers.serialbase import SerialBase

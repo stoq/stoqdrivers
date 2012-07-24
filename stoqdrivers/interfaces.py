@@ -31,8 +31,7 @@ Stoqdrivers interfaces specification
 
 from decimal import Decimal
 
-from kiwi.datatypes import currency
-
+from kiwi.currency import currency
 from zope.interface import Interface, Attribute
 from serial import EIGHTBITS, PARITY_NONE, STOPBITS_ONE
 

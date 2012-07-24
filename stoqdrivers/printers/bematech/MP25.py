@@ -34,7 +34,7 @@ import datetime
 from decimal import Decimal
 import struct
 
-from kiwi.datatypes import currency
+from kiwi.currency import currency
 from kiwi.log import Logger
 from kiwi.python import Settable
 from zope.interface import implements

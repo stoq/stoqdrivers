@@ -28,8 +28,8 @@
 import datetime
 from decimal import Decimal
 
-from kiwi.datatypes import currency
 from kiwi.argcheck import number, percent
+from kiwi.currency import currency
 from kiwi.log import Logger
 
 from stoqdrivers.exceptions import (CloseCouponError, PaymentAdditionError,

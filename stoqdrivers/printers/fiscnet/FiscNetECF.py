@@ -32,11 +32,10 @@ import datetime
 from decimal import Decimal
 import re
 
+from kiwi.currency import currency
+from kiwi.python import Settable
 from serial import PARITY_EVEN
 from zope.interface import implements
-
-from kiwi.datatypes import currency
-from kiwi.python import Settable
 
 from stoqdrivers.enum import PaymentMethodType, TaxType, UnitType
 from stoqdrivers.exceptions import (DriverError, PendingReduceZ,
