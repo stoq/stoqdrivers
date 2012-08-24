@@ -221,7 +221,6 @@ class FBII(SerialBase):
     coupon_printer_charset = "ascii"
 
     def __init__(self, port, consts=None):
-        port.set_options(baudrate=38400)
         SerialBase.__init__(self, port)
         self._consts = consts or FBIIConstants
         self._command_id = FIRST_COMMAND_ID-1 #0x80

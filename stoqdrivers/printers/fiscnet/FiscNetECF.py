@@ -153,8 +153,9 @@ class FiscNetECF(SerialBase):
         }
 
     def __init__(self, port, consts=None):
-        port.set_options(baudrate=115200, parity=PARITY_EVEN,
-                         write_timeout=3, read_timeout=3)
+        port.setParity(PARITY_EVEN)
+        port.setWriteTimeout(3)
+
         SerialBase.__init__(self, port)
         self._consts = consts or FiscNetConstants
         self._command_id = 0

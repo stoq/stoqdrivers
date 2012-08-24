@@ -35,4 +35,3 @@ class FBIII(FBII):
 
     def __init__(self, port, consts=None):
         FBII.__init__(self, port, consts)
-        port.set_options(baudrate=115200)

@@ -125,3 +125,9 @@ def get_supported_printers_by_iface(interface):
         if drivers:
             result[model] = drivers
     return result
+
+def get_baudrate_values():
+    """ Returns baudrate values to configure the communication speed with
+    serial port.
+    """
+    return ['4800', '9600', '19200', '38400', '57600', '115200']

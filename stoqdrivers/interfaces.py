@@ -60,10 +60,6 @@ class ISerialPort(Interface):
         """ Set to True when the driver is going to send data to the device
         """
 
-    def set_options(baudrate=9600, bytesize=EIGHTBITS, parity=PARITY_NONE,
-                    stopbits=STOPBITS_ONE, read_timeout=3, write_timeout=0):
-        """ Set general device options """
-
     def read(n_bytes=1):
         """ Read data """
 

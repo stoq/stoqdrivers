@@ -46,10 +46,6 @@ class VirtualPort:
     def setDTR(self, value):
         pass
 
-    def set_options(self, baudrate=9600, bytesize=EIGHTBITS, parity=PARITY_NONE,
-                    stopbits=STOPBITS_ONE, read_timeout=3, write_timeout=0):
-        pass
-
     def write(self, data):
         pass
 
@@ -59,25 +55,22 @@ class VirtualPort:
 class SerialPort(Serial):
     implements(ISerialPort)
 
-    def __init__(self, device):
+    def __init__(self, device, baudrate=9600):
         Serial.__init__(self, device)
         self.setDTR(True)
         self.flushInput()
         self.flushOutput()
-        self.set_options()
-
-    # WARNING: Never change these default options, some drivers is based on
-    # this to work. Maybe we should change this and do all the driver specify
-    # its options, but right now I think that's ok, since these options are
-    # common to most of the drivers.
-    def set_options(self, baudrate=9600, bytesize=EIGHTBITS, parity=PARITY_NONE,
-                    stopbits=STOPBITS_ONE, read_timeout=3, write_timeout=0):
         self.setBaudrate(baudrate)
-        self.setByteSize(bytesize)
-        self.setParity(parity)
-        self.setStopbits(stopbits)
-        self.setTimeout(read_timeout)
-        self.setWriteTimeout(write_timeout)
+        # WARNING: Never change these default options, some drivers are based
+        # on this to work. Maybe we should change this and make all the driver 
+        # specify its options, but right now I think that's ok, since these 
+        # options are common to most of the drivers.
+        self.setByteSize(EIGHTBITS)
+        self.setParity(PARITY_NONE)
+        self.setStopbits(STOPBITS_ONE)
+        self.setTimeout(3)
+        self.setWriteTimeout(0)
+
 
 class SerialBase(object):
 

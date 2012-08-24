@@ -64,9 +64,6 @@ class LogSerialPort:
     def getDSR(self):
         return self._port.getDSR()
 
-    def set_options(self, *args, **kwargs):
-        self._port.set_options(*args, **kwargs)
-
     def read(self, n_bytes=1):
         data = self._port.read(n_bytes)
         self._buffer += data
@@ -97,9 +94,6 @@ class PlaybackPort:
         self._input = []
         self._output = ''
         self._load_data(datafile)
-
-    def set_options(self, *args, **kwargs):
-        pass
 
     def setDTR(self):
         pass

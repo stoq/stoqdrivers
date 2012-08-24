@@ -101,8 +101,6 @@ class PrixIII(SerialBase):
 
     def __init__(self, device, consts=None):
         SerialBase.__init__(self, device)
-        device.set_options(baudrate=9600, bytesize=EIGHTBITS,
-                           stopbits=STOPBITS_ONE, parity=PARITY_NONE)
         self._package = None
 
     def _get_package(self):
