@@ -98,6 +98,24 @@ class PlaybackPort:
     def setDTR(self):
         pass
 
+    def setBaudrate(self, baudrate):
+        pass
+
+    def setByteSize(self, bytesize):
+        pass
+
+    def setParity(self, parity):
+        pass
+
+    def setStopbits(self, stopbits):
+        pass
+
+    def setTimeout(self, read_timeout):
+        pass
+
+    def setWriteTimeout(self, write_timeout):
+        pass
+
     def getDSR(self):
         return True
 
