@@ -42,7 +42,7 @@ from stoqdrivers.exceptions import (CouponTotalizeError, PaymentAdditionError,
                                     CloseCouponError, CouponOpenError,
                                     CancelItemError, ItemAdditionError,
                                     DriverError, PrinterOfflineError)
-from stoqdrivers.interfaces import ICouponPrinter, IChequePrinter
+from stoqdrivers.interfaces import ICouponPrinter
 from stoqdrivers.printers.base import BaseDriverConstants
 from stoqdrivers.printers.capabilities import Capability
 from stoqdrivers.translation import stoqdrivers_gettext
@@ -556,6 +556,9 @@ class Simple(object):
 
     def gerencial_report_close(self):
         self._check()
+
+    def get_firmware_version(self):
+        return '1.1.1'
 
 
     #
