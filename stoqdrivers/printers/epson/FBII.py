@@ -543,6 +543,7 @@ class FBII(SerialBase):
             self._reset()
 
         reply = self._send_command('0A06', '0001')
+        self._send_command('0702', '0000')
         return int(reply.fields[0])
 
     def gerencial_report_open(self):
