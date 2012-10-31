@@ -1,3 +1,9 @@
+stoqdrivers (1:0.9.18) precise; urgency=low
+
+  * New Release
+
+ -- Ronaldo Maia <romaia@async.com.br>  Wed, 31 Oct 2012 17:44:09 -0200
+
 stoqdrivers (1:0.9.17) precise; urgency=low
 
   * New Release
