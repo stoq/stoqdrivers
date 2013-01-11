@@ -20,12 +20,15 @@ New Versions
 
 New versions of the package can be found always by the bazaar repository:
 
-    bzr branch lp:stoqdrivers
+    git clone http://gerrit.async.com.br/stoqdrivers
 
-or at Stoq website and in Launchpad:
+There's a mirror at github:
+
+    https://github.com/jdahlin/stoqdrivers
+
+or at Stoq website:
 
 	http://www.stoq.com.br/
-    http://launchpad.net/stoqdrivers
 
 
 Mailing list
