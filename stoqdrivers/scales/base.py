@@ -47,7 +47,7 @@ class BaseScale(BaseDevice):
 def get_supported_scales():
     result = {}
 
-    for brand, module_names in [('toledo', ['PrixIII'])]:
+    for brand, module_names in [(u'toledo', [u'PrixIII'])]:
         result[brand] = []
         for module_name in module_names:
             try:
