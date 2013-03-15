@@ -81,6 +81,9 @@ class BasePrinter(BaseDevice):
             if enum == item:
                 return constant
 
+    def get_model_name(self):
+        return self._driver.model_name
+
 
 def get_virtual_printer():
     from stoqdrivers.printers.fiscal import FiscalPrinter
@@ -92,6 +95,7 @@ def get_supported_printers():
         ('bematech', ['DP20C', 'MP20', 'MP2100', 'MP25']),
         ('daruma', ['FS2100', 'FS345', 'FS600MFD']),
         ('dataregis', ['EP375', 'Quick']),
+        ('elgin', ['KFiscal']),
         ('epson', ['FBII', 'FBIII']),
         ('fiscnet', ['FiscNetECF']),
         ('perto', ['Pay2023']),
