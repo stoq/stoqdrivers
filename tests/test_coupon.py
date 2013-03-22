@@ -454,7 +454,4 @@ class FiscNet(TestCoupon, BaseTest):
 #     brand = "dataregis"
 #     model = "EP375"
 
-# class SwedaIFS9000I(TestCoupon, BaseTest):
-#     brand = "sweda"
-#     model = "IFS9000I"
 

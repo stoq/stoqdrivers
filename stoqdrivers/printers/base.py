@@ -98,8 +98,7 @@ def get_supported_printers():
         ('elgin', ['KFiscal']),
         ('epson', ['FBII', 'FBIII']),
         ('fiscnet', ['FiscNetECF']),
-        ('perto', ['Pay2023']),
-        ('sweda', ['IFS9000I'])]:
+        ('perto', ['Pay2023'])]:
         result[brand] = []
         for module_name in module_names:
             try:
