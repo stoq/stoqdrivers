@@ -42,7 +42,8 @@ from stoqdrivers.interfaces import ICouponPrinter
 from stoqdrivers.exceptions import (DriverError, PrinterError, CommandError,
                                     CommandParametersError, OutofPaperError,
                                     CancelItemError, AlmostOutofPaper,
-                                    ItemAdditionError)
+                                    ItemAdditionError, CouponOpenError,
+                                    CouponNotOpenError)
 from stoqdrivers.enum import TaxType, UnitType
 #from stoqdrivers.printers.capabilities import Capability
 from stoqdrivers.printers.base import BaseDriverConstants
@@ -104,6 +105,9 @@ class Reply(object):
         '0304': (OutofPaperError(_("Out of paper."))),
         '0305': (AlmostOutofPaper(_("Almost out of paper."))),
 
+        '0801': (CommandError(_("Invalid command with closed "
+                                "fiscal journey."))),
+
         '090C': (DriverError(_("Payment method not defined."))),
         '090F': (ItemAdditionError(_("Tax not found."))),
         '0910': (ItemAdditionError(_("Invalid tax."))),
@@ -111,6 +115,7 @@ class Reply(object):
         '0A12': (CancelItemError(_("It was not possible cancel the last "
                                    "fiscal coupon."))),
         '0A15': (PrinterError(_("Requires CDC cancellation."))),
+        '0A16': (CancelItemError(_("Invalid item number in fiscal coupon"))),
         '0E0A': (PrinterError(_("Last non-fiscal coupon not found."))),
         '0E0B': (PrinterError(_("Payment method not found."))),
     }
@@ -459,6 +464,9 @@ class FBII(SerialBase):
         return checked_coupon != CLOSED_COUPON
 
     def coupon_open(self):
+        coupon_status = self._get_coupon_status()
+        if coupon_status == OPENED_FISCAL_COUPON:
+            raise CouponOpenError(_("Coupon already open"))
         self._send_command('0A01', '0000', '', '')
 
     def _cancel_fiscal_coupon(self):
@@ -478,6 +486,10 @@ class FBII(SerialBase):
                         quantity=Decimal("1.0"), unit=UnitType.EMPTY,
                         discount=Decimal("0.0"), markup=Decimal("0.0"),
                         unit_desc=""):
+        coupon_status = self._get_coupon_status()
+        if coupon_status != OPENED_FISCAL_COUPON:
+            raise CouponNotOpenError(_("Coupon is not open"))
+
         if unit == UnitType.CUSTOM:
             unit = unit_desc
         else:

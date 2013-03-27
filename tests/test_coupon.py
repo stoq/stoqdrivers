@@ -41,6 +41,7 @@ from stoqdrivers.exceptions import (CouponOpenError,
                                     CouponNotOpenError)
 from stoqdrivers.interfaces import ISerialPort
 from stoqdrivers.printers.fiscal import FiscalPrinter
+from stoqdrivers.serialbase import SerialPort
 
 
 # The directory where tests data will be stored
@@ -183,16 +184,15 @@ class BaseTest(unittest.TestCase):
     def setUp(self):
         filename = self._get_recorder_filename()
         if not os.path.exists(filename):
-            self._device = self.device_class(brand=self.brand,
-                                             model=self.model)
-            # Decorate the port used by device
-            self._port = LogSerialPort(self._device.get_port())
-            self._device.set_port(self._port)
+            # Change this path to the serial port when recreating the tests
+            real_port = SerialPort('/dev/ttyS0')
+            self._port = LogSerialPort(real_port)
         else:
             self._port = PlaybackPort(filename)
-            self._device = self.device_class(brand=self.brand,
-                                             model=self.model,
-                                             port=self._port)
+
+        self._device = self.device_class(brand=self.brand,
+                                         model=self.model,
+                                         port=self._port)
         payments = self._device.get_payment_constants()
         assert len(payments) >= 1
         self._payment_method = payments[0][0]
@@ -404,6 +404,7 @@ class TestCoupon(object):
     def _get_card_payment_receipt(self):
         return self._device.get_payment_receipt_identifier(
                                             'Cartao Credito')
+
     def test_payment_receipt(self):
         payment_id = self._get_card_constant()
         receipt_id = self._get_card_payment_receipt()
@@ -449,6 +450,10 @@ class FiscNet(TestCoupon, BaseTest):
     def _get_card_payment_receipt(self):
         # this driver does not need one.
         return None
+
+class EpsonFBII(TestCoupon, BaseTest):
+    brand = "epson"
+    model = "FBII"
 
 # class DataregisEP375(TestCoupon, BaseTest):
 #     brand = "dataregis"
