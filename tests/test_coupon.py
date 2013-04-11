@@ -397,17 +397,16 @@ class TestCoupon(object):
 
         return None
 
-    def _get_card_constant(self):
+    def get_card_constant(self):
         return self._get_constant(self._device.get_payment_constants(),
-                                  'Cartao Credito')
+                                  u'Cartao Credito')
 
-    def _get_card_payment_receipt(self):
-        return self._device.get_payment_receipt_identifier(
-                                            'Cartao Credito')
+    def get_card_payment_receipt(self):
+        return self._device.get_payment_receipt_identifier(u'Cartao Credito')
 
     def test_payment_receipt(self):
-        payment_id = self._get_card_constant()
-        receipt_id = self._get_card_payment_receipt()
+        payment_id = self.get_card_constant()
+        receipt_id = self.get_card_payment_receipt()
 
         self._open_coupon()
         self._device.add_item(u"987654", u"Monitor LG 775N", Decimal(10),
@@ -424,6 +423,21 @@ class TestCoupon(object):
 class DarumaFS345(TestCoupon, BaseTest):
     brand = 'daruma'
     model = 'FS345'
+
+
+class DarumaFS2100(TestCoupon, BaseTest):
+    brand = 'daruma'
+    model = 'FS2100'
+
+    # Overwrite methods to use accentuation in payment method name.
+    # The fiscal printer used in tests has the payment constants,
+    # registered with accentuation.
+    def get_card_constant(self):
+        return self._get_constant(self._device.get_payment_constants(),
+                                  u"Cartão Crédito")
+
+    def get_card_payment_receipt(self):
+        return self._device.get_payment_receipt_identifier(u"Cartão Crédito")
 
 # XXX: This tests wore not done with a real printer, we used an emulator
 class BematechMP20(TestCoupon, BaseTest):
@@ -443,11 +457,11 @@ class FiscNet(TestCoupon, BaseTest):
     brand = "fiscnet"
     model = "FiscNetECF"
 
-    def _get_card_constant(self):
+    def get_card_constant(self):
         return self._get_constant(self._device.get_payment_constants(),
                                   u'Cartão Crédito')
 
-    def _get_card_payment_receipt(self):
+    def get_card_payment_receipt(self):
         # this driver does not need one.
         return None
 

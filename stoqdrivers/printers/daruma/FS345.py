@@ -554,6 +554,11 @@ class FS345(SerialBase):
         const_letter = 'ABCDEFGHIJKLMNOP'
         for i, char in enumerate(const_letter):
             const = raw[i*21:i*21+21]
+            # Ignore constants that are not registered.
+            if const[2] == '\xff':
+                continue
+
+            const = const.decode(self.coupon_printer_charset)
             constants.append((char, const.strip()))
 
         return constants
@@ -566,7 +571,7 @@ class FS345(SerialBase):
         """
         constants = self._get_bound_receipt_constants()
         for id, name in constants:
-            if str(name) == str(method_name):
+            if name == method_name:
                 return id
 
         raise DriverError(_("Receipt for method %s is not configured") % method_name)

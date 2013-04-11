@@ -1,0 +1,52 @@
+W \x1cR\xc8139\xbd
+R :\xc813932\r\xc5
+W \x1b\xee
+R :                    -Sangria              +Suprimento           +\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      +\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      +\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      +\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      +\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      +\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      +\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      +\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      +\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      +\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      +\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      +\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      +\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      +\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      Cheque               Boleto               Cart\xc4o Cr\xc8dito       Cart\xc4o D\xc8bito        Financeira           Vale Compra          \xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      \xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      \xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      \xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      \xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      \xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      \xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      \xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      \xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      \xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff      NDinheiro         VCheque           VBoleto           VCart\xc4o Cr\xc8dito   VCart\xc4o D\xc8bito    VFinanceira       VVale Compra      V\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff  V\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff  V\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff  V\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff  V\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff  V\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff  V\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff  V\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff  V\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff\xff  \r
+W \x1b\xe7
+R :%A0700B1200C1800D2500e0200F////G////H////I////J////K////L////M////N////O////P////\r
+W \x1d\xff
+R :A1C00C000000\r
+W \x1d\xff
+R :A1C00C000000\r
+W \x1b\xc8
+R :A000537\r
+W \x1cF\xc92100020000000100000000000000000        ABCDEF UNMonitor LG 775N\xff\\
+R :0000001\xc9001000000002000\r\xfc
+W \x1cF\xc92100010000000100000000000000000        987654 UNMonitor LG 775N\xffY
+R :0000001\xc9002000000001000\r\xfc
+W \x1cF\xc92100010000000100000000000000000        123456 TxMonitor LG 775N\xffh
+R :0000001\xc9003000000001000\r\xfd
+W \x1cF\xc92100010000000100020100000000000        123456 UNMonitor LG 775N\xff\\
+R :0000001\xc9004200000001010\r\xf9
+W \x1d\xff
+R :A1C50C010000\r
+W \x1d\xff
+R :A1C50C010000\r
+W \x1d\xff
+R :A1C50C010000\r
+W \x1b\xf11000000000000
+R :000000005010\r
+W \x1d\xff
+R :A1C40C000000\r
+W \x1d\xff
+R :A1C40C000000\r
+W \x1d\xff
+R :A1C40C000000\r
+W \x1b\xf2A000000010000\xff
+R :000000000000\r
+W \x1d\xff
+R :A1C50C010000\r
+W \x1d\xff
+R :A1C50C010000\r
+W \x1d\xff
+R :A1C50C010000\r
+W \x1b\xc9Henrique Romano                                                                     Async                                                                               1234567890                                                                          
+R :\r
+W \x1b\xf3\xff
+R :F000000005010\r
+W \x1b\xf4
+R :E99\r
+W \x1b\xf4
+R :\x1b\xf4000521000537000198000400000000000000010036331500000000010000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000049900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001202007700000000000000000000\r:\x1b\xf4000521000537000198000400000000000000010036331500000000010000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000049900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001202007700000000000000000000\r
+W \x1cF\xc92100010000005000000100000000000        123456 UNMonitor LG Flatron T910B\xffc
+R :1108201\xc9000000000000000\r\xf5
