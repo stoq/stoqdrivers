@@ -25,6 +25,7 @@
 ##              Johan Dahlin           <jdahlin@async.com.br>
 ##
 
+import datetime
 from decimal import Decimal
 import os
 import unittest
@@ -47,6 +48,7 @@ from stoqdrivers.serialbase import SerialPort
 # The directory where tests data will be stored
 RECORDER_DATA_DIR = "data"
 
+
 class LogSerialPort:
     """ A decorator for the SerialPort object expected by the driver to test,
     responsible for log all the bytes read/written.
@@ -64,6 +66,15 @@ class LogSerialPort:
 
     def getDSR(self):
         return self._port.getDSR()
+
+    def setParity(self, parity):
+        return self._port.setParity(parity)
+
+    def setTimeout(self, read_timeout):
+        return self._port.setTimeout(read_timeout)
+
+    def setWriteTimeout(self, write_timeout):
+        return self._port.setWriteTimeout(write_timeout)
 
     def read(self, n_bytes=1):
         data = self._port.read(n_bytes)
@@ -87,6 +98,7 @@ class LogSerialPort:
         for type, line in self._bytes:
             fd.write("%s %s\n" % (type, repr(line)[1:-1]))
         fd.close()
+
 
 class PlaybackPort:
     implements(ISerialPort)
@@ -171,6 +183,7 @@ class PlaybackPort:
                                 % (datafile, n + 1, line[0]))
         fd.close()
 
+
 class BaseTest(unittest.TestCase):
     def __init__(self, test_name):
         self._test_name = test_name
@@ -184,8 +197,10 @@ class BaseTest(unittest.TestCase):
     def setUp(self):
         filename = self._get_recorder_filename()
         if not os.path.exists(filename):
-            # Change this path to the serial port when recreating the tests
+            # Change this path to the serial port and set the baudrate used by
+            # fiscal printer when recreating the tests.
             real_port = SerialPort('/dev/ttyS0')
+            real_port.setBaudrate(9600)
             self._port = LogSerialPort(real_port)
         else:
             self._port = PlaybackPort(filename)
@@ -209,6 +224,7 @@ class BaseTest(unittest.TestCase):
         filename = "%s-%s-%s.txt" % (self.brand, self.model, test_name)
         return os.path.join(testdir, RECORDER_DATA_DIR, filename)
 
+
 class TestCoupon(object):
     """ Test a coupon creation """
     device_class = FiscalPrinter
@@ -218,7 +234,8 @@ class TestCoupon(object):
     #
 
     def _open_coupon(self):
-        self._device.identify_customer("Henrique Romano", "Async", "1234567890")
+        self._device.identify_customer("Henrique Romano", "Async",
+                                       "1234567890")
         while True:
             try:
                 self._device.open()
@@ -243,7 +260,8 @@ class TestCoupon(object):
         # 2. Specify unit_desc with unit different from UnitType.CUSTOM
         self.failUnlessRaises(ValueError, self._device.add_item, u"123456",
                               u"Monitor LG Flatron T910B", Decimal("500"),
-                              self._taxnone, unit=UnitType.LITERS, unit_desc="XX")
+                              self._taxnone, unit=UnitType.LITERS,
+                              unit_desc="XX")
 
         # 3. Specify unit as UnitType.CUSTOM and not supply a unit_desc
         self.failUnlessRaises(ValueError, self._device.add_item, u"123456",
@@ -253,7 +271,8 @@ class TestCoupon(object):
         # 4. Specify unit as UnitType.CUSTOM and unit_desc greater than 2 chars
         self.failUnlessRaises(ValueError, self._device.add_item, u"123456",
                               u"Monitor LG Flatron T910B", Decimal("500"),
-                              self._taxnone, unit=UnitType.CUSTOM, unit_desc="XXXX")
+                              self._taxnone, unit=UnitType.CUSTOM,
+                              unit_desc="XXXX")
 
         # 5. Add item without price
         self.failUnlessRaises(InvalidValue, self._device.add_item, u"123456",
@@ -293,7 +312,8 @@ class TestCoupon(object):
         if self.brand != 'bematech':
             self.failUnlessRaises(CouponNotOpenError, self._device.add_item,
                                   u"123456", u"Monitor LG Flatron T910B",
-                                  Decimal("500"), self._taxnone, discount=Decimal("1"))
+                                  Decimal("500"), self._taxnone,
+                                  discount=Decimal("1"))
 
     def test_cancel_item(self):
         self._open_coupon()
@@ -416,9 +436,64 @@ class TestCoupon(object):
         self._device.add_payment(payment_id, Decimal(10))
         coo = self._device.close()
 
-        self._device.payment_receipt_open(receipt_id, coo, payment_id, Decimal(10))
+        self._device.payment_receipt_open(receipt_id, coo, payment_id,
+                                          Decimal(10))
         self._device.payment_receipt_print('Stoq payment receipt')
         self._device.payment_receipt_close()
+
+    def test_summarize(self):
+        self._device.summarize()
+
+    def test_has_open_coupon(self):
+        self._open_coupon()
+        has_open_coupon = self._device.has_open_coupon()
+        self.assertEquals(has_open_coupon, True)
+        self._device.cancel()
+        has_open_coupon = self._device.has_open_coupon()
+        self.assertEquals(has_open_coupon, False)
+
+    def test_cancel_last_coupon(self):
+        # Cancel non fiscal coupon.
+        # Bematech MP20 does not support this
+        if self.model != 'MP20':
+            self._device.till_add_cash(Decimal("10"))
+            self._device.cancel_last_coupon()
+
+        # Cancel fiscal coupon.
+        self._open_coupon()
+        self._device.add_item(u"987654", u"Monitor LG 775N", Decimal("10"),
+                              self._taxnone, items_quantity=Decimal("1"))
+        self._device.totalize()
+        self._device.add_payment(self._payment_method, Decimal("100"))
+        self._device.close()
+        self._device.cancel()
+
+    def test_gerencial_report(self):
+        self._device.gerencial_report_open()
+        # Send a big report to test the line breaks and limit of columns number
+        self._device.gerencial_report_print("Teste Relatorio Gerencial\n"
+                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n\n"
+                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n\n"
+                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n\n"
+                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n\n"
+                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n\n"
+                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n"
+                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n"
+                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+        self._device.gerencial_report_close()
+
+    def test_read_memory(self):
+        start = datetime.date(year=2013, month=01, day=01)
+        end = datetime.date(year=2013, month=01, day=30)
+        self._device.till_read_memory(start, end)
+
+    def test_read_memory_by_reductions(self):
+        self._device.till_read_memory_by_reductions(start=1, end=10)
+
+    def test_sintegra(self):
+        self._device.get_sintegra()
+
 
 class DarumaFS345(TestCoupon, BaseTest):
     brand = 'daruma'
@@ -439,19 +514,23 @@ class DarumaFS2100(TestCoupon, BaseTest):
     def get_card_payment_receipt(self):
         return self._device.get_payment_receipt_identifier(u"Cartão Crédito")
 
+
 # XXX: This tests wore not done with a real printer, we used an emulator
 class BematechMP20(TestCoupon, BaseTest):
     brand = 'bematech'
     model = 'MP20'
 
+
 class BematechMP25FI(TestCoupon, BaseTest):
     brand = 'bematech'
     model = 'MP25'
+
 
 # XXX: This tests wore not done with a real printer, we used an emulator
 class BematechMP2100(TestCoupon, BaseTest):
     brand = 'bematech'
     model = 'MP2100'
+
 
 class FiscNet(TestCoupon, BaseTest):
     brand = "fiscnet"
@@ -465,12 +544,12 @@ class FiscNet(TestCoupon, BaseTest):
         # this driver does not need one.
         return None
 
+
 class EpsonFBII(TestCoupon, BaseTest):
     brand = "epson"
     model = "FBII"
 
+
 # class DataregisEP375(TestCoupon, BaseTest):
 #     brand = "dataregis"
 #     model = "EP375"
-
-
