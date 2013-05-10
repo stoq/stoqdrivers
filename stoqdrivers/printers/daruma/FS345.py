@@ -516,13 +516,7 @@ class FS345(SerialBase):
                               "%- 84s%- 84s%- 84s" % (customer_name,
                                                       customer_address,
                                                       customer_document))
-        LINE_LEN = 48
-        msg_len = len(message)
-        if msg_len > LINE_LEN:
-            l = []
-            for i in range(0, msg_len, LINE_LEN):
-                l.append(message[i:i+LINE_LEN])
-            message = '\n'.join(l)
+        message = message.encode(self.coupon_printer_charset)
         try:
             self.send_command(CMD_CLOSE_COUPON, message + '\xff')
         except DriverError:

@@ -554,6 +554,9 @@ class FBII(SerialBase):
                                self._customer_address[41:79])
             self._reset()
 
+        if message:
+            self._print_promotional_message(message)
+
         reply = self._send_command('0A06', '0001')
         self._send_command('0702', '0000')
         return int(reply.fields[0])
@@ -587,6 +590,17 @@ class FBII(SerialBase):
         """
         line = line.strip('\r')
         self._send_command('0E02', '0000', line)
+
+    def _print_promotional_message(self, message):
+        msg = []
+        # Epson accepts only 56 chars per line. Lets truncate each line
+        for line in message.split('\n'):
+            msg.append(line[:56])
+
+        # We must send 8 lines to fiscal printer, even if they are empty.
+        while len(msg) < 8:
+            msg.append('')
+        self._send_command('0A22', '0000', *msg[:8])
 
     #
     #   General information

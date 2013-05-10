@@ -1,19 +1,19 @@
 W {0;LeMeioPagamento;CodMeioPagamentoProgram=0;}
-R {0;0;CodMeioPagamentoProgram=0 DescricaoMeioPagamento="Cheque" NomeMeioPagamento="Cheque" PermiteVinculado=N;}
+R {0;8014;NomeErro="ErroCMDFormaPagamentoIndefinida" Circunstancia="Meio de pagamento nao carregado";}
 W {0;LeMeioPagamento;CodMeioPagamentoProgram=1;}
-R {0;0;CodMeioPagamentoProgram=1 DescricaoMeioPagamento="Boleto" NomeMeioPagamento="Boleto" PermiteVinculado=N;}
+R {0;0;CodMeioPagamentoProgram=1 DescricaoMeioPagamento="" NomeMeioPagamento="DINHEIRO" PermiteVinculado=Y;}
 W {0;LeMeioPagamento;CodMeioPagamentoProgram=2;}
-R {0;0;CodMeioPagamentoProgram=2 DescricaoMeioPagamento="Cart\xc6o credito" NomeMeioPagamento="Cart\xc6o credito" PermiteVinculado=N;}
+R {0;0;CodMeioPagamentoProgram=2 DescricaoMeioPagamento="" NomeMeioPagamento="Cartao Credito" PermiteVinculado=Y;}
 W {0;LeMeioPagamento;CodMeioPagamentoProgram=3;}
-R {0;0;CodMeioPagamentoProgram=3 DescricaoMeioPagamento="Cart\xc6o debito" NomeMeioPagamento="Cart\xc6o debito" PermiteVinculado=N;}
+R {0;0;CodMeioPagamentoProgram=3 DescricaoMeioPagamento="" NomeMeioPagamento="Cartao Debito" PermiteVinculado=Y;}
 W {0;LeMeioPagamento;CodMeioPagamentoProgram=4;}
-R {0;0;CodMeioPagamentoProgram=4 DescricaoMeioPagamento="Financeira" NomeMeioPagamento="Financeira" PermiteVinculado=N;}
+R {0;0;CodMeioPagamentoProgram=4 DescricaoMeioPagamento="" NomeMeioPagamento="Cheque" PermiteVinculado=Y;}
 W {0;LeMeioPagamento;CodMeioPagamentoProgram=5;}
-R {0;0;CodMeioPagamentoProgram=5 DescricaoMeioPagamento="Vale compra" NomeMeioPagamento="Vale compra" PermiteVinculado=N;}
+R {0;0;CodMeioPagamentoProgram=5 DescricaoMeioPagamento="" NomeMeioPagamento="Boleto" PermiteVinculado=Y;}
 W {0;LeMeioPagamento;CodMeioPagamentoProgram=6;}
-R {0;8014;NomeErro="ErroCMDFormaPagamentoIndefinida" Circunstancia="Meio de pagamento nao carregado";}
+R {0;0;CodMeioPagamentoProgram=6 DescricaoMeioPagamento="" NomeMeioPagamento="Financeira" PermiteVinculado=Y;}
 W {0;LeMeioPagamento;CodMeioPagamentoProgram=7;}
-R {0;8014;NomeErro="ErroCMDFormaPagamentoIndefinida" Circunstancia="Meio de pagamento nao carregado";}
+R {0;0;CodMeioPagamentoProgram=7 DescricaoMeioPagamento="" NomeMeioPagamento="Vale Compra" PermiteVinculado=Y;}
 W {0;LeMeioPagamento;CodMeioPagamentoProgram=8;}
 R {0;8014;NomeErro="ErroCMDFormaPagamentoIndefinida" Circunstancia="Meio de pagamento nao carregado";}
 W {0;LeMeioPagamento;CodMeioPagamentoProgram=9;}
@@ -31,17 +31,17 @@ R {0;8014;NomeErro="ErroCMDFormaPagamentoIndefinida" Circunstancia="Meio de paga
 W {0;LeMeioPagamento;CodMeioPagamentoProgram=15;}
 R {0;8014;NomeErro="ErroCMDFormaPagamentoIndefinida" Circunstancia="Meio de pagamento invalido (fora da faixa).";}
 W {0;LeAliquota;CodAliquotaProgramavel=0;}
-R {0;0;AliquotaICMS=Y CodAliquotaProgramavel=0 DescricaoAliquota="17.00%" PercentualAliquota=17,00;}
+R {0;8005;NomeErro="ErroCMDAliquotaNaoCarregada" Circunstancia="Aliquota nao carregada";}
 W {0;LeAliquota;CodAliquotaProgramavel=1;}
-R {0;0;AliquotaICMS=Y CodAliquotaProgramavel=1 DescricaoAliquota="12.00%" PercentualAliquota=12,00;}
+R {0;0;AliquotaICMS=Y CodAliquotaProgramavel=1 DescricaoAliquota="" PercentualAliquota=7,00;}
 W {0;LeAliquota;CodAliquotaProgramavel=2;}
-R {0;0;AliquotaICMS=Y CodAliquotaProgramavel=2 DescricaoAliquota="25.00%" PercentualAliquota=25,00;}
+R {0;0;AliquotaICMS=Y CodAliquotaProgramavel=2 DescricaoAliquota="" PercentualAliquota=12,00;}
 W {0;LeAliquota;CodAliquotaProgramavel=3;}
-R {0;0;AliquotaICMS=Y CodAliquotaProgramavel=3 DescricaoAliquota="8.00%" PercentualAliquota=8,00;}
+R {0;0;AliquotaICMS=Y CodAliquotaProgramavel=3 DescricaoAliquota="" PercentualAliquota=18,00;}
 W {0;LeAliquota;CodAliquotaProgramavel=4;}
-R {0;0;AliquotaICMS=Y CodAliquotaProgramavel=4 DescricaoAliquota="5.00%" PercentualAliquota=5,00;}
+R {0;0;AliquotaICMS=Y CodAliquotaProgramavel=4 DescricaoAliquota="" PercentualAliquota=25,00;}
 W {0;LeAliquota;CodAliquotaProgramavel=5;}
-R {0;0;AliquotaICMS=N CodAliquotaProgramavel=5 DescricaoAliquota="3.00%" PercentualAliquota=3,00;}
+R {0;0;AliquotaICMS=N CodAliquotaProgramavel=5 DescricaoAliquota="" PercentualAliquota=2,00;}
 W {0;LeAliquota;CodAliquotaProgramavel=6;}
 R {0;8005;NomeErro="ErroCMDAliquotaNaoCarregada" Circunstancia="Aliquota nao carregada";}
 W {0;LeAliquota;CodAliquotaProgramavel=7;}
@@ -86,7 +86,7 @@ W {0;LeMoeda;NomeDadoMonetario="TotalDocValorPago";}
 R {0;0;ValorMoeda=105,0000;}
 W {0;LeMoeda;NomeDadoMonetario="TotalDocLiquido";}
 R {0;0;ValorMoeda=10,0000;}
-W {0;EncerraDocumento;TextoPromocional="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";}
+W {0;EncerraDocumento;TextoPromocional="\xc7\xc6\xb5\xa0\xb7\x85\xb6\x83\x90\x82\xd2\x88\xd6\xa1\xe5\xe4\xe0\xa2\xe2\x93\xe9\xa3\x80\x87!@#$%^&*\xa6\xa7\nABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\nABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";}
 R {0;0;;}
 W {0;LeInteiro;NomeInteiro="COO";}
-R {0;0;ValorInteiro=292;}
+R {0;0;ValorInteiro=83;}

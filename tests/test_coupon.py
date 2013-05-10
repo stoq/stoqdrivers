@@ -384,7 +384,8 @@ class TestCoupon(object):
 
         self._device.add_payment(self._payment_method, Decimal("100"))
         # 4. Close the coupon with a BIG message
-        self._device.close(u"ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+        self._device.close(u"ÃãÁáÀàÂâÉéÊêÍíÕõÓóÔôÚúÇç!@#$%^&*ªº\n"
+                           "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n"
                            "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
                            "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
                            "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"

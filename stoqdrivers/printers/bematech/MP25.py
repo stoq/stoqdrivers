@@ -97,6 +97,7 @@ ACK = 6
 STX = 2
 
 RETRIES_BEFORE_TIMEOUT = 5
+CHARS_LIMIT = 492
 
 # Page 51
 class MP25Registers(object):
@@ -535,9 +536,7 @@ class MP25(SerialBase):
         payments added and totalized is called. It needs to be possible to open
         new coupons after this is called.
         """
-        # FIXME This will break the drivers recorded tests. Record new ones.
-        #self._send_command(CMD_COUPON_CLOSE, message)
-        self._send_command(CMD_COUPON_CLOSE)
+        self._send_command(CMD_COUPON_CLOSE, message[:CHARS_LIMIT])
         self._reset()
         return self._get_coupon_number()
 
