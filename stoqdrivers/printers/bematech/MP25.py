@@ -98,6 +98,8 @@ STX = 2
 
 RETRIES_BEFORE_TIMEOUT = 5
 CHARS_LIMIT = 492
+ALLOW_CANCEL_FISCAL_COUPON = 32
+
 
 # Page 51
 class MP25Registers(object):
@@ -529,7 +531,11 @@ class MP25(SerialBase):
 
     def cancel_last_coupon(self):
         """Cancel the last non fiscal coupon or the last sale."""
-        self._send_command(CMD_CANCEL_LAST)
+        value = ord(self._read_register(self.registers.FISCAL_FLAGS))
+        if value & ALLOW_CANCEL_FISCAL_COUPON:
+            self._send_command(CMD_COUPON_CANCEL)
+        else:
+            self._send_command(CMD_CANCEL_LAST)
 
     def coupon_close(self, message=""):
         """  This can only be called when the coupon is open, has items added,

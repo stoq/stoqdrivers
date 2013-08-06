@@ -467,7 +467,7 @@ class TestCoupon(object):
         self._device.totalize()
         self._device.add_payment(self._payment_method, Decimal("100"))
         self._device.close()
-        self._device.cancel()
+        self._device.cancel_last_coupon()
 
     def test_gerencial_report(self):
         self._device.gerencial_report_open()
