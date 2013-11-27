@@ -5,7 +5,7 @@ R :                    -Sangria              +Suprimento           +\xff\xff\xff
 W \x1b\xe7
 R :%A0700B1200C1800D2500e0200F////G////H////I////J////K////L////M////N////O////P////\r
 W \x1b\xd3
-R :A000565\r
+R :A000829\r
 W \x1b\xd5Teste Relatorio Gerencial\xff
 R :\r
 W \x1b\xd5ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\xff

@@ -28,7 +28,6 @@ Epson FB II ECF driver
 """
 
 import datetime
-#import time
 import struct
 from decimal import Decimal
 
@@ -45,7 +44,6 @@ from stoqdrivers.exceptions import (DriverError, PrinterError, CommandError,
                                     ItemAdditionError, CouponOpenError,
                                     CouponNotOpenError)
 from stoqdrivers.enum import TaxType, UnitType
-#from stoqdrivers.printers.capabilities import Capability
 from stoqdrivers.printers.base import BaseDriverConstants
 from stoqdrivers.translation import stoqdrivers_gettext
 
@@ -497,10 +495,25 @@ class FBII(SerialBase):
         qtd = int(quantity * self._decimals_quantity)
         value = int(price * self._decimals_price)
         st = taxcode
+        # Register the sale item
         reply = self._send_command('0A02', '0000', code, description,
                                    str(qtd), unit, str(value), st)
         id = reply.fields[0]
+        if discount:
+            self.apply_discount(id, discount)
+        elif markup:
+            self.apply_markup(id, markup)
         return int(id)
+
+    def apply_discount(self, id, discount):
+        value = int(discount * Decimal('1e2'))
+        # Register the discount on the item
+        self._send_command('0A04', '0004', str(value))
+
+    def apply_markup(self, id, markup):
+        value = int(markup * Decimal('1e2'))
+        # Register the markup on the item
+        self._send_command('0A04', '0005', str(value))
 
     def coupon_cancel_item(self, item_id):
         self._send_command('0A18', '0004', str(item_id))

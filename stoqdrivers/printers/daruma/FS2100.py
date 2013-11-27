@@ -79,13 +79,14 @@ class FS2100(FS345):
                         discount=Decimal("0.0"),
                         surcharge=Decimal("0.0"), unit_desc=""):
         if surcharge:
-            d = 2
-            E = surcharge
+            d = 3
+            # Translating to human beings: surcharge * 100 or converting to cents
+            E = int(surcharge * Decimal('1e2'))
         else:
-            d = 0
-            E = discount
+            d = 1
+            # Translating to human beings: discount * 100 or converting to cents
+            E = int(discount * Decimal('1e2'))
 
-        E = int(E)
         price = price
         quantity = quantity
 
@@ -99,22 +100,20 @@ class FS2100(FS345):
             unit = "%2s" % unit_desc[:2] # units must be 2 byte size strings
 
         # XXX: We need test correctly if the price's calcule is right (we
-        # don't can do it right now since the manual isn't so clean).
+        # don't can do it right now since the manual isn't so clear).
         data = ('%02s' # Tributary situation
                 '%07d' # Quantity
                 '%08d' # Unitary price
                 '%d'   # 0=Discount(%) 1=Discount($) 2=Surcharge(%) 3=Surcharge($)
-                '%04d' # Discount/Surcharge value
-                '%07d' # *Padding* (since we have discount/surcharge only in %)
+                '%011d'# Discount/Surcharge value
                 '%02d' # Description size
                 '%14s' # Code
                 '%3s'  # Unit of measure
                 '%s'   # Product descriptio?!?
                 '\xff' # EOF
                 % (taxcode, int(quantity * self._decimals_qtd),
-                   int(price * self._decimals_price), d,
-                   int(E * Decimal('1e2')),
-                   0, desc_size, code, unit, description[:233]))
+                   int(price * self._decimals_price), d, E,
+                   desc_size, code, unit, description[:233]))
 
         value = self.send_new_command('F', CMD_ADD_ITEM, data)
         return int(value[3:6])

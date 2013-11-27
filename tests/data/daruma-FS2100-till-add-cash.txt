@@ -5,4 +5,4 @@ R :                    -Sangria              +Suprimento           +\xff\xff\xff
 W \x1b\xe7
 R :%A0700B1200C1800D2500e0200F////G////H////I////J////K////L////M////N////O////P////\r
 W \x1cF\xec00000001000\xffx
-R :0000041\xec000545\r\xea
+R :0000040\xec000842\r\xe1

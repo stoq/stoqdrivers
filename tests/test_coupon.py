@@ -199,7 +199,7 @@ class BaseTest(unittest.TestCase):
         if not os.path.exists(filename):
             # Change this path to the serial port and set the baudrate used by
             # fiscal printer when recreating the tests.
-            real_port = SerialPort('/dev/ttyS0')
+            real_port = SerialPort('/tmp/stoq-ecf')
             real_port.setBaudrate(9600)
             self._port = LogSerialPort(real_port)
         else:
@@ -546,9 +546,9 @@ class FiscNet(TestCoupon, BaseTest):
         return None
 
 
-class EpsonFBII(TestCoupon, BaseTest):
+class EpsonFBIII(TestCoupon, BaseTest):
     brand = "epson"
-    model = "FBII"
+    model = "FBIII"
 
 
 # class DataregisEP375(TestCoupon, BaseTest):

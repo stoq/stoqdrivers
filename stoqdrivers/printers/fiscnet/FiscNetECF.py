@@ -176,7 +176,6 @@ class FiscNetECF(SerialBase):
             start, end = match.span(0)
             return match.string[:start] + match.string[end:]
 
-        orig_text = text
         result = {}
         while text:
             m = _RETVAL_TOKEN_RE.search(text)
@@ -237,7 +236,6 @@ class FiscNetECF(SerialBase):
         retdict = self._parse_return_value(sections[2])
         errorcode = int(sections[1])
         if errorcode != 0:
-            errorname = retdict['NomeErro']
             errordesc = retdict['Circunstancia']
             try:
                 exception = self.errors_dict[errorcode]
@@ -549,6 +547,12 @@ class FiscNetECF(SerialBase):
                            Unidade=unit,
                            PrecoUnitario=price,
                            Quantidade=quantity)
+
+        if discount:
+            self._send_command('AcresceItemFiscal',
+                                Cancelar=False,
+                                ValorAcrescimo=-discount)
+
         return self._get_last_item_id()
 
     def coupon_cancel_item(self, item_id):

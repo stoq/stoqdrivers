@@ -5,18 +5,18 @@ R :                    -Sangria              +Suprimento           +\xff\xff\xff
 W \x1b\xe7
 R :%A0700B1200C1800D2500e0200F////G////H////I////J////K////L////M////N////O////P////\r
 W \x1d\xff
-R :A1C00C000000\r
+R :A0C00C000000\r
 W \x1d\xff
-R :A1C00C000000\r
+R :A0C00C000000\r
 W \x1b\xc8
-R :A000539\r
-W \x1cF\xc92100010000000100000000000000000        987654 UNMonitor LG 775N\xffY
-R :0000001\xc9001000000001000\r\xff
+R :A000824\r
+W \x1cF\xc92100010000000100010000000000000        987654 UNMonitor LG 775N\xffX
+R :0000000\xc9001100000001000\r\xff
 W \x1d\xff
-R :A1C50C010000\r
+R :A0C50C010000\r
 W \x1d\xff
-R :A1C50C010000\r
+R :A0C50C010000\r
 W \x1d\xff
-R :A1C50C010000\r
+R :A0C50C010000\r
 W \x1b\xce
-R :C000539\r
+R :C000824\r

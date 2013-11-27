@@ -28,7 +28,7 @@
 import datetime
 from decimal import Decimal
 
-from kiwi.argcheck import number, percent
+from kiwi.argcheck import number
 from kiwi.currency import currency
 from kiwi.log import Logger
 
@@ -145,6 +145,11 @@ class FiscalPrinter(BasePrinter):
             raise ValueError("unit description must be 2-byte sized string")
         if not item_price:
             raise InvalidValue("The item value must be greater than zero")
+
+        if surcharge < 0:
+            raise ValueError('Surcharge cannot be negative')
+        if discount < 0:
+            raise ValueError('Discount cannot be negative')
 
         return self._driver.coupon_add_item(
             self._format_text(item_code), self._format_text(item_description),

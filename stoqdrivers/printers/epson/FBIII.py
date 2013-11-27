@@ -26,12 +26,26 @@
 """
 Epson FBIII ECF driver
 """
+from decimal import Decimal
 
+from stoqdrivers.enum import UnitType
+from stoqdrivers.exceptions import CouponNotOpenError
 from stoqdrivers.printers.epson.FBII import FBII
+from stoqdrivers.translation import stoqdrivers_gettext as _
+
+# Coupons status
+CLOSED_COUPON = '0000'
+OPENED_FISCAL_COUPON = '0001'
+OPENED_NON_FISCAL_COUPON = '1000'
 
 
 class FBIII(FBII):
     model_name = "Epson FBIII"
 
-    def __init__(self, port, consts=None):
-        FBII.__init__(self, port, consts)
+    def apply_discount(self, id, discount):
+        value = int(discount * Decimal('1e2'))
+        self._send_command('0A07', '0010', id, str(value))
+
+    def apply_markup(self, id, markup):
+        value = int(markup * Decimal('1e2'))
+        self._send_command('0A07', '0011', id, str(value))
