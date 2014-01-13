@@ -1,0 +1,8 @@
+[main]
+host = https://www.transifex.com
+
+[stoqdrivers.stoqdriverspot]
+file_filter = po/<lang>.po
+source_file = po/stoqdrivers.pot
+source_lang = en
+
