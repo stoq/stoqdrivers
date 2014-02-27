@@ -2,20 +2,22 @@ Source: stoqdrivers
 Section: python
 Priority: optional
 Maintainer: Ronaldo Francisco Maia <romaia@async.com.br>
-Build-Depends: debhelper (>= 5.0.32), cdbs, python-dev, python-support
+Build-Depends: debhelper (>= 8.0.0), python-all (>= 2.6), python-setuptools
 Build-Depends-Indep: python-zope.interface (>= 3.5.2)|python-zopeinterface (>= 3.2.1), python-kiwi (>= 1.9.26), python-serial (>= 2.2)
-Standards-Version: 3.8.3
+Homepage: http://www.stoq.com.br
+Vcs-Git: https://github.com/stoq/stoqdrivers.git
+Vcs-Browser: https://github.com/stoq/stoqdrivers/
+Standards-Version: 3.9.3
+X-Python-Version: >= 2.6
 
 Package: stoqdrivers
 Architecture: all
-Depends: ${misc:Depends}, python, ${shlibs:Depends}, python-zope.interface (>= 3.5.2)|python-zopeinterface (>= 3.2.1), python-serial (>= 2.2), python-kiwi (>= 1.9.27)
+Depends: ${misc:Depends}, ${python:Depends}
+Homepage: http://www.stoq.com.br
 Description: Python fiscal printer (ECF) drivers
  This package provices device drivers
  for fiscal printers, ECF (Emissor de Coupon Fiscal)
- written in Python. Supports printers from Bematech,
- Daruma, Dataregis, Perto, Sweda and the generic
- FiscNET protocol.
+ written in Python.
  .
- Homepage: http://www.stoq.com.br
-
-
+ Supports printers from Bematech, Daruma, Dataregis,
+ Perto, Sweda and the generic FiscNET protocol.

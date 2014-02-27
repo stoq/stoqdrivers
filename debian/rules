@@ -1,14 +1,10 @@
 #!/usr/bin/make -f
 
-DEB_PYTHON_SYSTEM := pysupport
+# For reference, see:
+#   https://wiki.debian.org/Python/Packaging
+#   https://wiki.debian.org/Python/LibraryStyleGuide
 
-include /usr/share/cdbs/1/rules/buildcore.mk
-include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/class/python-distutils.mk
-include /usr/share/cdbs/1/rules/simple-patchsys.mk
+%:
+	dh $@ --with python2 --buildsystem=python_distutils
 
-DEB_COMPRESS_EXCLUDE += .py
-DEB_PYTHON_INSTALL_ARGS_ALL += --single-version-externally-managed
 
-clean::
-	-find . -name \*.mo -exec rm {} \;
