@@ -1,8 +1,8 @@
-VERSION=$(shell egrep ^__version__ stoqdrivers/__init__.py|perl -pe 's/[\(\)]/\"/g'|perl -pe "s/, /./g"|cut -d\" -f2)
 PACKAGE=stoqdrivers
+TEST_PACKAGES=$(PACKAGE) tests
 WEBDOC_DIR=/mondo/htdocs/stoq.com.br/doc/devel
-TESTDLDIR=/mondo/htdocs/stoq.com.br/download/test
-TARBALL=$(PACKAGE)-$(VERSION).tar.gz
+# FIXME: This probably should be on utils.mk
+TESTS_RUNNER=nosetests --nocapture --nologcapture --verbose --detailed-errors
 
 stoqdrivers.pickle:
 	pydoctor --project-name="Stoqdrivers" \
@@ -20,6 +20,16 @@ web: apidocs
 	mv $(WEBDOC_DIR)/stoqdrivers-tmp $(WEBDOC_DIR)/stoqdrivers
 	cp stoqdrivers.pickle $(WEBDOC_DIR)/stoqdrivers
 
-include async.mk
+check: check-source-all
+	@rm -f .noseids
+	$(TESTS_RUNNER) --failed $(TEST_PACKAGES)
 
+check-failed:
+	$(TESTS_RUNNER) --failed $(TEST_PACKAGES)
+
+coverage: check-source-all
+	$(TESTS_RUNNER) --with-xcoverage --with-xunit
+	                --cover-package=$(PACKAGE) --cover-erase $(TEST_PACKAGES)
+
+include utils/utils.mk
 .PHONY: clean stoqdrivers.pickle

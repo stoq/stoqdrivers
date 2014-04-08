@@ -184,7 +184,7 @@ class PlaybackPort:
         fd.close()
 
 
-class BaseTest(unittest.TestCase):
+class _BaseTest(unittest.TestCase):
     def __init__(self, test_name):
         self._test_name = test_name
         unittest.TestCase.__init__(self, test_name)
@@ -225,7 +225,7 @@ class BaseTest(unittest.TestCase):
         return os.path.join(testdir, RECORDER_DATA_DIR, filename)
 
 
-class TestCoupon(object):
+class _TestCoupon(object):
     """ Test a coupon creation """
     device_class = FiscalPrinter
 
@@ -496,12 +496,12 @@ class TestCoupon(object):
         self._device.get_sintegra()
 
 
-class DarumaFS345(TestCoupon, BaseTest):
+class DarumaFS345(_TestCoupon, _BaseTest):
     brand = 'daruma'
     model = 'FS345'
 
 
-class DarumaFS2100(TestCoupon, BaseTest):
+class DarumaFS2100(_TestCoupon, _BaseTest):
     brand = 'daruma'
     model = 'FS2100'
 
@@ -517,23 +517,23 @@ class DarumaFS2100(TestCoupon, BaseTest):
 
 
 # XXX: This tests wore not done with a real printer, we used an emulator
-class BematechMP20(TestCoupon, BaseTest):
+class BematechMP20(_TestCoupon, _BaseTest):
     brand = 'bematech'
     model = 'MP20'
 
 
-class BematechMP25FI(TestCoupon, BaseTest):
+class BematechMP25FI(_TestCoupon, _BaseTest):
     brand = 'bematech'
     model = 'MP25'
 
 
 # XXX: This tests wore not done with a real printer, we used an emulator
-class BematechMP2100(TestCoupon, BaseTest):
+class BematechMP2100(_TestCoupon, _BaseTest):
     brand = 'bematech'
     model = 'MP2100'
 
 
-class FiscNet(TestCoupon, BaseTest):
+class FiscNet(_TestCoupon, _BaseTest):
     brand = "fiscnet"
     model = "FiscNetECF"
 
@@ -546,11 +546,11 @@ class FiscNet(TestCoupon, BaseTest):
         return None
 
 
-class EpsonFBIII(TestCoupon, BaseTest):
+class EpsonFBIII(_TestCoupon, _BaseTest):
     brand = "epson"
     model = "FBIII"
 
 
-# class DataregisEP375(TestCoupon, BaseTest):
+# class DataregisEP375(_TestCoupon, _BaseTest):
 #     brand = "dataregis"
 #     model = "EP375"
