@@ -331,7 +331,7 @@ class Simple(object):
         elif self.is_coupon_totalized:
             raise CancelItemError(_("The coupon is already totalized, "
                                     "you can't cancel items anymore."))
-        item = self._items.pop(item_id)
+        self._items.pop(item_id)
         self.output.feed('cancel_item %r\n' % (item_id, ))
 
     def coupon_cancel(self):

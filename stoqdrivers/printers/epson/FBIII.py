@@ -28,10 +28,7 @@ Epson FBIII ECF driver
 """
 from decimal import Decimal
 
-from stoqdrivers.enum import UnitType
-from stoqdrivers.exceptions import CouponNotOpenError
 from stoqdrivers.printers.epson.FBII import FBII
-from stoqdrivers.translation import stoqdrivers_gettext as _
 
 # Coupons status
 CLOSED_COUPON = '0000'

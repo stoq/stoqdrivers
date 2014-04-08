@@ -53,12 +53,12 @@ def example():
     item1_id = printer.add_item("123456", u"Hollywóód",
                                 Decimal("2.00"), TaxType.SUBSTITUTION,
                                 unit=UnitType.CUSTOM, unit_desc=u"mç")
-    item2_id = printer.add_item("654321", u"Heineken Beer",
-                                Decimal("1.53"), TaxType.NONE,
-                                items_quantity=Decimal("5"),
-                                unit=UnitType.LITERS)
+    printer.add_item("654321", u"Heineken Beer",
+                     Decimal("1.53"), TaxType.NONE,
+                     items_quantity=Decimal("5"),
+                     unit=UnitType.LITERS)
     printer.cancel_item(item1_id)
-    coupon_total = printer.totalize(discount=Decimal('1.0'))
+    printer.totalize(discount=Decimal('1.0'))
     printer.add_payment(PaymentMethodType.MONEY, Decimal('2.00'))
     printer.add_payment(PaymentMethodType.MONEY, Decimal('11.00'))
     coupon_id = printer.close()

@@ -27,7 +27,6 @@
 Implementation of Toled Prix III driver.
 """
 
-from serial import EIGHTBITS, STOPBITS_ONE, PARITY_NONE
 from zope.interface import implements
 
 from stoqdrivers.exceptions import InvalidReply

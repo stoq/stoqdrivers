@@ -44,8 +44,7 @@ from stoqdrivers.printers.base import BaseDriverConstants
 from stoqdrivers.enum import TaxType, UnitType
 from stoqdrivers.exceptions import (DriverError, PendingReduceZ,
                                     HardwareFailure, ReduceZError,
-                                    AuthenticationFailure, CommError,
-                                    CouponNotOpenError,
+                                    AuthenticationFailure, CouponNotOpenError,
                                     OutofPaperError, PrinterOfflineError,
                                     CouponOpenError, CancelItemError,
                                     CloseCouponError)
@@ -573,7 +572,7 @@ class FS345(SerialBase):
     def payment_receipt_open(self, identifier, coo, method, value):
         value = int(value * 100)
         # res is the coo for the current document.
-        res = self.send_command(CMD_OPEN_NON_FISCAL_BOUND_RECEIPT,
+        self.send_command(CMD_OPEN_NON_FISCAL_BOUND_RECEIPT,
                           '%c%c%06d%012d' % (identifier, method, coo, value))
 
     def payment_receipt_print(self, text):
@@ -749,7 +748,6 @@ class FS345(SerialBase):
         total_sold = sum(value for _, value, _ in taxes)
 
         old_total = Decimal(fiscal_registries[:18]) / 100
-        cancelled = Decimal(fiscal_registries[33:46]) / 100
         period_total = total_sold
 
         dates = self.send_command(CMD_GET_DATES)

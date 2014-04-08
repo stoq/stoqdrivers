@@ -33,7 +33,6 @@ from decimal import Decimal
 
 from kiwi.currency import currency
 from zope.interface import Interface, Attribute
-from serial import EIGHTBITS, PARITY_NONE, STOPBITS_ONE
 
 from stoqdrivers.enum import TaxType, UnitType
 

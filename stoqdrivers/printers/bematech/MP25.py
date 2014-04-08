@@ -486,9 +486,8 @@ class MP25(SerialBase):
                                       end.strftime('%d%m%y')))
 
     def _till_read_memory_to_serial(self, start, end):
-        ret = self._send_command(CMD_READ_MEMORY,
-                           '%s%sR' % (start.strftime('%d%m%y'),
-                                      end.strftime('%d%m%y')))
+        self._send_command(CMD_READ_MEMORY, '%s%sR' % (
+            start.strftime('%d%m%y'), end.strftime('%d%m%y')))
 
         data = ''
         while True:
@@ -656,7 +655,7 @@ class MP25(SerialBase):
             self._send_command(CMD_PAYMENT_RECEIPT_PRINT, line + '\n')
 
     def payment_receipt_close(self):
-        ret = self._send_command(CMD_PAYMENT_RECEIPT_CLOSE)
+        self._send_command(CMD_PAYMENT_RECEIPT_CLOSE)
 
     def payment_receipt_print_duplicate(self):
         self._send_command(CMD_PAYMENT_RECEIPT_PRINT_DUPLICATE)
@@ -711,7 +710,6 @@ class MP25(SerialBase):
 
         length, data = self._send_command(CMD_READ_TAXCODES, response='b32s')
 
-        service = False
         constants = []
         for i in range(16):
             value = bcd2dec(data[i*2:i*2+2])

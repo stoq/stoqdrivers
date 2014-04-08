@@ -495,10 +495,8 @@ class EP375(SerialBase, BaseChequePrinter):
             unit = UnitType.EMPTY
         if surcharge:
             cmd = self.CMD_ADD_ITEM_WITH_SURCHARGE
-            D = surcharge
         else:
             cmd = self.CMD_ADD_ITEM_WITH_DISCOUNT
-            D = discount
 
         #
         # FIXME: The product code can only contain alphanumeric characters if
