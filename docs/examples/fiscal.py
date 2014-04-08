@@ -34,6 +34,7 @@ from stoqdrivers.exceptions import (PendingReduceZ,
                                     CouponOpenError,)
 from stoqdrivers.enum import PaymentMethodType, TaxType, UnitType
 
+
 def example():
     printer = FiscalPrinter()
     printer.identify_customer('Henrique Romano', 'Async', '1234567890')

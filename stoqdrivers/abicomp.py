@@ -95,6 +95,7 @@ TABLE = {
 }
 RTABLE = dict([(v, k) for k, v in TABLE.items()])
 
+
 def encode(input):
     """
     Convert unicode to string.
@@ -105,6 +106,7 @@ def encode(input):
     """
     return [TABLE.get(c) or str(c) for c in input]
 
+
 def decode(input):
     """
     Convert string in unicode.
@@ -114,6 +116,7 @@ def decode(input):
     @rtype: unicode
     """
     return [RTABLE.get(c) or unicode(c) for c in input]
+
 
 def register_codec():
     import codecs
@@ -146,6 +149,7 @@ def register_codec():
                 StreamWriter)
 
     codecs.register(getregentry)
+
 
 def test():
     register_codec()

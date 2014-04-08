@@ -124,16 +124,14 @@ class MP20(MP25):
         # because its not working with the MP25 command (ESC 63). This
         # simpler command does not support markup and unit
         data = (
-                "%-13s"  # code
-                "%29s" # description
-                "%02s"     # taxcode
-                "%07d"     # quantity
-                "%08d"     # value
-                "%08d"    # discount
-                % (code, description, taxcode,
-                   quantity * Decimal("1e3"),
-                   price * Decimal("1e2"),
-                   discount * Decimal("1e2")))
+            "%-13s"  # code
+            "%29s"  # description
+            "%02s"     # taxcode
+            "%07d"     # quantity
+            "%08d"     # value
+            "%08d"    # discount
+        ) % (code, description, taxcode, quantity * Decimal("1e3"),
+             price * Decimal("1e2"), discount * Decimal("1e2"))
 
         self._send_command(CMD_ADD_ITEM_SIMPLE, data)
         return self._get_last_item_id()
@@ -157,5 +155,3 @@ class MP20(MP25):
     def status_reply_complete(self, reply):
         log.debug('status_reply_complete "%s" (size=%s)' % (reply, len(reply)))
         return len(reply) == 18
-
-

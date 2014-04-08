@@ -56,14 +56,16 @@ FLD = '\x1c'
 # Special protocol chars that need to be escaped when communicating
 SPECIAL_CHARS = [ESC, STX, ETX, FLD, '\x1a', '\x1d', '\x1e', '\x1f']
 
+
 def escape(string):
     for i in SPECIAL_CHARS:
-        string = string.replace(i, ESC+i)
+        string = string.replace(i, ESC + i)
     return string
+
 
 def unescape(string):
     for i in SPECIAL_CHARS:
-        string = string.replace(ESC+i, i)
+        string = string.replace(ESC + i, i)
     return string
 
 FIRST_COMMAND_ID = 0x81
@@ -81,6 +83,7 @@ OPENED_NON_FISCAL_COUPON = '1000'
 _ = stoqdrivers_gettext
 
 log = Logger('stoqdrivers.epson')
+
 
 class Reply(object):
 
@@ -152,7 +155,6 @@ class Reply(object):
         r = self.pop(2)
         self.reply_status = '%02X%02X' % (ord(r[0]), ord(r[1]))
 
-
         assert self.pop() == FLD, 'FLD 3'
         # reserved
         self.pop()
@@ -202,11 +204,11 @@ class FBIIConstants(BaseDriverConstants):
     # The 'unit' field is mandatory in ECF.
     # If unit is EMPTY, set the value 'UN' to avoid errors.
     _constants = {
-        UnitType.WEIGHT:      'Kg',
-        UnitType.METERS:      'm',
-        UnitType.LITERS:      'Lt',
-        UnitType.EMPTY:       'UN',
-        }
+        UnitType.WEIGHT: 'Kg',
+        UnitType.METERS: 'm',
+        UnitType.LITERS: 'Lt',
+        UnitType.EMPTY: 'UN',
+    }
 
 
 #
@@ -226,7 +228,7 @@ class FBII(SerialBase):
     def __init__(self, port, consts=None):
         SerialBase.__init__(self, port)
         self._consts = consts or FBIIConstants
-        self._command_id = FIRST_COMMAND_ID-1 #0x80
+        self._command_id = FIRST_COMMAND_ID - 1  # 0x80
         self._reset()
 
     def setup(self):
@@ -246,7 +248,7 @@ class FBII(SerialBase):
 
     def _get_next_command_id(self):
         if self._command_id == 256:
-            self._command_id = FIRST_COMMAND_ID-1
+            self._command_id = FIRST_COMMAND_ID - 1
 
         self._command_id += 1
         return chr(self._command_id)
@@ -263,7 +265,7 @@ class FBII(SerialBase):
                 frame += FLD + escape(i)
 
         command_id = self._get_next_command_id()
-        package = STX +  command_id + frame + ETX
+        package = STX + command_id + frame + ETX
 
         checksum = sum([ord(d) for d in package])
         return package + '%04X' % checksum
@@ -307,7 +309,7 @@ class FBII(SerialBase):
         ack = self.read(1)
         if not ack:
             raise DriverError(_("Timeout communicating with fiscal "
-                                        "printer"))
+                                "printer"))
         assert ack == ACK, repr(ack)
 
         reply = self._read_reply()
@@ -592,7 +594,7 @@ class FBII(SerialBase):
             if line == '':
                 self._print_line(line)
             for pos in range(0, len(line), 56):
-                data = line[pos:pos+56]
+                data = line[pos:pos + 56]
                 self._print_line(data)
 
     def _print_line(self, line):
@@ -630,7 +632,7 @@ class FBII(SerialBase):
         fields = reply.fields
         if len(fields) > 2:
             for i in range(0, len(fields), 3):
-                name, value = fields[i], fields[i+1]
+                name, value = fields[i], fields[i + 1]
 
                 if name.startswith('T'):
                     type = TaxType.CUSTOM
@@ -643,9 +645,9 @@ class FBII(SerialBase):
 
         constants.extend([
             (TaxType.SUBSTITUTION, 'F', None),
-            (TaxType.EXEMPTION,    'I', None),
-            (TaxType.NONE,         'N', None),
-            ])
+            (TaxType.EXEMPTION, 'I', None),
+            (TaxType.NONE, 'N', None),
+        ])
 
         return constants
 
@@ -654,14 +656,14 @@ class FBII(SerialBase):
 
         for i in range(20):
             try:
-                reply = self._send_command('050D', '0000', '%d' % (i+1))
+                reply = self._send_command('050D', '0000', '%d' % (i + 1))
             except DriverError, e:
-                if e.code == 0x090C: # Tipo de pagamento não definido
+                if e.code == 0x090C:  # Tipo de pagamento não definido
                     continue
                 else:
                     raise
             name, vinculado = reply.fields
-            methods.append(('%d' % (i+1), name.strip()))
+            methods.append(('%d' % (i + 1), name.strip()))
 
         return methods
 
@@ -673,7 +675,7 @@ class FBII(SerialBase):
             customer_id=Capability(max_len=28),
             customer_name=Capability(max_len=30),
             customer_address=Capability(max_len=79),
-            )
+        )
 
     def get_constants(self):
         return self._consts
@@ -711,7 +713,7 @@ class FBII(SerialBase):
 
         taxes = []
         for i in range(20):
-            reg = tax_codes[i*3:i*3+3]
+            reg = tax_codes[i * 3:i * 3 + 3]
             if not reg:
                 continue
 
@@ -719,7 +721,7 @@ class FBII(SerialBase):
             if name.startswith('T'):
                 tax_type = 'ICMS'
             else:
-                tax_type =  'ISS'
+                tax_type = 'ISS'
 
             sold = reg[2]
             value = reg[1]
@@ -788,12 +790,11 @@ class FBII(SerialBase):
         self._define_tax_code("0900", service=True)
 
 
-
 if __name__ == '__main__':
     from stoqdrivers.serialbase import SerialPort
     #port = Serial('/dev/pts/5')
     port = SerialPort('/dev/ttyUSB0')
-    p  = FBII(port)
+    p = FBII(port)
 
 #    p._send_command('0754', '0000') Desativar corte do papel
 

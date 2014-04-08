@@ -54,7 +54,8 @@ _constant_descriptions = {
     PaymentMethodType.GIFT_CERTIFICATE: _(u"Gift certificate Payment Method"),
     PaymentMethodType.CUSTOM: _(u"Custom Payment Method"),
     PaymentMethodType.MULTIPLE: _(u"Multiple Payment Method"),
-    }
+}
+
 
 def describe_constant(constant_id):
     """ Given the constant identifier, return a short string describing it """

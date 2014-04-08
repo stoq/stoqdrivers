@@ -30,6 +30,7 @@ from kiwi.python import namedAny
 
 from stoqdrivers.serialbase import SerialPort
 
+
 def main(args):
     usage = "usage: %prog [options] command [args]"
     parser = optparse.OptionParser(usage=usage)
@@ -79,5 +80,6 @@ def main(args):
         pprint.pprint(retval)
     return 0
 
-if __name__  == '__main__':
+
+if __name__ == '__main__':
     sys.exit(main(sys.argv))

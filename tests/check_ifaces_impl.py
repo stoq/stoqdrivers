@@ -35,6 +35,7 @@ from stoqdrivers.interfaces import (ICouponPrinter,
 from stoqdrivers.printers.base import get_supported_printers_by_iface
 from stoqdrivers.scales.base import get_supported_scales
 
+
 def _check_drivers(iface, brand, drivers):
     print "\t- Checking %s devices:" % brand
     for driver in drivers:
@@ -44,18 +45,22 @@ def _check_drivers(iface, brand, drivers):
         except Invalid, e:
             print "ERROR: ", e
 
+
 def _check_printers(iface):
     printers_dict = get_supported_printers_by_iface(iface)
     for brand, drivers in printers_dict.items():
         _check_drivers(iface, brand, drivers)
 
+
 def check_coupon_printers():
     print "Checking Coupon Printers..."
     _check_printers(ICouponPrinter)
 
+
 def check_cheque_printers():
     print "Checking Cheque Printers..."
     _check_printers(IChequePrinter)
+
 
 def check_scales():
     print "Checking Scales..."
@@ -66,4 +71,3 @@ if __name__ == "__main__":
     check_coupon_printers()
     check_cheque_printers()
     check_scales()
-

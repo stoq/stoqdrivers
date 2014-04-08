@@ -35,6 +35,7 @@ from stoqdrivers.translation import stoqdrivers_gettext
 
 _ = stoqdrivers_gettext
 
+
 class StoqdriversConfig:
 
     domain = 'stoqdrivers'
@@ -61,14 +62,14 @@ class StoqdriversConfig:
         # 1) $HOME/.$domain/$filename
         # 2) $PREFIX/etc/$domain/$filename
         # 3) /etc/$filename
-        
+
         # This is a bit hackish:
         # $prefix / lib / $DOMAIN / lib / config.py
         #    -4      -3     -2      -1       0
         filename = os.path.abspath(__file__)
         stripped = filename.split(os.sep)[:-4]
         self.prefix = os.path.join(os.sep, *stripped)
-        
+
         homepath = self.get_homepath()
         etcpath = os.path.join(self.prefix, 'etc', self.domain)
         globetcpath = os.path.join(os.sep, 'etc', self.domain)
@@ -82,10 +83,10 @@ class StoqdriversConfig:
 
     def has_option(self, name, section='General'):
         return self.config.has_option(section, name)
-    
+
     def get_option(self, name, section='General'):
         if not self.config.has_section(section):
-            raise  ConfigError(_("Invalid section: %s") % section)
+            raise ConfigError(_("Invalid section: %s") % section)
         elif not self.config.has_option(section, name):
             raise ConfigError(_("%s does not have option: %s")
                               % (self.filename, name))

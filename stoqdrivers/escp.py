@@ -45,6 +45,7 @@ QUALITY_DRAFT = '0'
 QUALITY_LQ = '1'
 QUALITY_NLQ = '1'
 
+
 class EscPPrinter(object):
     def __init__(self, device):
         self.device = device
@@ -55,9 +56,9 @@ class EscPPrinter(object):
     def _command(self, command, *args):
         chars = command
         for arg in args:
-            if arg == True:
+            if arg is True:
                 v = '1'
-            elif arg == False:
+            elif arg is False:
                 v = '0'
             else:
                 v = arg
@@ -85,6 +86,7 @@ class EscPPrinter(object):
     def set_vertical_position(self, position):
         args = struct.pack('b', position)
         self._command('J', *args)
+
 
 def test():
     printer = EscPPrinter('/dev/lp0')

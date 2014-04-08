@@ -36,6 +36,7 @@ from stoqdrivers.printers.cheque import BaseChequePrinter
 from stoqdrivers.printers.capabilities import Capability
 from stoqdrivers.serialbase import SerialBase
 
+
 class DP20C(SerialBase, BaseChequePrinter):
     CMD_PREFIX = '\x1B'
     CMD_SUFFIX = '\x0D'

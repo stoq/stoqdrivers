@@ -41,6 +41,7 @@ _ = stoqdrivers_gettext
 
 log = Logger('stoqdrivers.basedev')
 
+
 class BaseDevice:
     """ Base class for all device interfaces, responsible for instantiate
     the device driver itself based on the brand and model specified or in
@@ -50,7 +51,7 @@ class BaseDevice:
         DeviceType.PRINTER: "Printer",
         DeviceType.SCALE: "Scale",
         DeviceType.BARCODE_READER: "Barcode Reader",
-        }
+    }
     # Subclasses must define these attributes
     device_dirname = None
     required_interfaces = None
@@ -82,7 +83,7 @@ class BaseDevice:
             self.model = self.config.get_option("model", section_name)
 
         name = "stoqdrivers.%s.%s.%s" % (self.device_dirname,
-                                                 self.brand, self.model)
+                                         self.brand, self.model)
         try:
             module = __import__(name, None, None, 'stoqdevices')
         except ImportError, reason:

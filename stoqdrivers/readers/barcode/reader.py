@@ -33,6 +33,7 @@ from stoqdrivers.interfaces import IBarcodeReader
 from stoqdrivers.base import BaseDevice
 from stoqdrivers.enum import DeviceType
 
+
 class BarcodeReader(BaseDevice):
     device_dirname = "readers.barcode"
     device_type = DeviceType.BARCODE_READER
@@ -44,4 +45,3 @@ class BarcodeReader(BaseDevice):
 
     def get_code(self):
         return self._driver.get_code()
-

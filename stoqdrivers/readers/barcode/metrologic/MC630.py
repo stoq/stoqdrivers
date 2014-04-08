@@ -26,5 +26,6 @@
 
 from stoqdrivers.readers.barcode.base import BaseBarcodeReader
 
+
 class MC630(BaseBarcodeReader):
     model_name = "Metrologic MC630"

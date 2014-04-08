@@ -41,6 +41,7 @@ _ = stoqdrivers_gettext
 
 _NoDefault = object()
 
+
 class BaseDriverConstants:
     implements(IDriverConstants)
 
@@ -69,7 +70,7 @@ class BasePrinter(BaseDevice):
     def check_interfaces(self):
         driver_interfaces = providedBy(self._driver)
         if (not ICouponPrinter in driver_interfaces
-            and not IChequePrinter in driver_interfaces):
+                and not IChequePrinter in driver_interfaces):
             raise TypeError("The driver `%r' doesn't implements a valid "
                             "interface" % self._driver)
 
@@ -89,16 +90,17 @@ def get_virtual_printer():
     from stoqdrivers.printers.fiscal import FiscalPrinter
     return FiscalPrinter(brand='virtual', model='Simple')
 
+
 def get_supported_printers():
     result = {}
     for brand, module_names in [
-        ('bematech', ['DP20C', 'MP20', 'MP2100', 'MP25']),
-        ('daruma', ['FS2100', 'FS345', 'FS600MFD']),
-        ('dataregis', ['EP375', 'Quick']),
-        ('elgin', ['KFiscal']),
-        ('epson', ['FBII', 'FBIII']),
-        ('fiscnet', ['FiscNetECF']),
-        ('perto', ['Pay2023'])]:
+            ('bematech', ['DP20C', 'MP20', 'MP2100', 'MP25']),
+            ('daruma', ['FS2100', 'FS345', 'FS600MFD']),
+            ('dataregis', ['EP375', 'Quick']),
+            ('elgin', ['KFiscal']),
+            ('epson', ['FBII', 'FBIII']),
+            ('fiscnet', ['FiscNetECF']),
+            ('perto', ['Pay2023'])]:
         result[brand] = []
         for module_name in module_names:
             try:
@@ -111,6 +113,7 @@ def get_supported_printers():
                 continue
             result[brand].append(obj)
     return result
+
 
 def get_supported_printers_by_iface(interface):
     """ Returns all the printers that supports the interface.  The result
@@ -128,6 +131,7 @@ def get_supported_printers_by_iface(interface):
         if drivers:
             result[model] = drivers
     return result
+
 
 def get_baudrate_values():
     """ Returns baudrate values to configure the communication speed with

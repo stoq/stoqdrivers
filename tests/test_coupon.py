@@ -302,8 +302,8 @@ class TestCoupon(object):
         # 7. Add item with coupon totalized
         self._device.totalize()
         self.failUnlessRaises(AlreadyTotalized,
-            self._device.add_item, u"123456", u"Monitor LG Flatron T910B",
-            Decimal("10"), self._taxnone)
+                              self._device.add_item, u"123456", u"Monitor LG Flatron T910B",
+                              Decimal("10"), self._taxnone)
 
         self._device.add_payment(self._payment_method, Decimal("100"))
         self._device.close()
@@ -431,7 +431,7 @@ class TestCoupon(object):
 
         self._open_coupon()
         self._device.add_item(u"987654", u"Monitor LG 775N", Decimal(10),
-                             self._taxnone)
+                              self._taxnone)
 
         self._device.totalize()
         self._device.add_payment(payment_id, Decimal(10))
@@ -473,15 +473,15 @@ class TestCoupon(object):
         self._device.gerencial_report_open()
         # Send a big report to test the line breaks and limit of columns number
         self._device.gerencial_report_print("Teste Relatorio Gerencial\n"
-                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n\n"
-                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n\n"
-                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n\n"
-                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n\n"
-                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n\n"
-                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n"
-                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n"
-                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
-                                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+                                            "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n\n"
+                                            "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n\n"
+                                            "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n\n"
+                                            "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n\n"
+                                            "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n\n"
+                                            "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n"
+                                            "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\n"
+                                            "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+                                            "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
         self._device.gerencial_report_close()
 
     def test_read_memory(self):

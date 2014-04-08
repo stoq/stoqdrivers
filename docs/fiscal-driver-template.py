@@ -80,7 +80,7 @@ class TemplateDriver(SerialBase):
     # Till / Daily flow
 
     def summarize(self):
-        # Leitura X 
+        # Leitura X
         pass
 
     def close_till(self, previous_day):
@@ -120,7 +120,7 @@ class TemplateDriver(SerialBase):
             customer_address=Capability(max_len=80),
             add_cash_value=Capability(min_size=0.1, digits=12, decimals=2),
             remove_cash_value=Capability(min_size=0.1, digits=12, decimals=2),
-            )
+        )
 
     def get_constants(self):
         return self._consts
@@ -136,9 +136,9 @@ class TemplateDriver(SerialBase):
 
         constants.extend([
             (TaxType.SUBSTITUTION, 'FF', None),
-            (TaxType.EXEMPTION,    'II', None),
-            (TaxType.NONE,         'NN', None),
-            ])
+            (TaxType.EXEMPTION, 'II', None),
+            (TaxType.NONE, 'NN', None),
+        ])
 
         return constants
 
@@ -159,17 +159,17 @@ class TemplateDriver(SerialBase):
         taxes.append(('F', Decimal("0")))
 
         return Settable(
-             opening_date=datetime.date(2000, 1, 1),
-             serial=self._get_serial(),
-             serial_id='001',
-             coupon_start=0,
-             coupon_end=100,
-             cro=230,
-             crz=1232,
-             coo=320,
-             period_total=Decimal("1123"),
-             total=Decimal("2311123"),
-             taxes=taxes)
+            opening_date=datetime.date(2000, 1, 1),
+            serial=self._get_serial(),
+            serial_id='001',
+            coupon_start=0,
+            coupon_end=100,
+            cro=230,
+            crz=1232,
+            coo=320,
+            period_total=Decimal("1123"),
+            total=Decimal("2311123"),
+            taxes=taxes)
 
     # Device detection, asynchronous
 
@@ -181,4 +181,3 @@ class TemplateDriver(SerialBase):
 
     def get_serial(self):
         return 'ABC12345678'
-

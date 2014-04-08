@@ -38,4 +38,3 @@ class Quick(FiscNetECF):
     supported = True
 
     model_name = "Dataregis ECF-IF 3202DT (Quick)"
-

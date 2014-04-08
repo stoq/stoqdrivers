@@ -34,6 +34,7 @@ from stoqdrivers.interfaces import IScale
 from stoqdrivers.base import BaseDevice
 from stoqdrivers.enum import DeviceType
 
+
 class BaseScale(BaseDevice):
     device_dirname = "scales"
     device_type = DeviceType.SCALE
@@ -43,6 +44,7 @@ class BaseScale(BaseDevice):
         if not IScale in driver_interfaces:
             raise TypeError("This driver doesn't implements a valid "
                             "interface")
+
 
 def get_supported_scales():
     result = {}

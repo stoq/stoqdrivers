@@ -42,22 +42,23 @@ log = Logger('stoqdrivers.daruma')
 
 ENQ = 05
 ACK = 06
-LF  = 10
-CR  = 13
+LF = 10
+CR = 13
 ESC = 27
-FS  = 28
-GS  = 29
-FF  = 255
+FS = 28
+GS = 29
+FF = 255
 
 CMD_ADD_ITEM = 201
 
+
 class FS2100Constants(BaseDriverConstants):
     _constants = {
-        UnitType.WEIGHT:      'Kg',
-        UnitType.METERS:      'm ',
-        UnitType.LITERS:      'Lt',
-        UnitType.EMPTY:       'UN',
-        }
+        UnitType.WEIGHT: 'Kg',
+        UnitType.METERS: 'm ',
+        UnitType.LITERS: 'Lt',
+        UnitType.EMPTY: 'UN',
+    }
 
 
 class FS2100(FS345):
@@ -97,20 +98,20 @@ class FS2100(FS345):
         if unit != UnitType.CUSTOM:
             unit = self._consts.get_value(unit)
         else:
-            unit = "%2s" % unit_desc[:2] # units must be 2 byte size strings
+            unit = "%2s" % unit_desc[:2]  # units must be 2 byte size strings
 
         # XXX: We need test correctly if the price's calcule is right (we
         # don't can do it right now since the manual isn't so clear).
-        data = ('%02s' # Tributary situation
-                '%07d' # Quantity
-                '%08d' # Unitary price
+        data = ('%02s'  # Tributary situation
+                '%07d'  # Quantity
+                '%08d'  # Unitary price
                 '%d'   # 0=Discount(%) 1=Discount($) 2=Surcharge(%) 3=Surcharge($)
-                '%011d'# Discount/Surcharge value
-                '%02d' # Description size
-                '%14s' # Code
+                '%011d'  # Discount/Surcharge value
+                '%02d'  # Description size
+                '%14s'  # Code
                 '%3s'  # Unit of measure
                 '%s'   # Product descriptio?!?
-                '\xff' # EOF
+                '\xff'  # EOF
                 % (taxcode, int(quantity * self._decimals_qtd),
                    int(price * self._decimals_price), d, E,
                    desc_size, code, unit, description[:233]))
@@ -160,7 +161,7 @@ class FS2100(FS345):
         extended_error = retcode[3:6]
         warning_code = retcode[6:8]
         log.debug('FS2100 >>> Error %s - Extended: %s - Warning: %s' %
-                    (compatible_error, extended_error, warning_code))
+                  (compatible_error, extended_error, warning_code))
         if int(compatible_error):
             # Mimic FS345 error format
             error_code = ':E%s' % compatible_error
@@ -192,7 +193,7 @@ class FS2100(FS345):
 
         # After the CR, there is still one byte for the checksum
         retval_checksum = self.read(1)
-        retval_checksum # pyflakes
+        retval_checksum  # pyflakes
 
         if not ignore_error:
             self._check_response(retval, data)
@@ -216,14 +217,14 @@ class FS2100(FS345):
 
         constants = []
         for i in range(14):
-            reg = tax_codes[i*5]
+            reg = tax_codes[i * 5]
             if reg in 'ABCDEFGHIJKLMNOP':
                 tax_type = TaxType.CUSTOM
             elif reg in lower_case:
                 tax_type = TaxType.SERVICE
             else:
                 raise AssertionError(reg)
-            value = tax_codes[i*5+1:i*5+5]
+            value = tax_codes[i * 5 + 1:i * 5 + 5]
             if value == '////':
                 continue
             constants.append((tax_type,
@@ -233,10 +234,9 @@ class FS2100(FS345):
 
         # These definitions can be found on Page 60
         constants.extend([
-            (TaxType.SUBSTITUTION,   '17', None), # F1
-            (TaxType.EXEMPTION,      '19', None), # I1
-            (TaxType.NONE,           '21', None), # N1
-            ])
+            (TaxType.SUBSTITUTION, '17', None),  # F1
+            (TaxType.EXEMPTION, '19', None),  # I1
+            (TaxType.NONE, '21', None),  # N1
+        ])
 
         return constants
-

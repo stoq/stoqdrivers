@@ -31,6 +31,7 @@ from kiwi.argcheck import argcheck, number
 
 from stoqdrivers.exceptions import CapabilityError
 
+
 class capcheck(argcheck):
     """ A extension for argcheck that validates a value with base in the driver
     capabilities.  Note that the instance where this class is used as decorator
@@ -137,4 +138,3 @@ class Capability:
         elif value < self.min_size:
             raise CapabilityError("the value can't be less than %r"
                                   % self.min_size)
-

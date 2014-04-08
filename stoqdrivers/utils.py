@@ -29,6 +29,7 @@ Functions for general use.
 
 import unicodedata
 
+
 def encode_text(text, encoding):
     """ Converts the string 'text' to encoding 'encoding' and optionally
     normalizes the string (currently only for ascii)

@@ -49,6 +49,7 @@ from stoqdrivers.translation import stoqdrivers_gettext
 
 _ = stoqdrivers_gettext
 
+
 class CouponItem:
     def __init__(self, id, quantity, value):
         self.id, self.quantity, self.value = id, quantity, value
@@ -56,13 +57,14 @@ class CouponItem:
     def get_total_value(self):
         return self.quantity * self.value
 
+
 class FakeConstants(BaseDriverConstants):
     _constants = {
-        UnitType.WEIGHT:      'F',
-        UnitType.METERS:      'G ',
-        UnitType.LITERS:      'H',
-        UnitType.EMPTY:       'I',
-        }
+        UnitType.WEIGHT: 'F',
+        UnitType.METERS: 'G ',
+        UnitType.LITERS: 'H',
+        UnitType.EMPTY: 'I',
+    }
 
     _payment_constants = {
         PaymentMethodType.MONEY: 'M',
@@ -72,7 +74,7 @@ class FakeConstants(BaseDriverConstants):
         PaymentMethodType.DEBIT_CARD: 'D',
         PaymentMethodType.FINANCIAL: 'F',
         PaymentMethodType.GIFT_CERTIFICATE: 'G',
-        }
+    }
 
     _payment_descriptions = {
         'M': 'Dinheiro',
@@ -86,16 +88,18 @@ class FakeConstants(BaseDriverConstants):
 
     _tax_constants = [
         (TaxType.SUBSTITUTION, 'TS', None),
-        (TaxType.EXEMPTION,    'TE', None),
-        (TaxType.NONE,         'TN', None),
-        (TaxType.CUSTOM,       'T1', Decimal(18)),
-        (TaxType.CUSTOM,       'T2', Decimal(12)),
-        (TaxType.CUSTOM,       'T3', Decimal(5)),
-        (TaxType.SERVICE,      'S0', Decimal(3)),
-        ]
+        (TaxType.EXEMPTION, 'TE', None),
+        (TaxType.NONE, 'TN', None),
+        (TaxType.CUSTOM, 'T1', Decimal(18)),
+        (TaxType.CUSTOM, 'T2', Decimal(12)),
+        (TaxType.CUSTOM, 'T3', Decimal(5)),
+        (TaxType.SERVICE, 'S0', Decimal(3)),
+    ]
+
 
 class OutputWindow(gtk.Window):
     columns = 60
+
     def __init__(self, printer):
         self._printer = printer
         gtk.Window.__init__(self)
@@ -383,7 +387,7 @@ class Simple(object):
         self.payments_total += value
         self.has_payments = True
         self.output.feed('  %s - %s\n' % (
-                self._consts._payment_descriptions[payment_method], value))
+            self._consts._payment_descriptions[payment_method], value))
         return self.totalized_value - self.payments_total
 
     def coupon_close(self, message=''):
@@ -488,7 +492,7 @@ class Simple(object):
     def get_payment_constants(self):
         self._check()
         return [(key, value) for key, value in
-                        self._consts._payment_descriptions.items()]
+                self._consts._payment_descriptions.items()]
 
     def get_port(self):
         self._check()
@@ -560,11 +564,8 @@ class Simple(object):
     def get_firmware_version(self):
         return '1.1.1'
 
-
     #
     # IChequePrinter implementation
     #
-
     def print_cheque(self, value, thirdparty, city, date=None):
         return
-

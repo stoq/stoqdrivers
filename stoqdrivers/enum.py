@@ -29,6 +29,7 @@ StoqDrivers enums
 
 from kiwi.python import enum
 
+
 class PaymentMethodType(enum):
     """
     Enum for Payment Methods
@@ -43,6 +44,7 @@ class PaymentMethodType(enum):
      CUSTOM,
      MULTIPLE) = range(9)
 
+
 class UnitType(enum):
     """
     Enum for units
@@ -52,6 +54,7 @@ class UnitType(enum):
      LITERS,
      EMPTY,
      CUSTOM) = range(20, 25)
+
 
 class TaxType(enum):
     """
@@ -64,6 +67,7 @@ class TaxType(enum):
      SERVICE,
      CUSTOM) = range(40, 46)
 
+
 class DeviceType(enum):
     """
     Enum for device types
@@ -72,4 +76,3 @@ class DeviceType(enum):
     (PRINTER,
      SCALE,
      BARCODE_READER) = range(3)
-

@@ -39,4 +39,3 @@ class Pay2023(FiscNetChequePrinter):
     supported = True
 
     model_name = "Pertopay Fiscal 2023"
-

@@ -27,6 +27,7 @@ Stoqdrivers translation functions
 
 import gettext
 
+
 def stoqdrivers_gettext(message):
     is_unicode = False
     if isinstance(message, unicode):

@@ -29,6 +29,6 @@ Daruma FS600MFD driver
 
 from stoqdrivers.printers.daruma.FS2100 import FS2100
 
+
 class FS600MFD(FS2100):
     model_name = "Daruma FS 600 MFD"
-

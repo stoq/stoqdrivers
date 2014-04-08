@@ -39,10 +39,12 @@ from zope.interface import implements
 
 from stoqdrivers.enum import PaymentMethodType, TaxType, UnitType
 from stoqdrivers.exceptions import (DriverError, PendingReduceZ,
-    CommandParametersError, CommandError, ReadXError, OutofPaperError,
-    CouponTotalizeError, PaymentAdditionError, CancelItemError,
-    CouponOpenError, InvalidState, PendingReadX, CloseCouponError,
-    CouponNotOpenError)
+                                    CommandParametersError, CommandError,
+                                    ReadXError, OutofPaperError,
+                                    CouponTotalizeError, PaymentAdditionError,
+                                    CancelItemError, CouponOpenError,
+                                    InvalidState, PendingReadX,
+                                    CloseCouponError, CouponNotOpenError)
 from stoqdrivers.interfaces import ICouponPrinter, IChequePrinter
 from stoqdrivers.printers.capabilities import Capability
 from stoqdrivers.printers.cheque import BaseChequePrinter, BankConfiguration
@@ -67,7 +69,7 @@ _ = stoqdrivers_gettext
  FLAG_INSCRICOES_OK,
  FLAG_CLICHE_OK,
  FLAG_EM_LINHA,
- FLAG_MFD_ESGOTADA] = _status_flags = [2**n for n in range(15)]
+ FLAG_MFD_ESGOTADA] = _status_flags = [2 ** n for n in range(15)]
 
 _flagnames = {
     FLAG_INTERVENCAO_TECNICA: 'FLAG_INTERVENCAO_TECNICA',
@@ -85,27 +87,27 @@ _flagnames = {
     FLAG_CLICHE_OK: 'FLAG_CLICHE_OK',
     FLAG_EM_LINHA: 'FLAG_EM_LINHA',
     FLAG_MFD_ESGOTADA: 'FLAG_MFD_ESGOTADA',
-    }
+}
 
 
 class FiscNetConstants(BaseDriverConstants):
     _constants = {
-        UnitType.WEIGHT:      'km',
-        UnitType.LITERS:      'lt',
-        UnitType.METERS:      'm ',
-        UnitType.EMPTY:       '  ',
-        PaymentMethodType.MONEY:         '-2',
+        UnitType.WEIGHT: 'km',
+        UnitType.LITERS: 'lt',
+        UnitType.METERS: 'm ',
+        UnitType.EMPTY: '  ',
+        PaymentMethodType.MONEY: '-2',
 
-# FIXME: This should not be hardcoded (is it still)?
-#         PaymentMethodType.CHECK:        '2',
-#         PaymentMethodType.MONEY: '-2',
-#         PaymentMethodType.CHECK: '0',
-#         PaymentMethodType.BOLETO: '1',
-#         PaymentMethodType.CREDIT_CARD: '2',
-#         PaymentMethodType.DEBIT_CARD: '3',
-#         PaymentMethodType.FINANCIAL: '4',
-#         PaymentMethodType.GIFT_CERTIFICATE: '5,
-        }
+        # FIXME: This should not be hardcoded (is it still)?
+        #         PaymentMethodType.CHECK:        '2',
+        #         PaymentMethodType.MONEY: '-2',
+        #         PaymentMethodType.CHECK: '0',
+        #         PaymentMethodType.BOLETO: '1',
+        #         PaymentMethodType.CREDIT_CARD: '2',
+        #         PaymentMethodType.DEBIT_CARD: '3',
+        #         PaymentMethodType.FINANCIAL: '4',
+        #         PaymentMethodType.GIFT_CERTIFICATE: '5,
+    }
 
 _RETVAL_TOKEN_RE = re.compile(r"^\s*([^=\s;]+)")
 _RETVAL_QUOTED_VALUE_RE = re.compile(r"^\s*=\s*\"([^\"\\]*(?:\\.[^\"\\]*)*)\"")
@@ -123,7 +125,6 @@ class FiscNetECF(SerialBase):
     cheque_printer_charset = "ascii"
     supports_duplicate_receipt = True
     identify_customer_at_end = False
-
 
     CHEQUE_CONFIGFILE = 'perto.ini'
 
@@ -150,7 +151,7 @@ class FiscNetECF(SerialBase):
         15007: PendingReadX,
         15008: ReadXError,
         15011: OutofPaperError
-        }
+    }
 
     def __init__(self, port, consts=None):
         port.setParity(PARITY_EVEN)
@@ -317,16 +318,16 @@ class FiscNetECF(SerialBase):
             retdict = self._send_command(
                 'LeNaoFiscal', CodNaoFiscal=code)
         except DriverError, e:
-            if e.code != 8057: # Not configured
+            if e.code != 8057:  # Not configured
                 raise
         else:
             for retname in ['NomeNaoFiscal', 'DescricaoNaoFiscal']:
                 configured_name = retdict[retname]
-                if configured_name  != name:
+                if configured_name != name:
                     raise DriverError(
                         "The name of the tax code %d is set to %r, "
                         "but it needs to be configured as %r" % (
-                        code, configured_name, name))
+                            code, configured_name, name))
 
         try:
             self._send_command(
@@ -341,7 +342,7 @@ class FiscNetECF(SerialBase):
             self._send_command(
                 'ExcluiNaoFiscal', CodNaoFiscal=code)
         except DriverError, e:
-            if e.code != 8057: # Not configured
+            if e.code != 8057:  # Not configured
                 raise
 
     def _define_payment_method(self, code, name, vinculated=False):
@@ -349,13 +350,13 @@ class FiscNetECF(SerialBase):
             retdict = self._send_command(
                 'LeMeioPagamento', CodMeioPagamentoProgram=code)
         except DriverError, e:
-            if e.code != 8014: # Not configured
+            if e.code != 8014:  # Not configured
                 raise
         else:
             configure = False
             for retname in ['NomeMeioPagamento', 'DescricaoMeioPagamento']:
                 configured_name = retdict[retname]
-                if configured_name  != name:
+                if configured_name != name:
                     configure = True
 
             if not configure:
@@ -374,7 +375,7 @@ class FiscNetECF(SerialBase):
             self._send_command(
                 'ExcluiMeioPagamento', CodMeioPagamentoProgram=code)
         except DriverError, e:
-            if e.code != 8014: # Not configured
+            if e.code != 8014:  # Not configured
                 raise
 
     def _define_tax_code(self, code, value, service=False):
@@ -382,7 +383,7 @@ class FiscNetECF(SerialBase):
             retdict = self._send_command(
                 'LeAliquota', CodAliquotaProgramavel=code)
         except DriverError, e:
-            if e.code != 8005: # Not configured
+            if e.code != 8005:  # Not configured
                 raise
         else:
             configure = False
@@ -398,7 +399,7 @@ class FiscNetECF(SerialBase):
             self._send_command(
                 'DefineAliquota',
                 CodAliquotaProgramavel=code,
-                DescricaoAliquota='%2.2f%%' % value ,
+                DescricaoAliquota='%2.2f%%' % value,
                 PercentualAliquota=value,
                 AliquotaICMS=not service)
         except DriverError, e:
@@ -409,7 +410,7 @@ class FiscNetECF(SerialBase):
             self._send_command(
                 'ExcluiAliquota', CodAliquotaProgramavel=code)
         except DriverError, e:
-            if e.code != 8005: # Not configured
+            if e.code != 8005:  # Not configured
                 raise
 
     def _get_taxes(self):
@@ -428,7 +429,7 @@ class FiscNetECF(SerialBase):
             ('N', read_r('TotalDiaNaoTributadoICMS'), 'ICMS'),
             ('DESC', read_r('TotalDiaDescontos'), 'ICMS'),
             ('CANC', read_r('TotalDiaCancelamentosICMS'), 'ICMS'),
-            ]
+        ]
 
         for reg in range(16):
             value = read_r('TotalDiaValorAliquota[%d]' % reg)
@@ -447,26 +448,26 @@ class FiscNetECF(SerialBase):
 
     def _configure_printer(self):
         self._define_tax_name(0,
-            "Suprimento".encode(self.coupon_printer_charset), entrada=True)
+                              "Suprimento".encode(self.coupon_printer_charset), entrada=True)
         self._define_tax_name(1,
-            "Sangria".encode(self.coupon_printer_charset), entrada=False)
+                              "Sangria".encode(self.coupon_printer_charset), entrada=False)
         for code in range(2, 15):
             self._delete_tax_name(code)
 
         self._define_payment_method(0,
-            u'Cheque'.encode(self.coupon_printer_charset))
+                                    u'Cheque'.encode(self.coupon_printer_charset))
         self._define_payment_method(1,
-            u'Boleto'.encode(self.coupon_printer_charset))
+                                    u'Boleto'.encode(self.coupon_printer_charset))
         self._define_payment_method(2,
-            u'Cartão credito'.encode(self.coupon_printer_charset),
-            vinculated=True)
+                                    u'Cartão credito'.encode(self.coupon_printer_charset),
+                                    vinculated=True)
         self._define_payment_method(3,
-            u'Cartão debito'.encode(self.coupon_printer_charset),
-            vinculated=True)
+                                    u'Cartão debito'.encode(self.coupon_printer_charset),
+                                    vinculated=True)
         self._define_payment_method(4,
-            u'Financeira'.encode(self.coupon_printer_charset))
+                                    u'Financeira'.encode(self.coupon_printer_charset))
         self._define_payment_method(5,
-            u'Vale compra'.encode(self.coupon_printer_charset))
+                                    u'Vale compra'.encode(self.coupon_printer_charset))
         for code in range(6, 15):
             self._delete_payment_method(code)
 
@@ -550,8 +551,8 @@ class FiscNetECF(SerialBase):
 
         if discount:
             self._send_command('AcresceItemFiscal',
-                                Cancelar=False,
-                                ValorAcrescimo=-discount)
+                               Cancelar=False,
+                               ValorAcrescimo=-discount)
 
         return self._get_last_item_id()
 
@@ -679,7 +680,7 @@ class FiscNetECF(SerialBase):
                 retdict = self._send_command(
                     'LeAliquota', CodAliquotaProgramavel=reg)
             except DriverError, e:
-                if e.code == 8005: # Aliquota nao carregada
+                if e.code == 8005:  # Aliquota nao carregada
                     continue
                 raise
 
@@ -697,10 +698,10 @@ class FiscNetECF(SerialBase):
         # as strings and then subtract by 127
         # Page 10
         constants.extend([
-            (TaxType.SUBSTITUTION, '-2', None), # -2
-            (TaxType.EXEMPTION,    '-3', None), # -3
-            (TaxType.NONE,         '-4', None), # -4
-            ])
+            (TaxType.SUBSTITUTION, '-2', None),  # -2
+            (TaxType.EXEMPTION, '-3', None),  # -3
+            (TaxType.NONE, '-4', None),  # -4
+        ])
 
         return constants
 
@@ -712,7 +713,7 @@ class FiscNetECF(SerialBase):
                 retdict = self._send_command(
                     'LeMeioPagamento', CodMeioPagamentoProgram=reg)
             except DriverError, e:
-                if e.code == 8014: # Meio de pagamento nao carregado
+                if e.code == 8014:  # Meio de pagamento nao carregado
                     continue
                 raise
 
@@ -767,7 +768,7 @@ class FiscNetECF(SerialBase):
     def payment_receipt_print(self, text):
         text = text.encode(self.coupon_printer_charset)
         for line in text.split('\n'):
-            line = line.replace('\\', '\\\\') # Vespague sucks
+            line = line.replace('\\', '\\\\')  # Vespague sucks
             self._send_command('ImprimeTexto', TextoLivre=line)
 
     def payment_receipt_close(self):
@@ -782,7 +783,7 @@ class FiscNetECF(SerialBase):
     def gerencial_report_print(self, text):
         text = text.encode(self.coupon_printer_charset)
         for line in text.split('\n'):
-            line = line.replace('\\', '\\\\') # Vespague sucks
+            line = line.replace('\\', '\\\\')  # Vespague sucks
             self._send_command('ImprimeTexto', TextoLivre=line)
 
     def gerencial_report_close(self):

@@ -37,6 +37,7 @@ _ = stoqdrivers_gettext
 
 log = Logger('stoqdrivers.serial')
 
+
 class VirtualPort:
     implements(ISerialPort)
 
@@ -52,6 +53,7 @@ class VirtualPort:
     def read(self, n_bytes=1):
         return ''
 
+
 class SerialPort(Serial):
     implements(ISerialPort)
 
@@ -62,8 +64,8 @@ class SerialPort(Serial):
         self.flushOutput()
         self.setBaudrate(baudrate)
         # WARNING: Never change these default options, some drivers are based
-        # on this to work. Maybe we should change this and make all the driver 
-        # specify its options, but right now I think that's ok, since these 
+        # on this to work. Maybe we should change this and make all the driver
+        # specify its options, but right now I think that's ok, since these
         # options are common to most of the drivers.
         self.setByteSize(EIGHTBITS)
         self.setParity(PARITY_NONE)

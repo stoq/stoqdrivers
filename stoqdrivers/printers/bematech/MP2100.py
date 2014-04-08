@@ -29,6 +29,6 @@ Bematech MP2100 driver
 
 from stoqdrivers.printers.bematech.MP25 import MP25
 
+
 class MP2100(MP25):
     model_name = "Bematech MP2100 TH FI"
-

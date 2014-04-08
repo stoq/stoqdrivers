@@ -33,9 +33,11 @@ from stoqdrivers.scales.base import BaseScale
 # Scale interface
 #
 
+
 class Scale(BaseScale):
     def read_data(self):
         return self._driver.read_data()
+
 
 def test():
     scale = Scale()

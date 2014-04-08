@@ -29,8 +29,8 @@ Elgin Fiscal K
 
 from stoqdrivers.printers.fiscnet.FiscNetECF import FiscNetECF
 
+
 class KFiscal(FiscNetECF):
     log_domain = 'KFiscal'
     supported = True
     model_name = "Elgin K Fiscal"
-

@@ -48,6 +48,7 @@ log = Logger('stoqdrivers.fiscalprinter')
 # Extra data types to argcheck
 #
 
+
 class taxcode(number):
     @classmethod
     def value_check(cls, name, value):
@@ -55,12 +56,14 @@ class taxcode(number):
                          TaxType.EXEMPTION):
             raise ValueError("%s must be one of TaxType.* constants" % name)
 
+
 class unit(number):
     @classmethod
     def value_check(cls, name, value):
         if value not in (UnitType.WEIGHT, UnitType.METERS, UnitType.LITERS,
                          UnitType.EMPTY, UnitType.CUSTOM):
             raise ValueError("%s must be one of UNIT_* constants" % name)
+
 
 class payment_method(number):
     @classmethod
@@ -72,6 +75,7 @@ class payment_method(number):
 #
 # FiscalPrinter interface
 #
+
 
 class FiscalPrinter(BasePrinter):
     def __init__(self, brand=None, model=None, device=None, config_file=None,
@@ -98,8 +102,8 @@ class FiscalPrinter(BasePrinter):
     @capcheck(basestring, basestring, basestring)
     def identify_customer(self, customer_name, customer_address, customer_id):
         log.info('identify_customer(customer_name=%r, '
-                  'customer_address=%r, customer_id=%r)' % (
-            customer_name, customer_address, customer_id))
+                 'customer_address=%r, customer_id=%r)' % (
+                     customer_name, customer_address, customer_id))
 
         self._driver.coupon_identify_customer(
             self._format_text(customer_name),
@@ -127,8 +131,8 @@ class FiscalPrinter(BasePrinter):
         log.info("add_item(code=%r, description=%r, price=%r, "
                  "taxcode=%r, quantity=%r, unit=%r, discount=%r, "
                  "surcharge=%r, unit_desc=%r)" % (
-            item_code, item_description, item_price, taxcode,
-            items_quantity, unit, discount, surcharge, unit_desc))
+                     item_code, item_description, item_price, taxcode,
+                     items_quantity, unit, discount, surcharge, unit_desc))
 
         if self._has_been_totalized:
             raise AlreadyTotalized("the coupon is already totalized, you "
@@ -302,7 +306,7 @@ class FiscalPrinter(BasePrinter):
 
     def payment_receipt_open(self, identifier, coo, method, value):
         log.info('payment_receipt_open(identifier=%s, coo=%s, method=%s, value=%s)'
-                  % (identifier, coo, method, value))
+                 % (identifier, coo, method, value))
         return self._driver.payment_receipt_open(identifier, coo, method, value)
 
     def payment_receipt_print(self, text):
@@ -384,7 +388,6 @@ class FiscalPrinter(BasePrinter):
         log.info('get_crz()')
 
         return self._driver.get_crz()
-
 
     def get_sintegra(self):
         log.info('get_sintegra()')

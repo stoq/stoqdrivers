@@ -45,6 +45,7 @@ __all__ = ["ISerialPort",
            "IScale",
            ]
 
+
 class ISerialPort(Interface):
     """ Interface used by drivers to write commands and get reply from devices
     """
@@ -65,6 +66,7 @@ class ISerialPort(Interface):
     def write(data):
         """ Write data """
 
+
 class IDriverConstants(Interface):
     """ This interface determines the methods to be implemented by all objects
     that wants didacte constant values for stoqdrivers devices drivers.
@@ -80,8 +82,10 @@ class IDriverConstants(Interface):
         returns its value.
         """
 
+
 class IDevice(Interface):
     model_name = Attribute("A string describing briefly the device implemented")
+
 
 class ICouponPrinter(IDevice):
     """ Describes coupon related tasks for a printer.
@@ -97,12 +101,12 @@ class ICouponPrinter(IDevice):
                                        "coupon printer uses.")
 
     supports_duplicate_receipt = Attribute(
-                                "Wheater or not the printer can print a "
-                                "duplicate payment receipt")
+        "Wheater or not the printer can print a "
+        "duplicate payment receipt")
 
     identify_customer_at_end = Attribute(
-                               "True if the customer is identified at the"
-                               "end of the sale. False if at the beginning")
+        "True if the customer is identified at the"
+        "end of the sale. False if at the beginning")
 
     #
     # Common API
@@ -209,7 +213,7 @@ class ICouponPrinter(IDevice):
         payments added.
 
         @param discount:  discount in value
-        @type discount:   Value must be greater or equal than zero, and less 
+        @type discount:   Value must be greater or equal than zero, and less
                           than coupon total value
 
         @param surcharge: surcharge in value
@@ -455,6 +459,7 @@ class IChequePrinter(IDevice):
         * cheque_city         (str)
         """
 
+
 class IScaleInfo(Interface):
     """ This interface list the data read by the scale """
     weight = Attribute("The weight read")
@@ -462,6 +467,7 @@ class IScaleInfo(Interface):
     total_price = Attribute("The total price. It is equivalent to "
                             "price_per_kg * weight")
     code = Attribute("The product code")
+
 
 class IScale(IDevice):
     """ This interface describes how to interacts with scales.
@@ -471,6 +477,8 @@ class IScale(IDevice):
         """ Read informations of the scale, returning an object
         that implements IScaleInfo interface.
         """
+
+
 class IBarcodeReader(IDevice):
     """ Interface specification describing how to interacts with barcode
     readers.
@@ -482,6 +490,7 @@ class IBarcodeReader(IDevice):
         notify_read() to be notified when data was received), or it
         will block in loop waiting the data.
         """
+
 
 class ISintegraData(Interface):
     # This is used to generate a Sintegra 60M entry
@@ -496,4 +505,3 @@ class ISintegraData(Interface):
     total = Attribute('The total value for all sales done by this printer')
     # This is used to generate a Sintegra 60A entry
     tax_total = Attribute('The total value including taxes')
-

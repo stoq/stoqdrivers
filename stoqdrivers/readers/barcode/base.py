@@ -30,6 +30,7 @@ from zope.interface import implements
 from stoqdrivers.interfaces import IBarcodeReader
 from stoqdrivers.serialbase import SerialBase
 
+
 class BaseBarcodeReader(SerialBase):
     implements(IBarcodeReader)
     # Should be defined in subclasses
@@ -40,6 +41,7 @@ class BaseBarcodeReader(SerialBase):
 
     def get_code(self):
         return self.readline()
+
 
 def get_supported_barcode_readers():
     result = {}

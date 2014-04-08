@@ -61,13 +61,13 @@ CASH_OUT_TYPE = "SA"
 
 # The comment after the commands are comparing the MP25 command with MP20.
 
-CMD_COUPON_OPEN = 0 # MP25 aceita 2 parametros opcionais a mais
+CMD_COUPON_OPEN = 0  # MP25 aceita 2 parametros opcionais a mais
 CMD_CLOSE_TILL = 5
 CMD_REDUCE_Z = 5
 CMD_READ_X = 6
 CMD_ADD_TAX = 7
 CMD_READ_MEMORY = 8
-CMD_COUPON_CANCEL = 14 # MP25 aceita 3 parametros opicionais
+CMD_COUPON_CANCEL = 14  # MP25 aceita 3 parametros opicionais
 CMD_STATUS = 19
 CMD_ADD_VOUCHER = 25
 CMD_READ_TAXCODES = 26
@@ -75,13 +75,13 @@ CMD_READ_TOTALIZERS = 27
 CMD_GET_COUPON_SUBTOTAL = 29
 CMD_GET_COUPON_NUMBER = 30
 CMD_CANCEL_ITEM = 31
-CMD_COUPON_TOTALIZE = 32 # MP 20 Nao permite desconto simultaneo
+CMD_COUPON_TOTALIZE = 32  # MP 20 Nao permite desconto simultaneo
 CMD_COUPON_CLOSE = 34
-CMD_READ_REGISTER = 35 # Registradores diferentes
+CMD_READ_REGISTER = 35  # Registradores diferentes
 CMD_ADD_ITEM = 63
-CMD_PAYMENT_RECEIPT_OPEN = 66 # MP20 suporta somente 3 primeiro parametros
+CMD_PAYMENT_RECEIPT_OPEN = 66  # MP20 suporta somente 3 primeiro parametros
 CMD_PAYMENT_RECEIPT_PRINT = 67
-CMD_PAYMENT_RECEIPT_CLOSE = 21 # Parece o mesmo, mas com nomes diferentes na mp20 e 25
+CMD_PAYMENT_RECEIPT_CLOSE = 21  # Parece o mesmo, mas com nomes diferentes na mp20 e 25
 CMD_GERENCIAL_REPORT_PRINT = 20
 CMD_GERENCIAL_REPORT_CLOSE = 21
 
@@ -147,11 +147,11 @@ class MP25Registers(object):
 
 class MP25Constants(BaseDriverConstants):
     _constants = {
-        UnitType.WEIGHT:      'Kg',
-        UnitType.METERS:      'm ',
-        UnitType.LITERS:      'Lt',
-        UnitType.EMPTY:       '  ',
-        }
+        UnitType.WEIGHT: 'Kg',
+        UnitType.METERS: 'm ',
+        UnitType.LITERS: 'Lt',
+        UnitType.EMPTY: '  ',
+    }
 
 
 class MP25Status(object):
@@ -180,7 +180,7 @@ class MP25Status(object):
         # FIXME: This shouldn't be commented. But it will break the tests.
         # Need to update the tests for all bematech printers
         #1: (CommandError(_("Command not executed")))
-        }
+    }
 
     st3_codes = {
         # 7: (CouponOpenError(_("Coupon already Open"))),
@@ -191,7 +191,7 @@ class MP25Status(object):
         17: (DriverError(_("Coupon with no items"))),
         20: (PaymentAdditionError(_("Payment method not recognized"))),
         22: (PaymentAdditionError(_("Isn't possible add more payments since"
-                                     "the coupon total value already was "
+                                    "the coupon total value already was "
                                     "reached"))),
         23: (DriverError(_("Coupon isn't totalized yet"))),
         43: (CouponNotOpenError(_("Printer not initialized"))),
@@ -226,7 +226,7 @@ class MP25Status(object):
 
     def check_error(self):
         log.debug("status: st1=%s st2=%s st3=%s" %
-                    (self.st1, self.st2, self.st3))
+                  (self.st1, self.st2, self.st3))
 
         if self.st1 != 0:
             self._check_error_in_dict(self.st1_codes, self.st1)
@@ -247,11 +247,14 @@ class MP25Status(object):
 def bcd2dec(data):
     return int(''.join(['%02x' % ord(i) for i in data]))
 
+
 def bcd2hex(data):
     return ''.join(['%02x' % ord(i) for i in data])
 
+
 def dec2bcd(dec):
     return chr(dec % 10 + (dec / 10) * 16)
+
 
 def dec2bin(n, trim=-1):
     a = ""
@@ -264,12 +267,13 @@ def dec2bin(n, trim=-1):
 
     if trim != -1:
         if len(a) < trim:
-            a = ("0" * (trim-len(a))) + a
+            a = ("0" * (trim - len(a))) + a
     return a
 
 #
 # Driver implementation
 #
+
 
 class MP25(SerialBase):
     implements(ICouponPrinter)
@@ -478,7 +482,7 @@ class MP25(SerialBase):
         self._add_voucher(CASH_IN_TYPE, value)
 
     def till_remove_cash(self, value):
-        self._add_voucher(CASH_OUT_TYPE,value)
+        self._add_voucher(CASH_OUT_TYPE, value)
 
     def till_read_memory(self, start, end):
         self._send_command(CMD_READ_MEMORY,
@@ -518,9 +522,9 @@ class MP25(SerialBase):
     def coupon_open(self):
         """ This needs to be called before anything else """
         self._send_command(CMD_COUPON_OPEN,
-                            "%-29s%-30s%-80s" % (self._customer_document,
-                                                 self._customer_name,
-                                                 self._customer_address))
+                           "%-29s%-30s%-80s" % (self._customer_document,
+                                                self._customer_name,
+                                                self._customer_address))
 
     def coupon_cancel(self):
         """ Can only be called when a coupon is opened. It needs to be possible
@@ -567,7 +571,7 @@ class MP25(SerialBase):
                 "%022d"    # padding
                 "%2s"      # unit
                 "%-48s\0"  # code
-                "%-200s\0" # description
+                "%-200s\0"  # description
                 % (taxcode,
                    price * Decimal("1e3"),
                    quantity * Decimal("1e3"),
@@ -583,7 +587,7 @@ class MP25(SerialBase):
         last_item = self._get_last_item_id()
         if item_id is None:
             item_id = last_item
-        elif item_id not in xrange(1, last_item+2):
+        elif item_id not in xrange(1, last_item + 2):
             raise CancelItemError("There is no such item with ID %r"
                                   % item_id)
         self._send_command(CMD_CANCEL_ITEM, "%04d" % (item_id,))
@@ -646,7 +650,7 @@ class MP25(SerialBase):
             raise DriverError('Looks like this payment method '
                               'is not configured in the printer')
 
-        value = int(value*100)
+        value = int(value * 100)
         self._send_command(CMD_PAYMENT_RECEIPT_OPEN,
                            '%-16s%014d%06d' % (method, value, coo))
 
@@ -675,7 +679,7 @@ class MP25(SerialBase):
             customer_address=Capability(max_len=80),
             add_cash_value=Capability(min_size=0.1, digits=12, decimals=2),
             remove_cash_value=Capability(min_size=0.1, digits=12, decimals=2),
-            )
+        )
 
     def get_constants(self):
         return self._consts
@@ -712,23 +716,23 @@ class MP25(SerialBase):
 
         constants = []
         for i in range(16):
-            value = bcd2dec(data[i*2:i*2+2])
+            value = bcd2dec(data[i * 2:i * 2 + 2])
             if not value:
                 continue
 
-            if 1 << 15-i & status == 0:
+            if 1 << 15 - i & status == 0:
                 tax = TaxType.CUSTOM
             else:
                 tax = TaxType.SERVICE
             constants.append((tax,
-                              '%02d' % (i+1,),
+                              '%02d' % (i + 1,),
                               Decimal(value) / 100))
 
         constants.extend([
             (TaxType.SUBSTITUTION, 'FF', None),
-            (TaxType.EXEMPTION,    'II', None),
-            (TaxType.NONE,         'NN', None),
-            ])
+            (TaxType.EXEMPTION, 'II', None),
+            (TaxType.NONE, 'NN', None),
+        ])
 
         return constants
 
@@ -736,9 +740,9 @@ class MP25(SerialBase):
         status = self._read_register(self.registers.PAYMENT_METHODS)[1]
         methods = []
         for i in range(20):
-            method = status[i*16:i*16+16]
+            method = status[i * 16:i * 16 + 16]
             if method != '\x00' * 16:
-                methods.append(('%02d' % (i+1), method.strip()))
+                methods.append(('%02d' % (i + 1), method.strip()))
         return methods
 
     def get_sintegra(self):
@@ -752,12 +756,12 @@ class MP25(SerialBase):
         total_discount = self._read_register(self.registers.TOTAL_DISCOUNT)
 
         # Avbr function TACBrECFBematech.GetVendaBruta
-        registers = self._send_command(62 , 55, response='308s')
-        coupon_end = int(bcd2hex(registers)[568:568+6])
+        registers = self._send_command(62, 55, response='308s')
+        coupon_end = int(bcd2hex(registers)[568:568 + 6])
 
         grande_total = self._read_register(self.registers.TOTAL)
-        grande_total = grande_total/Decimal(100)
-        total_bruto = bcd2dec(registers[1:10])/Decimal(100)
+        grande_total = grande_total / Decimal(100)
+        total_bruto = bcd2dec(registers[1:10]) / Decimal(100)
 
         length, names = self._send_command(CMD_READ_TAXCODES, response='b32s')
         status = self._read_register(self.registers.TOTALIZERS)
@@ -766,36 +770,36 @@ class MP25(SerialBase):
 
         taxes = []
         for i in range(length):
-            if 1 << 15-i & status != 0:
+            if 1 << 15 - i & status != 0:
                 type = 'ISS'
             else:
                 type = 'ICMS'
 
-            name = bcd2hex(names[i*2:i*2+2])
-            value = bcd2dec(values[i*7:i*7+7])
-            taxes.append((name, value/Decimal(100), type))
+            name = bcd2hex(names[i * 2:i * 2 + 2])
+            value = bcd2dec(values[i * 7:i * 7 + 7])
+            taxes.append((name, value / Decimal(100), type))
 
-        taxes.append(('CANC', total_cancelations/Decimal(100), 'ICMS'))
-        taxes.append(('DESC', total_discount/Decimal(100), 'ICMS'))
-        taxes.append(('I', bcd2dec(values[112:119])/Decimal(100), 'ICMS'))
-        taxes.append(('N', bcd2dec(values[119:126])/Decimal(100), 'ICMS'))
-        taxes.append(('F', bcd2dec(values[126:133])/Decimal(100), 'ICMS'))
+        taxes.append(('CANC', total_cancelations / Decimal(100), 'ICMS'))
+        taxes.append(('DESC', total_discount / Decimal(100), 'ICMS'))
+        taxes.append(('I', bcd2dec(values[112:119]) / Decimal(100), 'ICMS'))
+        taxes.append(('N', bcd2dec(values[119:126]) / Decimal(100), 'ICMS'))
+        taxes.append(('F', bcd2dec(values[126:133]) / Decimal(100), 'ICMS'))
         date = bcd2hex(opening_date[:6])
 
         return Settable(
-             opening_date=datetime.date(year=2000+int(date[4:6]),
-                                        month=int(date[2:4]),
-                                        day=int(date[:2])),
-             serial=self.get_serial(),
-             serial_id='%03d' % self._read_register(self.registers.NUMBER_TILL),
-             coupon_start=0,
-             coupon_end=coupon_end,
-             cro=cro,
-             crz=crz,
-             coo=coo,
-             period_total=grande_total - total_bruto,
-             total=grande_total,
-             taxes=taxes)
+            opening_date=datetime.date(year=2000 + int(date[4:6]),
+                                       month=int(date[2:4]),
+                                       day=int(date[:2])),
+            serial=self.get_serial(),
+            serial_id='%03d' % self._read_register(self.registers.NUMBER_TILL),
+            coupon_start=0,
+            coupon_end=coupon_end,
+            cro=cro,
+            crz=crz,
+            coo=coo,
+            period_total=grande_total - total_bruto,
+            total=grande_total,
+            taxes=taxes)
 
     def get_firmware_version(self):
         """Return the firmware version"""
@@ -810,6 +814,6 @@ if __name__ == "__main__":
     from stoqdrivers.serialbase import SerialPort
     #port = Serial('/dev/pts/5')
     port = SerialPort('/tmp/com2')
-    p  = MP25(port)
+    p = MP25(port)
 
     p._setup_constants()

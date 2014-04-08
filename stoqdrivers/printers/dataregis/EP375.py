@@ -35,7 +35,7 @@ from zope.interface import implements
 
 from stoqdrivers.serialbase import SerialBase
 from stoqdrivers.interfaces import (IChequePrinter,
-                                            ICouponPrinter)
+                                    ICouponPrinter)
 from stoqdrivers.exceptions import (DriverError, PendingReduceZ, PendingReadX,
                                     PrinterError, CommError, CommandError,
                                     CommandParametersError, ReduceZError,
@@ -44,7 +44,7 @@ from stoqdrivers.exceptions import (DriverError, PendingReduceZ, PendingReadX,
                                     CouponOpenError)
 from stoqdrivers.enum import PaymentMethodType, TaxType, UnitType
 from stoqdrivers.printers.cheque import (BaseChequePrinter,
-                                                 BankConfiguration)
+                                         BankConfiguration)
 from stoqdrivers.printers.capabilities import Capability
 from stoqdrivers.printers.base import BaseDriverConstants
 from stoqdrivers.translation import stoqdrivers_gettext
@@ -61,27 +61,29 @@ _ = stoqdrivers_gettext
 # Helper functions
 #
 
+
 def format_value(value, max_len):
     value = "%-*.02f" % (max_len, value)
     if len(value) > max_len:
         raise ValueError("The value is too big")
     return value
 
+
 class EP375Constants(BaseDriverConstants):
     _constants = {
-        UnitType.WEIGHT:      '00',
-        UnitType.METERS:      '04',
-        UnitType.LITERS:      '03',
-        UnitType.EMPTY:       '02',
-        PaymentMethodType.MONEY:         '00',
-        PaymentMethodType.CHECK:        '01',
-        }
+        UnitType.WEIGHT: '00',
+        UnitType.METERS: '04',
+        UnitType.LITERS: '03',
+        UnitType.EMPTY: '02',
+        PaymentMethodType.MONEY: '00',
+        PaymentMethodType.CHECK: '01',
+    }
 
     _tax_constants = [
         (TaxType.SUBSTITUTION, '02', None),
-        (TaxType.EXEMPTION,    '03', None),
-        (TaxType.NONE,         '04', None),
-        ]
+        (TaxType.EXEMPTION, '03', None),
+        (TaxType.NONE, '04', None),
+    ]
 
 
 #
@@ -151,7 +153,7 @@ class EP375Status:
                              "previous than the last reduce Z")),
         0x7a: (HardwareFailure, _("No more fiscal memory :(")),
         0x5a: (ReduceZError, _("Reduce Z already done"))
-        }
+    }
 
     def __init__(self, raw_status):
         self.parse(raw_status)
@@ -176,7 +178,6 @@ class EP375Status:
 
     def has_been_totalized(self):
         return ord(self.internal_state) == EP375Status.HAS_BEEN_TOTALIZED
-
 
     def has_opened_sale(self):
         return (self.has_been_totalized()
@@ -213,6 +214,7 @@ class EP375Status:
                                                         self.internal_state,
                                                         self.is_ready))
 
+
 class CouponItem:
     def __init__(self, code, description, taxcode, quantity, price, discount,
                  surcharge, unit):
@@ -241,13 +243,13 @@ class CouponItem:
         price = int(float(self.price) * 1e2)
         D = int(float(D) * 1e2)
 
-        return ("%-16s" # code
-                "%-*s" # description
-                "%02s" # taxcode
-                "%06d" # quantity
-                "%09d" # price
-                "%04d" # discount/surcharge
-                "%02s" # unit
+        return ("%-16s"  # code
+                "%-*s"  # description
+                "%02s"  # taxcode
+                "%06d"  # quantity
+                "%09d"  # price
+                "%04d"  # discount/surcharge
+                "%02s"  # unit
                 % (self.code[:16], desc_size, self.description[:desc_size],
                    taxcode, quantity, price, D, self.unit))
 
@@ -324,7 +326,7 @@ class EP375(SerialBase, BaseChequePrinter):
         if package[0] != EP375.CMD_PREFIX:
             raise ValueError("Received inconsistent data")
         n_params = ord(package[3])
-        params = package[4:4+n_params]
+        params = package[4:4 + n_params]
         if len(params) != n_params:
             raise ValueError("Received inconsistent data")
         return params
@@ -339,7 +341,7 @@ class EP375(SerialBase, BaseChequePrinter):
         except ValueError:
             return False
         cmdid = package[2]
-        checksum = ord(package[4+len(params)])
+        checksum = ord(package[4 + len(params)])
         new_checksum = ord(self._get_packed(cmdid, params)[-1])
         return new_checksum == checksum
 
@@ -455,11 +457,9 @@ class EP375(SerialBase, BaseChequePrinter):
         result = self._send_command(self.CMD_GET_STATUS)
         return EP375Status(result)
 
-
     #
     # ICouponPrinter implementation
     #
-
     def coupon_identify_customer(self, customer, address, document):
         # The printer Dataregis 375-EP doesn't supports customer
         # identification
@@ -575,7 +575,7 @@ class EP375(SerialBase, BaseChequePrinter):
         value = "%014d" % int(float(value) * 1e2)
 
         if ((not self._get_status().has_been_totalized())
-            and self.coupon_discount or self.coupon_surcharge):
+                and self.coupon_discount or self.coupon_surcharge):
             if self.coupon_discount:
                 type = "D"
                 D = self.coupon_discount

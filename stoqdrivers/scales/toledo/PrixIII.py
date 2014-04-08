@@ -39,6 +39,7 @@ ETX = 0x03
 PRICE_PRECISION = 2
 QUANTITY_PRECISION = 3
 
+
 class PackagePrt4:
     """ This class implements a parser for the 4a protocol of Toledo Prix III
 

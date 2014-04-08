@@ -41,6 +41,7 @@ from stoqdrivers.translation import stoqdrivers_gettext
 
 _ = stoqdrivers_gettext
 
+
 class BankConfiguration:
     """ This class store and manage the Cheque elements positions for a bank.
     """
@@ -70,6 +71,7 @@ class BankConfiguration:
     @argcheck(str)
     def get_y_coordinate(self, name):
         return self.get_coordinate(name)[0]
+
 
 class BaseChequePrinter:
     """ A base class for all printers that implements IChequePrinter interface.
@@ -167,6 +169,7 @@ class ChequePrinter(BasePrinter):
 #
 # Testing
 #
+
 
 def test():
     printer = ChequePrinter()
