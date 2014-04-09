@@ -28,7 +28,7 @@ check-failed:
 	$(TESTS_RUNNER) --failed $(TEST_PACKAGES)
 
 coverage: check-source-all
-	$(TESTS_RUNNER) --with-xcoverage --with-xunit
+	$(TESTS_RUNNER) --with-xcoverage --with-xunit \
 	                --cover-package=$(PACKAGE) --cover-erase $(TEST_PACKAGES)
 
 include utils/utils.mk
