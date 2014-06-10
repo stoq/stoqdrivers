@@ -8,6 +8,10 @@ from kiwi.dist import setup, listpackages, listfiles
 from stoqdrivers import __version__
 
 
+with open('requirements.txt') as f:
+    install_requires = [l.strip() for l in f.readlines() if
+                        l.strip() and not l.startswith('#')]
+
 setup(
     name="stoqdrivers",
     version=".".join(map(str, __version__)),
@@ -25,9 +29,5 @@ setup(
     data_files=[("$datadir/conf", listfiles("stoqdrivers/conf", "*.ini"))],
     global_resources=dict(conf="$datadir/conf"),
     resources=dict(locale="$prefix/share/locale"),
-    install_requires=[
-        "kiwi-gtk >= 1.9.28",
-        "zope.interface >= 3.0",
-        "pyserial >= 2.2",
-    ]
+    install_requires=install_requires,
 )
