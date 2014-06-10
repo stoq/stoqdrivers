@@ -305,10 +305,7 @@ class Simple(object):
                         discount=Decimal("0.0"),
                         surcharge=Decimal("0.0"), unit_desc=""):
         self._check()
-        if code not in ['2368694135945', '6234564656756', '6985413595971',
-                        '2692149835416', '1595843695465', '8596458216412',
-                        '9586249534513', '7826592136954', '5892458629421',
-                        '1598756984265', '1598756984265']:
+        if code not in ["{:02d}".format(x) for x in range(1, 11)]:
             # Allow deliveries as well
             if code != '' and taxcode != 'S0':
                 raise ItemAdditionError(
