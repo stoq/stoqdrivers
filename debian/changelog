@@ -1,3 +1,9 @@
+stoqdrivers (1:0.9.21.1) precise; urgency=low
+
+  * Bugfix release
+
+ -- Thiago Bellini Ribeiro <hackedbellini@async.com.br>  Wed, 11 Jun 2014 15:39:30 -0300
+
 stoqdrivers (1:0.9.21) precise; urgency=low
 
   * New release
