@@ -403,6 +403,8 @@ class Simple(object):
         if troco:
             self.output.feed('Troco: %0.2f\n' % troco)
         self.output.feed_line()
+        if message:
+            self.output.feed(message)
         self.output.feed('\n')
         self._reset_flags()
         return 0
