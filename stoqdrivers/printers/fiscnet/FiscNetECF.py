@@ -28,11 +28,14 @@
 FiscNet base driver implementation.
 """
 
+import ConfigParser
 import datetime
 from decimal import Decimal
 import re
+import os
 
 from kiwi.currency import currency
+from kiwi.log import Logger
 from kiwi.python import Settable
 from serial import PARITY_EVEN
 from zope.interface import implements
@@ -53,6 +56,8 @@ from stoqdrivers.translation import stoqdrivers_gettext
 from stoqdrivers.serialbase import SerialBase
 
 _ = stoqdrivers_gettext
+
+log = Logger('stoqdrivers.conf')
 
 # Page 92
 [FLAG_INTERVENCAO_TECNICA,
@@ -132,6 +137,9 @@ class FiscNetECF(SerialBase):
     CMD_SUFFIX = '}'
     EOL_DELIMIT = CMD_SUFFIX
 
+    CASH_SUPPLY = 'Suprimento'
+    CASH_REMOVAL = 'Sangria'
+
     errors_dict = {
         7003: OutofPaperError,
         7004: OutofPaperError,
@@ -160,6 +168,16 @@ class FiscNetECF(SerialBase):
         SerialBase.__init__(self, port)
         self._consts = consts or FiscNetConstants
         self._command_id = 0
+        config = ConfigParser.RawConfigParser()
+        has_conf = config.read([os.path.expanduser('~/.stoq/stoqdrivers.conf')])
+        if has_conf:
+            try:
+                self.CASH_SUPPLY = config.get('fiscnet', 'cash_supply')
+                self.CASH_REMOVAL = config.get('fiscnet', 'cash_removal')
+            except ConfigParser.NoOptionError:
+                log.info("Option not found, check stoqdrivers.conf")
+        else:
+            log.info("file: stoqdrivers.conf not found")
         self._reset()
 
     def _reset(self):
@@ -448,9 +466,9 @@ class FiscNetECF(SerialBase):
 
     def _configure_printer(self):
         self._define_tax_name(0,
-                              "Suprimento".encode(self.coupon_printer_charset), entrada=True)
+                              self.CASH_SUPPLY.encode(self.coupon_printer_charset), entrada=True)
         self._define_tax_name(1,
-                              "Sangria".encode(self.coupon_printer_charset), entrada=False)
+                              self.CASH_REMOVAL.encode(self.coupon_printer_charset), entrada=False)
         for code in range(2, 15):
             self._delete_tax_name(code)
 
@@ -615,7 +633,7 @@ class FiscNetECF(SerialBase):
             self.coupon_cancel()
         self._send_command('AbreCupomNaoFiscal')
         self._send_command('EmiteItemNaoFiscal',
-                           NomeNaoFiscal="Suprimento",
+                           NomeNaoFiscal=self.CASH_SUPPLY,
                            Valor=value)
         self._send_command('PagaCupom',
                            CodMeioPagamento=-2, Valor=value)
@@ -627,7 +645,7 @@ class FiscNetECF(SerialBase):
             self.coupon_cancel()
         self._send_command('AbreCupomNaoFiscal')
         self._send_command('EmiteItemNaoFiscal',
-                           NomeNaoFiscal="Sangria",
+                           NomeNaoFiscal=self.CASH_REMOVAL,
                            Valor=value)
         self._send_command('EncerraDocumento')
 
