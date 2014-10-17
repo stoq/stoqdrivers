@@ -247,7 +247,7 @@ class FBII(SerialBase):
     #
 
     def _get_next_command_id(self):
-        if self._command_id == 256:
+        if self._command_id == 255:
             self._command_id = FIRST_COMMAND_ID - 1
 
         self._command_id += 1
