@@ -87,7 +87,14 @@ class FiscalPrinter(BasePrinter):
         self.totalized_value = Decimal("0.0")
         self._capabilities = self._driver.get_capabilities()
         self._charset = self._driver.coupon_printer_charset
-        self.setup()
+        try:
+            self.setup()
+            self._setup_complete = True
+        except Exception:
+            self._setup_complete = False
+
+    def setup_complete(self):
+        return self._setup_complete
 
     def get_capabilities(self):
         return self._capabilities
