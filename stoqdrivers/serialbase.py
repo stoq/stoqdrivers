@@ -25,7 +25,8 @@
 ##              Henrique Romano  <henrique@async.com.br>
 ##
 
-from kiwi.log import Logger
+import logging
+
 from serial import Serial, EIGHTBITS, PARITY_NONE, STOPBITS_ONE
 from zope.interface import implements
 
@@ -35,7 +36,7 @@ from stoqdrivers.translation import stoqdrivers_gettext
 
 _ = stoqdrivers_gettext
 
-log = Logger('stoqdrivers.serial')
+log = logging.getLogger('stoqdrivers.serial')
 
 
 class VirtualPort:

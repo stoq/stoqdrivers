@@ -29,10 +29,10 @@ Daruma FS345 driver
 """
 import datetime
 from decimal import Decimal
+import logging
 import time
 
 from kiwi.currency import currency
-from kiwi.log import Logger
 from kiwi.python import Settable
 from zope.interface import implements
 
@@ -54,7 +54,7 @@ abicomp.register_codec()
 
 _ = stoqdrivers_gettext
 
-log = Logger('stoqdrivers.daruma')
+log = logging.getLogger('stoqdrivers.daruma')
 
 CMD_STATUS = '\x1d\xff'
 

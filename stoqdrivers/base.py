@@ -27,9 +27,9 @@
 Generic base class implementation for all devices.
 """
 
-import gobject
+import logging
 
-from kiwi.log import Logger
+import gobject
 
 from stoqdrivers.configparser import StoqdriversConfig
 from stoqdrivers.enum import DeviceType
@@ -39,7 +39,7 @@ from stoqdrivers.serialbase import SerialPort
 
 _ = stoqdrivers_gettext
 
-log = Logger('stoqdrivers.basedev')
+log = logging.getLogger('stoqdrivers.basedev')
 
 
 class BaseDevice:

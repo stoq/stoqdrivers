@@ -32,10 +32,10 @@ Bematech MP25 driver
 
 import datetime
 from decimal import Decimal
+import logging
 import struct
 
 from kiwi.currency import currency
-from kiwi.log import Logger
 from kiwi.python import Settable
 from zope.interface import implements
 
@@ -54,7 +54,7 @@ from stoqdrivers.translation import stoqdrivers_gettext
 
 _ = stoqdrivers_gettext
 
-log = Logger('stoqdrivers.bematech.MP25')
+log = logging.getLogger('stoqdrivers.bematech.MP25')
 
 CASH_IN_TYPE = "SU"
 CASH_OUT_TYPE = "SA"

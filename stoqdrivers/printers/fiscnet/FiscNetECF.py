@@ -31,11 +31,11 @@ FiscNet base driver implementation.
 import ConfigParser
 import datetime
 from decimal import Decimal
+import logging
 import re
 import os
 
 from kiwi.currency import currency
-from kiwi.log import Logger
 from kiwi.python import Settable
 from serial import PARITY_EVEN
 from zope.interface import implements
@@ -57,7 +57,7 @@ from stoqdrivers.serialbase import SerialBase
 
 _ = stoqdrivers_gettext
 
-log = Logger('stoqdrivers.conf')
+log = logging.getLogger('stoqdrivers.conf')
 
 # Page 92
 [FLAG_INTERVENCAO_TECNICA,

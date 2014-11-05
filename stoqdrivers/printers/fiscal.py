@@ -27,10 +27,10 @@
 
 import datetime
 from decimal import Decimal
+import logging
 
 from kiwi.argcheck import number
 from kiwi.currency import currency
-from kiwi.log import Logger
 
 from stoqdrivers.exceptions import (CloseCouponError, PaymentAdditionError,
                                     AlreadyTotalized, InvalidValue)
@@ -42,7 +42,7 @@ from stoqdrivers.translation import stoqdrivers_gettext
 
 _ = stoqdrivers_gettext
 
-log = Logger('stoqdrivers.fiscalprinter')
+log = logging.getLogger('stoqdrivers.fiscalprinter')
 
 #
 # Extra data types to argcheck

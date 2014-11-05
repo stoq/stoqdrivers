@@ -28,6 +28,7 @@ Daruma FS2100 driver
 """
 
 import operator
+import logging
 from decimal import Decimal
 import time
 
@@ -36,9 +37,7 @@ from stoqdrivers.printers.daruma.FS345 import FS345, CMD_GET_TAX_CODES
 from stoqdrivers.enum import UnitType, TaxType
 from stoqdrivers.exceptions import DriverError
 
-from kiwi.log import Logger
-
-log = Logger('stoqdrivers.daruma')
+log = logging.getLogger('stoqdrivers.daruma')
 
 ENQ = 05
 ACK = 06

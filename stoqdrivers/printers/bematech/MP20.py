@@ -41,13 +41,13 @@ CMD             MP 20                MP 25
 73              Algumas diferencas no funcionamento. Ver manual.
 """
 
-from kiwi.log import Logger
 from decimal import Decimal
+import logging
 
 from stoqdrivers.printers.bematech.MP25 import (MP25, MP25Status, CMD_STATUS,
                                                 CMD_COUPON_OPEN)
 
-log = Logger('stoqdrivers.bematech.MP20')
+log = logging.getLogger('stoqdrivers.bematech.MP20')
 
 CMD_ADD_ITEM_SIMPLE = 9
 
