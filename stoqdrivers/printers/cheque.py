@@ -91,7 +91,8 @@ class BaseChequePrinter:
         configfile = self.__module__.split('.')[-2] + '.ini'
 
         config = ConfigParser()
-        filename = environ.find_resource("conf", configfile)
+        filename = environ.get_resource_filename('stoqdrivers', 'conf',
+                                                 configfile)
         if not config.read(filename):
             return None
         for section in config.sections():

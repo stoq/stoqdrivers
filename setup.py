@@ -27,7 +27,5 @@ setup(
     license="GNU LGPL 2.1 (see COPYING)",
     packages=listpackages('stoqdrivers'),
     data_files=[("$datadir/conf", listfiles("stoqdrivers/conf", "*.ini"))],
-    global_resources=dict(conf="$datadir/conf"),
-    resources=dict(locale="$prefix/share/locale"),
     install_requires=install_requires,
 )
