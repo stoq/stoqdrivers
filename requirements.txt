@@ -3,6 +3,6 @@
 # needed to run stoqdrivers, they are processed by pip/easy_install
 #
 
-kiwi-gtk >= 1.9.28
+kiwi-gtk >= 1.9.41
 zope.interface >= 3.0
 pyserial >= 2.2
