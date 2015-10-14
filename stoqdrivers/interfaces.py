@@ -460,6 +460,32 @@ class IChequePrinter(IDevice):
         """
 
 
+class INonFiscalPrinter(IDevice):
+    """ Interface used to formatting texts in non fiscal printers.
+    """
+
+    def centralize():
+        """ Centralize the text to be sent to coupon. """
+
+    def descentralize():
+        """ Descentralize the text to be sent to coupon. """
+
+    def set_bold():
+        """ The sent text will be appear in bold. """
+
+    def unset_bold():
+        """ Remove the bold option. """
+
+    def print_line(data):
+        """ Performs a line break to the given text. """
+
+    def print_inline(data):
+        """ Print a given text in a unique line. """
+
+    def print_barcode(code):
+        """ Print a barcode representing the given code. """
+
+
 class IScaleInfo(Interface):
     """ This interface list the data read by the scale """
     weight = Attribute("The weight read")
