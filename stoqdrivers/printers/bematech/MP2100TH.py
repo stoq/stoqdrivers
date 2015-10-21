@@ -39,6 +39,9 @@ BARCODE_128 = '\x1Dkn'
 class MP2100TH(SerialBase):
     implements(INonFiscalPrinter)
 
+    supported = True
+    model_name = "Bematech MP2100 TH"
+
     def __init__(self, port, consts=None):
         self._is_bold = False
         self._is_centralized = False
