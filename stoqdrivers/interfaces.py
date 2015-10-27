@@ -485,6 +485,9 @@ class INonFiscalPrinter(IDevice):
     def print_barcode(code):
         """ Print a barcode representing the given code. """
 
+    def print_qrcode(code):
+        """ Print a qrcode representing the given code. """
+
 
 class IScaleInfo(Interface):
     """ This interface list the data read by the scale """

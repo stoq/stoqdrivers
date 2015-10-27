@@ -6,3 +6,4 @@
 kiwi-gtk >= 1.9.41
 zope.interface >= 3.0
 pyserial >= 2.2
+qrcode >= 4.0.1
