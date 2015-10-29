@@ -97,7 +97,7 @@ def get_supported_printers():
     result = {}
     for brand, module_names in [
             ('bematech', ['DP20C', 'MP20', 'MP2100', 'MP2100TH', 'MP25']),
-            ('daruma', ['FS2100', 'FS345', 'FS600MFD']),
+            ('daruma', ['DR700', 'FS2100', 'FS345', 'FS600MFD']),
             ('dataregis', ['EP375', 'Quick']),
             ('elgin', ['KFiscal']),
             ('epson', ['FBII', 'FBIII']),
