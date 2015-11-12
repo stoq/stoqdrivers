@@ -6,7 +6,7 @@
 Summary: Python fiscal printer (ECF) drivers
 
 Name: stoqdrivers
-Version: 0.9.23
+Version: 0.9.24
 Release: 1
 License: LGPL
 Group: System Environment/Libraries
