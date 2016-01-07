@@ -99,7 +99,7 @@ def get_supported_printers():
             ('bematech', ['DP20C', 'MP20', 'MP2100', 'MP2100TH', 'MP25']),
             ('daruma', ['DR700', 'FS2100', 'FS345', 'FS600MFD']),
             ('dataregis', ['EP375', 'Quick']),
-            ('elgin', ['KFiscal']),
+            ('elgin', ['I9', 'KFiscal']),
             ('epson', ['FBII', 'FBIII']),
             ('fiscnet', ['FiscNetECF']),
             ('perto', ['Pay2023'])]:
