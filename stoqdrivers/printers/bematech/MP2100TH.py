@@ -154,6 +154,9 @@ class MP2100TH(SerialBase):
         self.write('\x00')
         self._print_matrix(_GRAPHICS_8BITS, qr.get_matrix())
 
+    def cut_paper(self):
+        self.write('\x1b\x6d')
+
     #
     #  Private
     #

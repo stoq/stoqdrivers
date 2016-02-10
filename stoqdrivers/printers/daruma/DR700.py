@@ -97,3 +97,6 @@ class DR700(SerialBase):
         correction = chr(0)
         self.write('\x1b\x81%s%s%s%s%s' % (max_size, min_size, width, correction, code))
         self.write('\x0A')
+
+    def cut_paper(self):
+        self.write('\x1b\x6d')

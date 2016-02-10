@@ -54,3 +54,6 @@ class NonFiscalPrinter(BasePrinter):
 
     def print_qrcode(self, code):
         self._driver.print_qrcode(code)
+
+    def cut_paper(self):
+        self._driver.cut_paper()

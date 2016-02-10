@@ -488,6 +488,9 @@ class INonFiscalPrinter(IDevice):
     def print_qrcode(code):
         """ Print a qrcode representing the given code. """
 
+    def cut_paper():
+        """ Performs a paper cutting. """
+
 
 class IScaleInfo(Interface):
     """ This interface list the data read by the scale """

@@ -136,3 +136,6 @@ class I9(SerialBase):
 
         # Print - 1D 28 6B pl(3) ph(0) cn(49) fn(81) m(48)
         self.write('\x1d\x28\x6b\x03\x00%s%s%s' % (chr(49), chr(81), chr(48)))
+
+    def cut_paper(self):
+        self.write('\x1d\x56%s' % chr(48))
