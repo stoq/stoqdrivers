@@ -59,20 +59,16 @@ class SerialPort(Serial):
     implements(ISerialPort)
 
     def __init__(self, device, baudrate=9600):
-        Serial.__init__(self, device)
-        self.setDTR(True)
-        self.flushInput()
-        self.flushOutput()
-        self.setBaudrate(baudrate)
         # WARNING: Never change these default options, some drivers are based
         # on this to work. Maybe we should change this and make all the driver
         # specify its options, but right now I think that's ok, since these
         # options are common to most of the drivers.
-        self.setByteSize(EIGHTBITS)
-        self.setParity(PARITY_NONE)
-        self.setStopbits(STOPBITS_ONE)
-        self.setTimeout(3)
-        self.setWriteTimeout(0)
+        Serial.__init__(self, device, baudrate=baudrate, bytesize=EIGHTBITS,
+                        parity=PARITY_NONE, stopbits=STOPBITS_ONE, timeout=3,
+                        writeTimeout=0)
+        self.setDTR(True)
+        self.flushInput()
+        self.flushOutput()
 
 
 class SerialBase(object):

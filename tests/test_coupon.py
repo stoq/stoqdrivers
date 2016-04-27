@@ -67,14 +67,29 @@ class LogSerialPort:
     def getDSR(self):
         return self._port.getDSR()
 
-    def setParity(self, parity):
-        return self._port.setParity(parity)
+    @property
+    def parity(self):
+        return self._port.parity
 
-    def setTimeout(self, read_timeout):
-        return self._port.setTimeout(read_timeout)
+    @parity.setter
+    def parity(self, value):
+        self._port.parity = value
 
-    def setWriteTimeout(self, write_timeout):
-        return self._port.setWriteTimeout(write_timeout)
+    @property
+    def timeout(self):
+        return self._port.timeout
+
+    @timeout.setter
+    def timeout(self, value):
+        self._port.timeout = value
+
+    @property
+    def writeTimeout(self):
+        return self._port.writeTimeout
+
+    @writeTimeout.setter
+    def writeTimeout(self, value):
+        self._port.writeTimeout = value
 
     def read(self, n_bytes=1):
         data = self._port.read(n_bytes)
@@ -109,24 +124,6 @@ class PlaybackPort:
         self._load_data(datafile)
 
     def setDTR(self):
-        pass
-
-    def setBaudrate(self, baudrate):
-        pass
-
-    def setByteSize(self, bytesize):
-        pass
-
-    def setParity(self, parity):
-        pass
-
-    def setStopbits(self, stopbits):
-        pass
-
-    def setTimeout(self, read_timeout):
-        pass
-
-    def setWriteTimeout(self, write_timeout):
         pass
 
     def getDSR(self):
@@ -199,8 +196,7 @@ class _BaseTest(unittest.TestCase):
         if not os.path.exists(filename):
             # Change this path to the serial port and set the baudrate used by
             # fiscal printer when recreating the tests.
-            real_port = SerialPort('/tmp/stoq-ecf')
-            real_port.setBaudrate(9600)
+            real_port = SerialPort('/tmp/stoq-ecf', baudrate=9600)
             self._port = LogSerialPort(real_port)
         else:
             self._port = PlaybackPort(filename)

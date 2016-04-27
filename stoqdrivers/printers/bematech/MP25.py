@@ -292,8 +292,8 @@ class MP25(SerialBase):
 
     def __init__(self, port, consts=None):
         self._consts = consts or MP25Constants
-        port.setTimeout(2)
-        port.setWriteTimeout(5)
+        port.timeout = 2
+        port.writeTimeout = 5
         SerialBase.__init__(self, port)
         # XXX: Seems that Bematech doesn't contains any variable with the
         # coupon remainder value, so I need to manage it by myself.
