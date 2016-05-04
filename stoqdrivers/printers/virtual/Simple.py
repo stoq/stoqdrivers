@@ -553,12 +553,15 @@ class Simple(object):
 
     def gerencial_report_open(self, gerencial_id=0):
         self._check()
+        self.output.feed('      RELATORIO GERENCIAL\n\n')
 
     def gerencial_report_print(self, text):
         self._check()
+        self.output.feed(text)
 
     def gerencial_report_close(self):
         self._check()
+        self.output.feed_line()
 
     def get_firmware_version(self):
         return '1.1.1'
