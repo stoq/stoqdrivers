@@ -28,14 +28,17 @@ from zope.interface import implements
 from stoqdrivers.interfaces import INonFiscalPrinter
 from stoqdrivers.serialbase import SerialBase
 
-LINE_FEED = '\x1bA\x00'
-CENTRALIZE = '\x1ba\x01'
-DESCENTRALIZE = '\x1ba\x00'
-CONDENSED_MODE = '\x1bSI'
-NORMAL_MODE = '\x1bH'
-SET_BOLD = '\x1bE'
-UNSET_BOLD = '\x1bF'
-BARCODE_128 = '\x1Dkn'
+ESC = '\x1b'
+GS = '\x1d'
+
+LINE_FEED = ESC + 'A\x00'
+CENTRALIZE = ESC + 'a\x01'
+DESCENTRALIZE = ESC + 'a\x00'
+CONDENSED_MODE = ESC + '\x0f'
+NORMAL_MODE = ESC + 'H'
+SET_BOLD = ESC + 'E'
+UNSET_BOLD = ESC + 'F'
+BARCODE_128 = GS + 'kn'
 
 _GRAPHICS_8BITS = 8
 _GRAPHICS_24BITS = 24
@@ -44,8 +47,8 @@ _GRAPHICS_MAX_COLS = {
     _GRAPHICS_24BITS: 1728,
 }
 _GRAPHICS_CMD = {
-    _GRAPHICS_8BITS: '\x1b\x4b%s%s%s',
-    _GRAPHICS_24BITS: '\x1b\x2a\x21%s%s%s',
+    _GRAPHICS_8BITS: ESC + '\x4b%s%s%s',
+    _GRAPHICS_24BITS: ESC + '\x2a\x21%s%s%s',
 }
 
 
@@ -139,13 +142,13 @@ class MP2100TH(SerialBase):
 
     def print_barcode(self, code):
         # Change the height
-        self.write('\x1d\x68%s' % chr(120))
+        self.write(GS + '\x68%s' % chr(120))
         # Normal width
-        self.write('\x1d\x77\x02')
+        self.write(GS + '\x77\x02')
         # No HRI (human readable information)
-        self.write('\x1d\x48\x00')
+        self.write(GS + '\x48\x00')
 
-        cmd = '\x1d\x6b\x49%s%s' % (chr(len(code)), code)
+        cmd = GS + '\x6b\x49%s%s' % (chr(len(code)), code)
         self.write(cmd)
 
     def print_qrcode(self, code):
@@ -155,7 +158,7 @@ class MP2100TH(SerialBase):
         self._print_matrix(_GRAPHICS_8BITS, qr.get_matrix())
 
     def cut_paper(self):
-        self.write('\x1b\x6d')
+        self.write(ESC + '\x6d')
 
     #
     #  Private
