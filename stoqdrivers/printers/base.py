@@ -100,7 +100,7 @@ def get_supported_printers():
             ('daruma', ['DR700', 'FS2100', 'FS345', 'FS600MFD']),
             ('dataregis', ['EP375', 'Quick']),
             ('elgin', ['I9', 'KFiscal']),
-            ('epson', ['FBII', 'FBIII']),
+            ('epson', ['FBII', 'FBIII', 'TMT20']),
             ('fiscnet', ['FiscNetECF']),
             ('perto', ['Pay2023'])]:
         result[brand] = []
