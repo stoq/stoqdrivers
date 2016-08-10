@@ -27,7 +27,10 @@ from zope.interface import implements
 
 from stoqdrivers.interfaces import INonFiscalPrinter
 from stoqdrivers.serialbase import SerialBase
+from stoqdrivers.utils import GRAPHICS_8BITS, GRAPHICS_24BITS, matrix2graphics
 
+# FIXME: probably all those commands should be defined on the
+# class itself to allow subclasses to overwrite them easily
 ESC = '\x1b'
 GS = '\x1d'
 
@@ -40,65 +43,23 @@ SET_BOLD = ESC + 'E'
 UNSET_BOLD = ESC + 'F'
 BARCODE_128 = GS + 'kn'
 
-_GRAPHICS_8BITS = 8
-_GRAPHICS_24BITS = 24
-_GRAPHICS_MAX_COLS = {
-    _GRAPHICS_8BITS: 576,
-    _GRAPHICS_24BITS: 1728,
-}
-_GRAPHICS_CMD = {
-    _GRAPHICS_8BITS: ESC + '\x4b%s%s%s',
-    _GRAPHICS_24BITS: ESC + '\x2a\x21%s%s%s',
-}
-
-
-def _bits2byte(bits):
-    return sum(2 ** i if bit else 0 for i, bit in enumerate(reversed(bits)))
-
-
-def _matrix2graphics(graphics_api, matrix, multiplier=1, centralized=True):
-    if not graphics_api in [_GRAPHICS_8BITS, _GRAPHICS_24BITS]:
-        raise ValueError("Graphics api %s not supported" % (graphics_api, ))
-
-    sub_len = graphics_api / multiplier
-
-    for i in xrange(0, len(matrix), sub_len):
-        bytes_ = []
-        sub = matrix[i:i + sub_len]
-        if len(sub) < sub_len:
-            sub.extend([[False] * len(matrix)] * (sub_len - len(sub)))
-
-        for j in xrange(len(matrix)):
-            bits = []
-            for bit in sub:
-                bits.extend([bit[j]] * multiplier)
-
-            if graphics_api == _GRAPHICS_8BITS:
-                # The 3 is to compensate for the fact that each pixel is
-                # 3x larger vertically than horizontally
-                bytes_.extend([_bits2byte(bits)] * 3 * multiplier)
-            elif graphics_api == _GRAPHICS_24BITS:
-                splitted_bytes = []
-                for k in xrange(0, 24, 8):
-                    splitted_bytes.append(_bits2byte(bits[k: k + 8]))
-                bytes_.extend(splitted_bytes * multiplier)
-            else:
-                raise AssertionError
-
-        if centralized:
-            diff = _GRAPHICS_MAX_COLS[graphics_api] - len(bytes_)
-            if diff:
-                bytes_ = ([0] * (diff / 2)) + bytes_
-
-        divide_len_by = graphics_api / 8
-        yield ''.join(chr(b) for b in bytes_), len(bytes_) / divide_len_by
-
 
 class MP2100TH(SerialBase):
     implements(INonFiscalPrinter)
 
     supported = True
     model_name = "Bematech MP2100 TH"
+
+    GRAPHICS_API = GRAPHICS_8BITS
+    GRAPHICS_MULTIPLIER = 1
+    GRAPHICS_MAX_COLS = {
+        GRAPHICS_8BITS: 576,
+        GRAPHICS_24BITS: 1728,
+    }
+    GRAPHICS_CMD = {
+        GRAPHICS_8BITS: ESC + '\x4b%s%s%s',
+        GRAPHICS_24BITS: ESC + '\x2a\x21%s%s%s',
+    }
 
     def __init__(self, port, consts=None):
         self._is_bold = False
@@ -155,7 +116,7 @@ class MP2100TH(SerialBase):
         qr = qrcode.QRCode(version=1, border=4)
         qr.add_data(code)
         self.write('\x00')
-        self._print_matrix(_GRAPHICS_8BITS, qr.get_matrix())
+        self._print_matrix(qr.get_matrix())
 
     def cut_paper(self):
         self.write(ESC + '\x6d')
@@ -164,9 +125,13 @@ class MP2100TH(SerialBase):
     #  Private
     #
 
-    def _print_matrix(self, graphics_api, matrix, multiplier=1):
-        for line, line_len in _matrix2graphics(graphics_api, matrix, multiplier):
-            assert line_len <= _GRAPHICS_MAX_COLS[graphics_api]
+    def _print_matrix(self, matrix):
+        max_cols = self.GRAPHICS_MAX_COLS[self.GRAPHICS_API]
+        cmd = self.GRAPHICS_CMD[self.GRAPHICS_API]
+
+        for line, line_len in matrix2graphics(self.GRAPHICS_API, matrix,
+                                              max_cols, self.GRAPHICS_MULTIPLIER):
+            assert line_len <= max_cols
             n2 = 0
             n1 = line_len
             # line_len = n1 + n2 * 256
@@ -174,5 +139,5 @@ class MP2100TH(SerialBase):
                 n2 += 1
                 n1 -= 256
 
-            self.write(_GRAPHICS_CMD[graphics_api] % (chr(n1), chr(n2), line))
+            self.write(cmd % (chr(n1), chr(n2), line))
             self.write(LINE_FEED)

@@ -26,6 +26,7 @@ from zope.interface import implements
 
 from stoqdrivers.printers.bematech.MP2100TH import MP2100TH
 from stoqdrivers.interfaces import INonFiscalPrinter
+from stoqdrivers.utils import GRAPHICS_8BITS, GRAPHICS_24BITS
 
 
 class MP4200TH(MP2100TH):
@@ -33,3 +34,9 @@ class MP4200TH(MP2100TH):
 
     supported = True
     model_name = "Bematech MP4200 TH"
+
+    GRAPHICS_MAX_COLS = {
+        GRAPHICS_8BITS: 288,
+        # FIXME: What is a good value for 24bits? It is not in the manual
+        GRAPHICS_24BITS: 1023,
+    }

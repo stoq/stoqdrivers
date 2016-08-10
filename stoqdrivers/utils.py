@@ -29,6 +29,9 @@ Functions for general use.
 
 import unicodedata
 
+GRAPHICS_8BITS = 8
+GRAPHICS_24BITS = 24
+
 
 def encode_text(text, encoding):
     """ Converts the string 'text' to encoding 'encoding' and optionally
@@ -45,3 +48,45 @@ def encode_text(text, encoding):
     if encoding == "ascii":
         text = unicodedata.normalize("NFKD", text)
     return text.encode(encoding, "ignore")
+
+
+def bits2byte(bits):
+    return sum(2 ** i if bit else 0 for i, bit in enumerate(reversed(bits)))
+
+
+def matrix2graphics(graphics_api, matrix, max_cols, multiplier=1, centralized=True):
+    if not graphics_api in [GRAPHICS_8BITS, GRAPHICS_24BITS]:
+        raise ValueError("Graphics api %s not supported" % (graphics_api, ))
+
+    sub_len = graphics_api / multiplier
+
+    for i in xrange(0, len(matrix), sub_len):
+        bytes_ = []
+        sub = matrix[i:i + sub_len]
+        if len(sub) < sub_len:
+            sub.extend([[False] * len(matrix)] * (sub_len - len(sub)))
+
+        for j in xrange(len(matrix)):
+            bits = []
+            for bit in sub:
+                bits.extend([bit[j]] * multiplier)
+
+            if graphics_api == GRAPHICS_8BITS:
+                # The 3 is to compensate for the fact that each pixel is
+                # 3x larger vertically than horizontally
+                bytes_.extend([bits2byte(bits)] * 3 * multiplier)
+            elif graphics_api == GRAPHICS_24BITS:
+                splitted_bytes = []
+                for k in xrange(0, 24, 8):
+                    splitted_bytes.append(bits2byte(bits[k: k + 8]))
+                bytes_.extend(splitted_bytes * multiplier)
+            else:
+                raise AssertionError
+
+        if centralized:
+            diff = max_cols - len(bytes_)
+            if diff:
+                bytes_ = ([0] * (diff / 2)) + bytes_
+
+        divide_len_by = graphics_api / 8
+        yield ''.join(chr(b) for b in bytes_), len(bytes_) / divide_len_by
