@@ -41,6 +41,8 @@ class DR700(SerialBase):
 
     supported = True
     model_name = "Daruma DR 700"
+    # FIXME: Check the real max number of characters
+    max_characters = 57
 
     def __init__(self, port, consts=None):
         self._is_bold = False

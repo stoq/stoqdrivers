@@ -49,6 +49,7 @@ class MP2100TH(SerialBase):
 
     supported = True
     model_name = "Bematech MP2100 TH"
+    max_characters = 57
 
     GRAPHICS_API = GRAPHICS_8BITS
     GRAPHICS_MULTIPLIER = 1

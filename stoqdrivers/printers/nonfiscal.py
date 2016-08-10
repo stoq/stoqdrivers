@@ -31,6 +31,10 @@ class NonFiscalPrinter(BasePrinter):
         BasePrinter.__init__(self, brand, model, device, config_file, *args,
                              **kwargs)
 
+    @property
+    def max_characters(self):
+        return self._driver.max_characters
+
     def centralize(self):
         self._driver.centralize()
 

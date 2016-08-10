@@ -41,6 +41,8 @@ class I9(SerialBase):
 
     supported = True
     model_name = "Elgin I9"
+    # FIXME: Check the real max number of characters
+    max_characters = 57
 
     def __init__(self, port, consts=None):
         self._is_bold = False

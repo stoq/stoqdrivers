@@ -464,6 +464,8 @@ class INonFiscalPrinter(IDevice):
     """ Interface used to formatting texts in non fiscal printers.
     """
 
+    max_characters = Attribute("The maximum characters per line")
+
     def centralize():
         """ Centralize the text to be sent to coupon. """
 

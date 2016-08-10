@@ -34,6 +34,7 @@ class MP4200TH(MP2100TH):
 
     supported = True
     model_name = "Bematech MP4200 TH"
+    max_characters = 67
 
     GRAPHICS_MAX_COLS = {
         GRAPHICS_8BITS: 288,
