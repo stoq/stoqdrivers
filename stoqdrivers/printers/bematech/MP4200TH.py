@@ -29,7 +29,7 @@ from stoqdrivers.interfaces import INonFiscalPrinter
 
 
 class MP4200TH(MP2100TH):
-        implements(INonFiscalPrinter)
+    implements(INonFiscalPrinter)
 
-        supported = True
-        model_name = "Bematech MP4200 TH"
+    supported = True
+    model_name = "Bematech MP4200 TH"
