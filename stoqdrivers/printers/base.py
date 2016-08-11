@@ -27,6 +27,7 @@
 Generic base class implementation for all printers
 """
 
+import usb.core
 from zope.interface import providedBy, implements
 from kiwi.python import namedAny
 
@@ -35,6 +36,8 @@ from stoqdrivers.interfaces import (ICouponPrinter,
                                     IChequePrinter,
                                     INonFiscalPrinter)
 from stoqdrivers.base import BaseDevice
+from stoqdrivers.serialbase import SerialBase
+from stoqdrivers.usbbase import UsbBase
 from stoqdrivers.enum import DeviceType
 from stoqdrivers.translation import stoqdrivers_gettext
 
@@ -117,9 +120,24 @@ def get_supported_printers():
     return result
 
 
-def get_supported_printers_by_iface(interface):
+def get_supported_printers_by_iface(interface, protocol=None):
     """ Returns all the printers that supports the interface.  The result
-    format is the same for get_supported_printers."""
+    format is the same for get_supported_printers.
+
+    @param interface: The interface the printer implements
+                      (ICouponPrinter, IChequePrinter or INonFiscalPrinter)
+    @param protocol: The protocol in which the printer is connected
+                     (None (all protocols), usb, serial or ethernet)
+    """
+    # Select the base class depending on which interface has been chosen
+    # TODO: Implement Ethernet interface support
+    base_class = {
+        'usb': UsbBase,
+        'serial': SerialBase,
+        'ethernet': None,
+        None: object,
+    }[protocol]
+
     if not interface in (ICouponPrinter, IChequePrinter, INonFiscalPrinter):
         raise TypeError("Interface specified (`%r') is not a valid "
                         "printer interface" % interface)
@@ -128,11 +146,28 @@ def get_supported_printers_by_iface(interface):
     for model, driver_list in all_printers_supported.items():
         drivers = []
         for driver in driver_list:
-            if interface.implementedBy(driver):
+            if interface.implementedBy(driver) and issubclass(driver, base_class):
                 drivers.append(driver)
         if drivers:
             result[model] = drivers
+
     return result
+
+
+def get_usb_printer_devices():
+    """ List all printers connected via USB """
+    def is_printer(device):
+        """ Tests whether a device is a printer or not """
+        # Devices with either bDeviceClass == 7 or bInterfaceClass == 7 are
+        # printers
+        if device.bDeviceClass == 7:
+            return True
+        for configuration in device:
+            for interface in configuration:
+                if interface.bInterfaceClass == 7:
+                    return True
+        return False
+    return list(usb.core.find(find_all=True, custom_match=is_printer))
 
 
 def get_baudrate_values():
