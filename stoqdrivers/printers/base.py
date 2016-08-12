@@ -27,7 +27,6 @@
 Generic base class implementation for all printers
 """
 
-import usb.core
 from zope.interface import providedBy, implements
 from kiwi.python import namedAny
 
@@ -37,7 +36,7 @@ from stoqdrivers.interfaces import (ICouponPrinter,
                                     INonFiscalPrinter)
 from stoqdrivers.base import BaseDevice
 from stoqdrivers.serialbase import SerialBase
-from stoqdrivers.usbbase import UsbBase
+from stoqdrivers.usbbase import UsbBase, usb_find
 from stoqdrivers.enum import DeviceType
 from stoqdrivers.translation import stoqdrivers_gettext
 
@@ -160,14 +159,16 @@ def get_usb_printer_devices():
         """ Tests whether a device is a printer or not """
         # Devices with either bDeviceClass == 7 or bInterfaceClass == 7 are
         # printers
-        if device.bDeviceClass == 7:
+        if device.deviceClass == 7:
             return True
-        for configuration in device:
-            for interface in configuration:
-                if interface.bInterfaceClass == 7:
-                    return True
+        for configuration in device.configurations:
+            for interfaces in configuration.interfaces:
+                for interface in interfaces:
+                    if interface.interfaceClass == 7:
+                        return True
         return False
-    return list(usb.core.find(find_all=True, custom_match=is_printer))
+
+    return list(usb_find(custom_match=is_printer))
 
 
 def get_baudrate_values():

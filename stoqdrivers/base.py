@@ -57,16 +57,20 @@ class BaseDevice:
     required_interfaces = None
     device_type = None
 
-    def __init__(self, brand=None, model=None, device=None, config_file=None,
-                 port=None, consts=None):
+    def __init__(self, brand=None, model=None, device=None,
+                 config_file=None, port=None, consts=None, product_id=None,
+                 vendor_id=None, interface='serial'):
         if not self.device_dirname:
             raise ValueError("Subclasses must define the "
                              "`device_dirname' attribute")
         elif self.device_type is None:
             raise ValueError("device_type must be defined")
+        self.interface = interface
         self.brand = brand
         self.device = device
         self.model = model
+        self.product_id = product_id
+        self.vendor_id = vendor_id
         self._port = port
         self._driver_constants = consts
         self._load_configuration(config_file)
@@ -95,10 +99,15 @@ class BaseDevice:
         if not driver_class:
             raise CriticalError("Device driver at %s needs a class called %s"
                                 % (name, class_name))
-        if not self._port:
-            self._port = SerialPort(self.device)
 
-        self._driver = driver_class(self._port, consts=self._driver_constants)
+        if self.interface == 'serial':
+            if not self._port:
+                self._port = SerialPort(self.device)
+            self._driver = driver_class(self._port, consts=self._driver_constants)
+        elif self.interface == 'usb':
+            self._driver = driver_class(self.vendor_id, self.product_id)
+        else:
+            raise NotImplementedError('Interface not implemented')
         log.info(("Config data: brand=%s,device=%s,model=%s"
                   % (self.brand, self.device, self.model)))
         self.check_interfaces()

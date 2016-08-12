@@ -28,7 +28,8 @@ from stoqdrivers.printers.base import BasePrinter
 class NonFiscalPrinter(BasePrinter):
     def __init__(self, brand=None, model=None, device=None, config_file=None,
                  *args, **kwargs):
-        BasePrinter.__init__(self, brand, model, device, config_file, *args,
+        BasePrinter.__init__(self, brand=brand, model=model, device=device,
+                             config_file=config_file, *args,
                              **kwargs)
 
     @property
