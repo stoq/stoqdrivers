@@ -60,6 +60,13 @@ CHARCODES = {
 }
 
 #
+# Font Commands
+#
+
+FONT_A = ESC + b'M0'
+FONT_B = ESC + b'M1'
+
+#
 # Text
 #
 
@@ -106,6 +113,15 @@ class EscPosMixin(object):
 
     #: Which charcode to be used as default
     charcode = None
+
+    #: The default font
+    default_font = FONT_B
+
+    #: The maximum number of characters that fit a line
+    max_characters = 64
+
+    #: The maximum number of characters that fit a barcode
+    max_barcode_characters = 27
 
     def __init__(self, columns=32, charcode=None):
         """
@@ -173,11 +189,23 @@ class EscPosMixin(object):
             text = text.encode(self.codepage)
 
         # Then, finally write the text
+        self.write(self.default_font)
         self.write(text)
 
     def print_barcode(self, code):
         """ Print a barcode representing the given code. """
         if not code:
+            return
+
+        # If the barcode size exceeds the maximum size in which the printer
+        # could input in a single line, split it in two lines
+        if len(code) > self.max_barcode_characters:
+            # int() conversion is not actually required, but it makes the code
+            # Python 3 ready.
+            length = int(len(code) / 2)
+            self.print_barcode(code[:length])
+            self.print_line('')
+            self.print_barcode(code[length:])
             return
 
         # Set Width and Height
@@ -202,7 +230,7 @@ class EscPosMixin(object):
         #     parameters - specifies the process of each function
 
         # Set QR Code module/size
-        self.write(GS + '(k\x03\x00%s%s%s' % (chr(49), chr(67), chr(5)))
+        self.write(GS + '(k\x03\x00%s%s%s' % (chr(49), chr(67), chr(4)))
 
         # Level error correction - 1D 28 6B pl(3) ph(0) cn(49) fn(67) n(48)
         # Levels = (L, M, Q, H) => (48, 49, 50, 51)
