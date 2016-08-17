@@ -1,3 +1,9 @@
+stoqdrivers (1:1.2) trusty; urgency=low
+
+  * New release
+
+ -- Thiago Bellini Ribeiro <hackedbellini@async.com.br>  Wed, 17 Aug 2016 16:05:43 -0300
+
 stoqdrivers (1:1.1.1) trusty; urgency=low
 
   * Bugfix release 1.1.1
