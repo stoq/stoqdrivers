@@ -49,7 +49,7 @@ class MP2100TH(SerialBase):
 
     supported = True
     model_name = "Bematech MP2100 TH"
-    max_characters = 57
+    max_characters = 64
 
     GRAPHICS_API = GRAPHICS_8BITS
     GRAPHICS_MULTIPLIER = 1
@@ -120,6 +120,9 @@ class MP2100TH(SerialBase):
         self._print_matrix(qr.get_matrix())
 
     def cut_paper(self):
+        # FIXME: Ensure the paper is safely out of the paper-cutter before
+        #        executing the cut.
+        self.print_inline('\n' * 2)
         self.write(ESC + '\x6d')
 
     #
