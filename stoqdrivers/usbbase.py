@@ -23,6 +23,8 @@
 
 import usb
 
+from stoqdrivers.exceptions import USBDriverError
+
 # Based on python-escpos's escpos.printer.Usb:
 #
 # https://github.com/python-escpos/python-escpos/blob/master/src/escpos/printer.py
@@ -84,8 +86,8 @@ class UsbBase(object):
         self.device = usb_find(idVendor=self.vendor_id,
                                idProduct=self.product_id)
         if self.device is None:
-            raise Exception('USB Device not found using %s:%s' %
-                            (self.vendor_id, self.product_id))
+            raise USBDriverError('USB Device not found using %s:%s' %
+                                 (self.vendor_id, self.product_id))
 
         self.handler = self.device.open()
         try:

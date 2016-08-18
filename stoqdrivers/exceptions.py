@@ -53,6 +53,10 @@ class DriverError(Exception):
         self.code = code
 
 
+class USBDriverError(DriverError):
+    """A USB Error that was raised by StoqDrivers (and not pyusb)"""
+
+
 class OutofPaperError(DriverError):
     "No paper left"
 
