@@ -57,9 +57,13 @@ class BaseDevice:
     required_interfaces = None
     device_type = None
 
+    INTERFACE_SERIAL = 'serial'
+    INTERFACE_USB = 'usb'
+    INTERFACE_ETHERNET = 'ethernet'
+
     def __init__(self, brand=None, model=None, device=None,
                  config_file=None, port=None, consts=None, product_id=None,
-                 vendor_id=None, interface='serial'):
+                 vendor_id=None, interface=INTERFACE_SERIAL):
         if not self.device_dirname:
             raise ValueError("Subclasses must define the "
                              "`device_dirname' attribute")
@@ -77,7 +81,11 @@ class BaseDevice:
 
     def _load_configuration(self, config_file):
         section_name = BaseDevice.typename_translate_dict[self.device_type]
-        if not self.model or not self.brand or (not self.device and not self._port):
+
+        if (not self.model or
+                not self.brand or
+                (self.interface == BaseDevice.INTERFACE_SERIAL and
+                 not self.device and not self._port)):
             self.config = StoqdriversConfig(config_file)
             if not self.config.has_section(section_name):
                 raise ConfigError(_("There is no section named `%s'!")
