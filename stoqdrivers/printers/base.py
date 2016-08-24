@@ -36,7 +36,7 @@ from stoqdrivers.interfaces import (ICouponPrinter,
                                     INonFiscalPrinter)
 from stoqdrivers.base import BaseDevice
 from stoqdrivers.serialbase import SerialBase
-from stoqdrivers.usbbase import UsbBase, usb_find
+from stoqdrivers.usbbase import UsbBase
 from stoqdrivers.enum import DeviceType
 from stoqdrivers.translation import stoqdrivers_gettext
 
@@ -155,20 +155,24 @@ def get_supported_printers_by_iface(interface, protocol=None):
 
 def get_usb_printer_devices():
     """ List all printers connected via USB """
+    try:
+        import usb.core
+    except ImportError:
+        # No pyusb > 1.0.0 support, return an empty list
+        return []
+
     def is_printer(device):
         """ Tests whether a device is a printer or not """
         # Devices with either bDeviceClass == 7 or bInterfaceClass == 7 are
         # printers
-        if device.deviceClass == 7:
+        if device.bDeviceClass == 7:
             return True
-        for configuration in device.configurations:
-            for interfaces in configuration.interfaces:
-                for interface in interfaces:
-                    if interface.interfaceClass == 7:
-                        return True
+        for configuration in device:
+            for interface in configuration:
+                if interface.bInterfaceClass == 7:
+                    return True
         return False
-
-    return list(usb_find(custom_match=is_printer))
+    return list(usb.core.find(find_all=True, custom_match=is_printer))
 
 
 def get_baudrate_values():
