@@ -29,6 +29,8 @@
 # Basic Characters
 #
 
+from functools import wraps
+
 ESC = b'\x1b'  # Escape
 GS = b'\x1d'  # Group Separator
 
@@ -107,6 +109,19 @@ LINE_FEED_SET = ESC + b'3'
 PAPER_FULL_CUT = GS + b'V\x00'  # Full Paper Cut
 
 
+def autoflush(func):
+    """Flush all the commands into the device on the end of the function"""
+    @wraps(func)
+    def decorated_function(self, *args, **kwargs):
+        return_value = func(self, *args, **kwargs)
+        # Check if a `flush` command is actually avaliable before executing it,
+        # as serial printers would probably not need it.
+        if hasattr(self, 'flush'):
+            self.flush()
+        return return_value
+    return decorated_function
+
+
 class EscPosMixin(object):
     #: How many line feeds should be done before cutting the paper
     cut_line_feeds = 4
@@ -154,26 +169,32 @@ class EscPosMixin(object):
     # INonFiscalPrinter Methods
     #
 
+    @autoflush
     def centralize(self):
         """ Centralize the text to be sent to coupon. """
         self.write(TXT_ALIGN_CT)
 
+    @autoflush
     def descentralize(self):
         """ Descentralize the text to be sent to coupon. """
         self.write(TXT_ALIGN_LT)
 
+    @autoflush
     def set_bold(self):
         """ The sent text will be appear in bold. """
         self.write(TXT_BOLD_ON)
 
+    @autoflush
     def unset_bold(self):
         """ Remove the bold option. """
         self.write(TXT_BOLD_OFF)
 
+    @autoflush
     def print_line(self, text):
         """ Performs a line break to the given text. """
         self.print_inline(text + '\n')
 
+    @autoflush
     def print_inline(self, text):
         """ Print a given text in a unique line. """
         # Do nothing for empty texts
@@ -192,6 +213,7 @@ class EscPosMixin(object):
         self.write(self.default_font)
         self.write(text)
 
+    @autoflush
     def print_barcode(self, code):
         """ Print a barcode representing the given code. """
         if not code:
@@ -219,6 +241,7 @@ class EscPosMixin(object):
         # Then write the code
         self.write(BARCODE_CODE93 + chr(len(code)) + code.encode())
 
+    @autoflush
     def print_qrcode(self, code):
         """ Prints the QR code """
         # Parameters:
@@ -247,6 +270,7 @@ class EscPosMixin(object):
         # Print - 1D 28 6B pl(3) ph(0) cn(49) fn(81) m(48)
         self.write(GS + '(k\x03\x00%s%s%s' % (chr(49), chr(81), chr(48)))
 
+    @autoflush
     def cut_paper(self):
         """ Performs a paper cutting. """
         self.print_inline('\n' * self.cut_line_feeds)

@@ -50,6 +50,7 @@ class UsbBase(object):
         self.timeout = timeout
         self.in_ep = in_ep
         self.out_ep = out_ep
+        self._data = ''
         self.device = usb.core.find(idVendor=self.vendor_id,
                                     idProduct=self.product_id)
         if self.device is None:
@@ -86,11 +87,22 @@ class UsbBase(object):
         """Release the USB interface"""
         usb.util.dispose_resources(self.device)
 
-    def write(self, data):
-        """Write any data to the USB printer
+    def write(self, data, flush=False):
+        """Write any data to the USB printer buffer
+
+        Write the given data into a buffer and flush it if requested
 
         :param data: Any data to be written
         :type data: bytes
+        :param flush: Should the data be flushed into the device
+        :type flush: bool
         """
+        self._data += data
+        if flush:
+            self.flush()
+
+    def flush(self):
+        """Write the buffer data into the USB device"""
         with self._open():
-            self.device.write(self.out_ep, data, self.timeout)
+            self.device.write(self.out_ep, self._data, self.timeout)
+        self._data = ''
