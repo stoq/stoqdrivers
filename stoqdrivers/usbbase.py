@@ -21,8 +21,6 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
 ## USA.
 
-import contextlib
-
 try:
     import usb.core
     import usb.util
@@ -50,18 +48,18 @@ class UsbBase(object):
         self.timeout = timeout
         self.in_ep = in_ep
         self.out_ep = out_ep
+
+    def __del__(self):
+        """Stop using any unnecessary resources upon destruction"""
+        self.close()
+
+    def open(self):
         self.device = usb.core.find(idVendor=self.vendor_id,
                                     idProduct=self.product_id)
         if self.device is None:
             raise USBDriverError('USB Device not found using %s:%s' %
                                  (self.vendor_id, self.product_id))
 
-    def __del__(self):
-        """Stop using any unnecessary resources upon destruction"""
-        self._close()
-
-    @contextlib.contextmanager
-    def _open(self):
         check_driver = None
         try:
             check_driver = self.device.is_kernel_driver_active(0)
@@ -78,13 +76,11 @@ class UsbBase(object):
         self.device.set_configuration()
         self.device.reset()
 
-        yield
-
-        self._close()
-
-    def _close(self):
+    def close(self):
         """Release the USB interface"""
-        usb.util.dispose_resources(self.device)
+        if self.device:
+            usb.util.dispose_resources(self.device)
+        self.device = None
 
     def write(self, data):
         """Write any data to the USB printer
@@ -92,5 +88,4 @@ class UsbBase(object):
         :param data: Any data to be written
         :type data: bytes
         """
-        with self._open():
-            self.device.write(self.out_ep, data, self.timeout)
+        self.device.write(self.out_ep, data, self.timeout)
