@@ -1,3 +1,9 @@
+stoqdrivers (1:1.2.3) trusty; urgency=low
+
+  * Bugfix release 1.2.3
+
+ -- Thiago Bellini Ribeiro <hackedbellini@async.com.br>  Tue, 13 Dec 2016 15:39:04 -0200
+
 stoqdrivers (1:1.2.2) trusty; urgency=low
 
   * Bugfix release 1.2.2
