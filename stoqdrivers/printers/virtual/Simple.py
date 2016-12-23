@@ -42,7 +42,7 @@ from stoqdrivers.exceptions import (CouponTotalizeError, PaymentAdditionError,
                                     CloseCouponError, CouponOpenError,
                                     CancelItemError, ItemAdditionError,
                                     DriverError, PrinterOfflineError)
-from stoqdrivers.interfaces import ICouponPrinter
+from stoqdrivers.interfaces import ICouponPrinter, INonFiscalPrinter
 from stoqdrivers.printers.base import BaseDriverConstants
 from stoqdrivers.printers.capabilities import Capability
 from stoqdrivers.translation import stoqdrivers_gettext
@@ -139,6 +139,7 @@ class OutputWindow(gtk.Window):
             self._printer.set_off(True)
 
     def feed(self, text):
+        self.show_all()
         self.buffer.props.text += text
         mark = self.buffer.get_insert()
         self.textview.scroll_mark_onscreen(mark)
@@ -156,7 +157,7 @@ class OutputWindow(gtk.Window):
 
 
 class Simple(object):
-    implements(ICouponPrinter)
+    implements(ICouponPrinter, INonFiscalPrinter)
 
     model_name = "Virtual Printer"
     coupon_printer_charset = "utf-8"
@@ -476,7 +477,6 @@ class Simple(object):
         return None
 
     def get_serial(self):
-        self.output.show_all()
         self._check()
         return 'Virtual'
 
@@ -569,5 +569,37 @@ class Simple(object):
     #
     # IChequePrinter implementation
     #
+
     def print_cheque(self, value, thirdparty, city, date=None):
         return
+
+    #
+    # INonFiscalPrinter implementation
+    #
+
+    def centralize(self):
+        self._is_centralized = True
+
+    def descentralize(self):
+        self._is_centralized = False
+
+    def set_bold(self):
+        self._is_bold = True
+
+    def unset_bold(self):
+        self._is_bold = False
+
+    def print_line(self, data):
+        self.output.feed(data + '\n')
+
+    def print_inline(self, data):
+        self.output.feed(data)
+
+    def print_barcode(self, code):
+        self.output.feed('=== BARCODE {} ===\n'.format(code))
+
+    def print_qrcode(self, code):
+        self.output.feed('=== QRCODE {} ===\n'.format(code))
+
+    def cut_paper(self):
+        self.output.feed('\n--- paper cut ---\n')
