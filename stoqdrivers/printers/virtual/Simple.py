@@ -98,13 +98,13 @@ class FakeConstants(BaseDriverConstants):
 
 
 class OutputWindow(gtk.Window):
-    columns = 60
+    columns = 72
 
     def __init__(self, printer):
         self._printer = printer
         gtk.Window.__init__(self)
         self.set_title(_("ECF Emulator"))
-        self.set_size_request(220, 320)
+        self.set_size_request(380, 320)
         self.move(0, 0)
         self.set_deletable(False)
         self.vbox = gtk.VBox(0, False)
@@ -129,6 +129,7 @@ class OutputWindow(gtk.Window):
         self.b.set_active(True)
         buttonbox.pack_start(self.b)
         self.b.connect("toggled", self._on_onoff__toggled)
+        self.show_all()
 
     def _on_onoff__toggled(self, button):
         if button.get_active():
@@ -139,8 +140,9 @@ class OutputWindow(gtk.Window):
             self._printer.set_off(True)
 
     def feed(self, text):
-        self.show_all()
-        self.buffer.props.text += text
+        position = self.buffer.get_end_iter()
+        self.buffer.insert(position, text)
+
         mark = self.buffer.get_insert()
         self.textview.scroll_mark_onscreen(mark)
 
@@ -164,6 +166,7 @@ class Simple(object):
 
     identify_customer_at_end = True
     supported = False
+    max_characters = 72
 
     def __init__(self, port, consts=None):
         self._consts = consts or FakeConstants()
@@ -191,6 +194,11 @@ class Simple(object):
         self._reset_flags()
         self._load_state()
 
+    #
+    # Helper methods
+    #
+
+    def _print_coupon_header(self):
         self.output.feed(
             "Virtual Printer\n"
             "Test Company\n"
@@ -201,10 +209,6 @@ class Simple(object):
             datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
             self.coo))
         self.output.feed_line()
-
-    #
-    # Helper methods
-    #
 
     def _get_state_filename(self):
         dirname = os.path.join(os.environ['HOME'], '.stoq')
@@ -590,6 +594,8 @@ class Simple(object):
         self._is_bold = False
 
     def print_line(self, data):
+        if self._is_centralized:
+            data = data.center(self.max_characters)
         self.output.feed(data + '\n')
 
     def print_inline(self, data):
