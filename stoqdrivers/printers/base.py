@@ -95,16 +95,21 @@ def get_virtual_printer():
     return FiscalPrinter(brand='virtual', model='Simple')
 
 
-def get_supported_printers():
+def get_supported_printers(include_virtual=False):
     result = {}
-    for brand, module_names in [
-            ('bematech', ['DP20C', 'MP20', 'MP2100', 'MP2100TH', 'MP4200TH', 'MP25']),
-            ('daruma', ['DR700', 'FS2100', 'FS345', 'FS600MFD']),
-            ('dataregis', ['EP375', 'Quick']),
-            ('elgin', ['I9', 'KFiscal']),
-            ('epson', ['FBII', 'FBIII', 'TMT20']),
-            ('fiscnet', ['FiscNetECF']),
-            ('perto', ['Pay2023'])]:
+    config = [
+        ('bematech', ['DP20C', 'MP20', 'MP2100', 'MP2100TH', 'MP4200TH', 'MP25']),
+        ('daruma', ['DR700', 'FS2100', 'FS345', 'FS600MFD']),
+        ('dataregis', ['EP375', 'Quick']),
+        ('elgin', ['I9', 'KFiscal']),
+        ('epson', ['FBII', 'FBIII', 'TMT20']),
+        ('fiscnet', ['FiscNetECF']),
+        ('perto', ['Pay2023'])
+    ]
+    if include_virtual:
+        config.append(('virtual', ['Simple']))
+
+    for brand, module_names in config:
         result[brand] = []
         for module_name in module_names:
             try:
@@ -119,7 +124,8 @@ def get_supported_printers():
     return result
 
 
-def get_supported_printers_by_iface(interface, protocol=None):
+def get_supported_printers_by_iface(interface, protocol=None,
+                                    include_virtual=False):
     """ Returns all the printers that supports the interface.  The result
     format is the same for get_supported_printers.
 
@@ -127,6 +133,8 @@ def get_supported_printers_by_iface(interface, protocol=None):
                       (ICouponPrinter, IChequePrinter or INonFiscalPrinter)
     @param protocol: The protocol in which the printer is connected
                      (None (all protocols), usb, serial or ethernet)
+    @param include_virtual: If the virtual printer (for development) should be
+                            included in the results
     """
     # Select the base class depending on which interface has been chosen
     # TODO: Implement Ethernet interface support
@@ -140,7 +148,7 @@ def get_supported_printers_by_iface(interface, protocol=None):
     if not interface in (ICouponPrinter, IChequePrinter, INonFiscalPrinter):
         raise TypeError("Interface specified (`%r') is not a valid "
                         "printer interface" % interface)
-    all_printers_supported = get_supported_printers()
+    all_printers_supported = get_supported_printers(include_virtual=include_virtual)
     result = {}
     for model, driver_list in all_printers_supported.items():
         drivers = []
