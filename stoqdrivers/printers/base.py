@@ -104,7 +104,8 @@ def get_supported_printers(include_virtual=False):
         ('elgin', ['I9', 'KFiscal']),
         ('epson', ['FBII', 'FBIII', 'TMT20']),
         ('fiscnet', ['FiscNetECF']),
-        ('perto', ['Pay2023'])
+        ('perto', ['Pay2023']),
+        ('sweda', ['SI150']),
     ]
     if include_virtual:
         config.append(('virtual', ['Simple']))

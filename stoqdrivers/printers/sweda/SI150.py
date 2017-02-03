@@ -3,7 +3,7 @@
 
 ##
 ## Stoqdrivers
-## Copyright (C) 2016 Stoq Tecnologia <http://stoq.link>
+## Copyright (C) 2017 Stoq Tecnologia <http://stoq.link>
 ## All rights reserved
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -22,10 +22,10 @@ from stoqdrivers.escpos import EscPosMixin
 from stoqdrivers.interfaces import INonFiscalPrinter
 
 
-class TMT20(UsbBase, EscPosMixin):
+class SI150(UsbBase, EscPosMixin):
     implements(INonFiscalPrinter)
 
-    out_ep = 0x01
+    out_ep = 0x03
 
     supported = True
-    model_name = "Epson TM-T20"
+    model_name = "Sweda SI-150"

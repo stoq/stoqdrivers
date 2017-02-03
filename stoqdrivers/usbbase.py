@@ -38,16 +38,18 @@ from stoqdrivers.exceptions import USBDriverError
 class UsbBase(object):
     """Base class for a USB Printer"""
 
-    def __init__(self, vendor_id, product_id, interface=0, in_ep=0x82,
-                 out_ep=0x01, timeout=0, *args, **kwargs):
+    #: Out Endpoint address. Subclasses must define this.
+    out_ep = None
+
+    def __init__(self, vendor_id, product_id, interface=0,
+                 timeout=0, *args, **kwargs):
         assert has_usb
         super(UsbBase, self).__init__(*args, **kwargs)
         self.vendor_id = vendor_id
         self.product_id = product_id
         self.interface = interface
         self.timeout = timeout
-        self.in_ep = in_ep
-        self.out_ep = out_ep
+        assert self.out_ep is not None
 
     def __del__(self):
         """Stop using any unnecessary resources upon destruction"""
