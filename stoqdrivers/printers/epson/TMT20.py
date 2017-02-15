@@ -29,3 +29,4 @@ class TMT20(UsbBase, EscPosMixin):
 
     supported = True
     model_name = "Epson TM-T20"
+    max_characters = 53
