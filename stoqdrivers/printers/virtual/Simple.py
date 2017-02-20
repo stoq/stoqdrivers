@@ -164,7 +164,7 @@ class Simple(object):
     model_name = "Virtual Printer"
     coupon_printer_charset = "utf-8"
 
-    identify_customer_at_end = True
+    identify_customer_at_end = False
     supported = False
     max_characters = 72
 
@@ -516,10 +516,6 @@ class Simple(object):
     def get_ccf(self):
         self._check()
         return self.ccf
-
-    def identify_customer_at_end(self):
-        self._check()
-        return False
 
     def get_sintegra(self):
         self._check()
