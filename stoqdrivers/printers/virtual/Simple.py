@@ -261,6 +261,7 @@ class Simple(object):
         self.has_payments = False
         self.payments_total = Decimal("0.0")
         self._items = {}
+        self._is_centralized = False
 
     def _check_coupon_is_opened(self):
         if not self.is_coupon_opened:
@@ -269,6 +270,13 @@ class Simple(object):
     def _check_coupon_is_closed(self):
         if self.is_coupon_opened:
             raise CouponOpenError(_("There is a coupon already open"))
+
+    #
+    #   SerialBase implementation
+    #
+
+    def write(self, data):
+        self.output.feed(data)
 
     #
     # ICouponPrinter implementation
@@ -588,6 +596,18 @@ class Simple(object):
 
     def unset_bold(self):
         self._is_bold = False
+
+    def set_condensed(self):
+        self._is_condensed = True
+
+    def unset_condensed(self):
+        self._is_condensed = False
+
+    def set_double_height(self):
+        self._is_double_height = True
+
+    def unset_double_height(self):
+        self._is_double_height = False
 
     def print_line(self, data):
         if self._is_centralized:

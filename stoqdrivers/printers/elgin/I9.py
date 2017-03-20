@@ -27,13 +27,19 @@ from zope.interface import implements
 from stoqdrivers.interfaces import INonFiscalPrinter
 from stoqdrivers.serialbase import SerialBase
 
-NORMAL_FONT = '\x1b\x4d\x00'
-CONDENSED_MODE = '\x1b\x4d\x01'
+ESC = '\x1b'
 
-CENTRALIZE = '\x1b\x61\x01'
-DESCENTRALIZE = '\x1b\x61\x00'
-SET_BOLD = '\x1b\x45\x01'
-UNSET_BOLD = '\x1b\x45\x00'
+NORMAL_MODE = ESC + 'M\x00'
+CONDENSED_MODE = ESC + 'M\x01'
+
+CENTRALIZE = ESC + 'a\x01'
+DESCENTRALIZE = ESC + 'a\x00'
+
+SET_BOLD = ESC + 'E\x01'
+UNSET_BOLD = ESC + 'E\x00'
+
+DOUBLE_HEIGHT_ON = ESC + 'G\x01'
+DOUBLE_HEIGHT_OFF = ESC + 'G\x00'
 
 
 class I9(SerialBase):
@@ -45,35 +51,31 @@ class I9(SerialBase):
     max_characters = 57
 
     def __init__(self, port, consts=None):
-        self._is_bold = False
-        self._is_centralized = False
         SerialBase.__init__(self, port)
-        self.write(NORMAL_FONT)
-        self.write(CONDENSED_MODE)
 
     def centralize(self):
-        if self._is_centralized:
-            return
         self.write(CENTRALIZE)
-        self._is_centralized = True
 
     def descentralize(self):
-        if not self._is_centralized:
-            return
         self.write(DESCENTRALIZE)
-        self._is_centralized = False
 
     def set_bold(self):
-        if self._is_bold:
-            return
         self.write(SET_BOLD)
-        self._is_bold = True
 
     def unset_bold(self):
-        if not self._is_bold:
-            return
         self.write(UNSET_BOLD)
-        self._is_bold = False
+
+    def set_condensed(self):
+        self.write(CONDENSED_MODE)
+
+    def unset_condensed(self):
+        self.write(NORMAL_MODE)
+
+    def set_double_height(self):
+        self.write(DOUBLE_HEIGHT_ON)
+
+    def unset_double_height(self):
+        self.write(DOUBLE_HEIGHT_OFF)
 
     def print_line(self, data):
         self.write(data + '\n')

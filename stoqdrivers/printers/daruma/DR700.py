@@ -27,13 +27,23 @@ from zope.interface import implements
 from stoqdrivers.interfaces import INonFiscalPrinter
 from stoqdrivers.serialbase import SerialBase
 
-NORMAL_FONT = '\x1b\x21\x00\x00'
+ESC = '\x1b'
+SI = '\x0f'
+DC2 = '\x12'
 
-CONDENSED_MODE = '\x1b\x0F\x00'
-CENTRALIZE = '\x1b\x6A\x01'
-DESCENTRALIZE = '\x1b\x6A\x00'
-SET_BOLD = '\x1b\x45\x00'
-UNSET_BOLD = '\x1b\x46\x00'
+NORMAL_FONT = ESC + '\x21\x00\x00'
+
+CONDENSED_MODE = ESC + SI + '\x00'
+NORMAL_MODE = DC2
+
+CENTRALIZE = ESC + 'j\x01'
+DESCENTRALIZE = ESC + 'j\x00'
+
+DOUBLE_HEIGHT_ON = ESC + 'w\x01'
+DOUBLE_HEIGHT_OFF = ESC + 'w\x00'
+
+SET_BOLD = ESC + 'E'
+UNSET_BOLD = ESC + 'F'
 
 
 class DR700(SerialBase):
@@ -45,35 +55,31 @@ class DR700(SerialBase):
     max_characters = 57
 
     def __init__(self, port, consts=None):
-        self._is_bold = False
-        self._is_centralized = False
         SerialBase.__init__(self, port)
-        self.write(NORMAL_FONT)
-        self.write(CONDENSED_MODE)
 
     def centralize(self):
-        if self._is_centralized:
-            return
         self.write(CENTRALIZE)
-        self._is_centralized = True
 
     def descentralize(self):
-        if not self._is_centralized:
-            return
         self.write(DESCENTRALIZE)
-        self._is_centralized = False
 
     def set_bold(self):
-        if self._is_bold:
-            return
         self.write(SET_BOLD)
-        self._is_bold = True
 
     def unset_bold(self):
-        if not self._is_bold:
-            return
         self.write(UNSET_BOLD)
-        self._is_bold = False
+
+    def set_condensed(self):
+        self.write(CONDENSED_MODE)
+
+    def unset_condensed(self):
+        self.write(NORMAL_MODE)
+
+    def set_double_height(self):
+        self.write(DOUBLE_HEIGHT_ON)
+
+    def unset_double_height(self):
+        self.write(DOUBLE_HEIGHT_OFF)
 
     def print_line(self, data):
         self.write(data + '\n')
@@ -86,8 +92,8 @@ class DR700(SerialBase):
         width = chr(2)
         height = chr(80)
         barcode_label = chr(0)
-        self.write('\x1b\x62%s%s%s%s%s\x00' % (code_128, width, height,
-                                               barcode_label, code))
+        self.write(ESC + '\x62%s%s%s%s%s\x00' % (code_128, width, height,
+                                                 barcode_label, code))
         self.write('\x0A')
 
     def print_qrcode(self, code):
@@ -97,8 +103,11 @@ class DR700(SerialBase):
         width = chr(3)
         # Correction level: auto
         correction = chr(0)
-        self.write('\x1b\x81%s%s%s%s%s' % (max_size, min_size, width, correction, code))
+        self.write(ESC + '\x81%s%s%s%s%s' % (max_size, min_size, width, correction, code))
         self.write('\x0A')
 
     def cut_paper(self):
-        self.write('\x1b\x6d')
+        # FIXME: Ensure the paper is safely out of the paper-cutter before
+        #        executing the cut.
+        self.print_inline('\n' * 2)
+        self.write(ESC + '\x6d')

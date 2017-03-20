@@ -70,11 +70,15 @@ FONT_B = ESC + b'M1'
 # Text
 #
 
-TXT_ALIGN_LT = ESC + b'\x61\x00'  # Left justification
-TXT_ALIGN_CT = ESC + b'\x61\x01'  # Centering
+TXT_ALIGN_LT = ESC + b'a\x00'  # Left justification
+TXT_ALIGN_CT = ESC + b'a\x01'  # Centering
 
-TXT_BOLD_OFF = ESC + b'\x45\x00'  # Bold font OFF
-TXT_BOLD_ON = ESC + b'\x45\x01'  # Bold font ON
+TXT_BOLD_OFF = ESC + b'E\x00'  # Bold font OFF
+TXT_BOLD_ON = ESC + b'E\x01'  # Bold font ON
+
+DOUBLE_HEIGHT_ON = ESC + b'G\x01'
+DOUBLE_HEIGHT_OFF = ESC + b'G\x00'
+
 
 #
 # Barcode
@@ -169,6 +173,18 @@ class EscPosMixin(object):
     def unset_bold(self):
         """ Remove the bold option. """
         self.write(TXT_BOLD_OFF)
+
+    def set_condensed(self):
+        self.write(FONT_B)
+
+    def unset_condensed(self):
+        self.write(FONT_A)
+
+    def set_double_height(self):
+        self.write(DOUBLE_HEIGHT_ON)
+
+    def unset_double_height(self):
+        self.write(DOUBLE_HEIGHT_OFF)
 
     def print_line(self, text):
         """ Performs a line break to the given text. """

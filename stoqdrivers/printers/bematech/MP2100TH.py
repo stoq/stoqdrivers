@@ -33,15 +33,18 @@ from stoqdrivers.utils import GRAPHICS_8BITS, GRAPHICS_24BITS, matrix2graphics
 # class itself to allow subclasses to overwrite them easily
 ESC = '\x1b'
 GS = '\x1d'
+SI = '\x0f'
 
 LINE_FEED = ESC + 'A\x00'
 CENTRALIZE = ESC + 'a\x01'
 DESCENTRALIZE = ESC + 'a\x00'
-CONDENSED_MODE = ESC + '\x0f'
+CONDENSED_MODE = ESC + SI
 NORMAL_MODE = ESC + 'H'
 SET_BOLD = ESC + 'E'
 UNSET_BOLD = ESC + 'F'
 BARCODE_128 = GS + 'kn'
+DOUBLE_HEIGHT_OFF = ESC + 'd0'
+DOUBLE_HEIGHT_ON = ESC + 'd1'
 
 
 class MP2100TH(SerialBase):
@@ -63,38 +66,36 @@ class MP2100TH(SerialBase):
     }
 
     def __init__(self, port, consts=None):
-        self._is_bold = False
-        self._is_centralized = False
         SerialBase.__init__(self, port)
-        self.write(CONDENSED_MODE)
+        self.set_condensed()
 
     #
     #  INonFiscalPrinter
     #
 
     def centralize(self):
-        if self._is_centralized:
-            return
         self.write(CENTRALIZE)
-        self._is_centralized = True
 
     def descentralize(self):
-        if not self._is_centralized:
-            return
         self.write(DESCENTRALIZE)
-        self._is_centralized = False
 
     def set_bold(self):
-        if self._is_bold:
-            return
         self.write(SET_BOLD)
-        self._is_bold = True
 
     def unset_bold(self):
-        if not self._is_bold:
-            return
         self.write(UNSET_BOLD)
-        self._is_bold = False
+
+    def set_condensed(self):
+        self.write(CONDENSED_MODE)
+
+    def unset_condensed(self):
+        self.write(NORMAL_MODE)
+
+    def set_double_height(self):
+        self.write(DOUBLE_HEIGHT_ON)
+
+    def unset_double_height(self):
+        self.write(DOUBLE_HEIGHT_OFF)
 
     def print_line(self, data):
         self.write(data + '\n')
@@ -128,6 +129,19 @@ class MP2100TH(SerialBase):
     #
     #  Private
     #
+
+    def _setup_charset(self, charset='\x32'):
+        # Set charset - \x38 - Unicode \x32 - cp850
+        self.write('\x1d\xf9\x37%s' % charset)
+
+    def _setup_commandset(self, commset='\x30'):
+        # ESC/BEMA = 0x30
+        # ESC/POS = 0x31
+        self.write('\x1d\xf9\x35%s' % commset)
+
+    def _print_configuration(self):
+        # Print configuration
+        self.write('\x1d\xf9\x29\x30')
 
     def _print_matrix(self, matrix):
         max_cols = self.GRAPHICS_MAX_COLS[self.GRAPHICS_API]
