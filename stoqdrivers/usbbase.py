@@ -45,6 +45,7 @@ class UsbBase(object):
                  timeout=0, *args, **kwargs):
         assert has_usb
         super(UsbBase, self).__init__(*args, **kwargs)
+        self.device = None
         self.vendor_id = vendor_id
         self.product_id = product_id
         self.interface = interface
@@ -90,4 +91,7 @@ class UsbBase(object):
         :param data: Any data to be written
         :type data: bytes
         """
+        if not self.device:
+            self.open()
         self.device.write(self.out_ep, data, self.timeout)
+        self.close()
