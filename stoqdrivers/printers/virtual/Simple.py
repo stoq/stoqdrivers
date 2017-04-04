@@ -290,13 +290,6 @@ class Simple(object):
 
     def coupon_identify_customer(self, customer, address, document):
         self._check()
-        if document not in ['160.618.061-40',
-                            '335.728.854-00',
-                            '804.727.615-87',
-                            '871.007.004-42']:
-            raise ItemAdditionError(
-                _("Not allowed to sell to a client not created by the demo"))
-
         self._customer_name = customer
         self._customer_document = document
         self._customer_address = address
@@ -318,12 +311,6 @@ class Simple(object):
                         discount=Decimal("0.0"),
                         surcharge=Decimal("0.0"), unit_desc=""):
         self._check()
-        if code not in ["{:02d}".format(x) for x in range(1, 11)]:
-            # Allow deliveries as well
-            if code != '' and taxcode != 'S0':
-                raise ItemAdditionError(
-                    _("Not allowed to sell an item not created by the demo"))
-
         self._check_coupon_is_opened()
         if self.is_coupon_totalized:
             raise ItemAdditionError(_("The coupon is already totalized, "
