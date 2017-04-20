@@ -98,7 +98,6 @@ class FakeConstants(BaseDriverConstants):
 
 
 class OutputWindow(gtk.Window):
-    columns = 72
 
     def __init__(self, printer):
         self._printer = printer
@@ -146,17 +145,6 @@ class OutputWindow(gtk.Window):
         mark = self.buffer.get_insert()
         self.textview.scroll_mark_onscreen(mark)
 
-    def feed_line(self, text=None):
-        if not text:
-            self.buffer.props.text += ('-' * self.columns) + '\n'
-            return
-
-        length = (self.columns - len(text) - 2) / 2
-        self.buffer.props.text += '%s %s %s\n' % (
-            '-' * length, text, '-' * length)
-        mark = self.buffer.get_insert()
-        self.textview.scroll_mark_onscreen(mark)
-
 
 class Simple(object):
     implements(ICouponPrinter, INonFiscalPrinter)
@@ -173,7 +161,7 @@ class Simple(object):
         self._customer_document = None
 
         self._off = False
-        self.output = OutputWindow(self)
+        self.output = None
 
         # Internal state
         self.till_closed = False
@@ -199,16 +187,16 @@ class Simple(object):
     #
 
     def _print_coupon_header(self):
-        self.output.feed(
+        self.write(
             "Virtual Printer\n"
             "Test Company\n"
             "CNPJ: 00.000.000/0000-00 IE: ISENTO\n"
             "IM: 012345\n")
-        self.output.feed_line()
-        self.output.feed("%s  COO:%s\n" % (
+        self._feed_line()
+        self.write("%s  COO:%s\n" % (
             datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
             self.coo))
-        self.output.feed_line()
+        self._feed_line()
 
     def _get_state_filename(self):
         dirname = os.path.join(os.environ['HOME'], '.stoq')
@@ -271,12 +259,17 @@ class Simple(object):
         if self.is_coupon_opened:
             raise CouponOpenError(_("There is a coupon already open"))
 
+    def _feed_line(self):
+        self.write(('-' * self.max_characters) + '\n')
+
     #
     #   SerialBase implementation
     #
 
     def write(self, data):
-        self.output.feed(data)
+        if not self.output:
+            self.output = OutputWindow(self)
+        self.write(data)
 
     #
     # ICouponPrinter implementation
@@ -299,10 +292,10 @@ class Simple(object):
 
     def coupon_open(self):
         self._check()
-        self.output.feed('\n')
-        self.output.feed("CUPOM SIMULADO\n")
+        self.write('\n')
+        self.write("CUPOM SIMULADO\n")
 
-        self.output.feed("ITEM CODIGO DESCRICAO QTD.UN.VL. UNIT R$ ST A/T VL ITEM R$\n")
+        self.write("ITEM CODIGO DESCRICAO QTD.UN.VL. UNIT R$ ST A/T VL ITEM R$\n")
         self._check_coupon_is_closed()
         self.is_coupon_opened = True
 
@@ -319,8 +312,8 @@ class Simple(object):
         item_id = self.items_quantity
         item = CouponItem(item_id, quantity, price)
         self._items[item_id] = item
-        self.output.feed("%03d %s %s\n" % (self.items_quantity, code, description))
-        self.output.feed("  %d %f %s\n" % (quantity, price, taxcode))
+        self.write("%03d %s %s\n" % (self.items_quantity, code, description))
+        self.write("  %d %f %s\n" % (quantity, price, taxcode))
         return item_id
 
     def coupon_cancel_item(self, item_id):
@@ -333,16 +326,16 @@ class Simple(object):
             raise CancelItemError(_("The coupon is already totalized, "
                                     "you can't cancel items anymore."))
         self._items.pop(item_id)
-        self.output.feed('cancel_item %r\n' % (item_id, ))
+        self.write('cancel_item %r\n' % (item_id, ))
 
     def coupon_cancel(self):
         self._check()
         # FIXME: If we don't have a coupon open, verify that
         #        we've opened at least one
         #self._check_coupon_is_opened()
-        self.output.feed_line()
-        self.output.feed('    Cupom Cancelado\n')
-        self.output.feed_line()
+        self._feed_line()
+        self.write('    Cupom Cancelado\n')
+        self._feed_line()
         self._reset_flags()
 
     def coupon_totalize(self, discount=Decimal("0.0"),
@@ -371,8 +364,8 @@ class Simple(object):
                                         "than zero!"))
 
         self.is_coupon_totalized = True
-        self.output.feed('\n')
-        self.output.feed('Pagamentos:\n')
+        self.write('\n')
+        self.write('Pagamentos:\n')
         return self.totalized_value
 
     def coupon_add_payment(self, payment_method, value, description=u"",
@@ -383,7 +376,7 @@ class Simple(object):
                                          "coupon since it isn't totalized"))
         self.payments_total += value
         self.has_payments = True
-        self.output.feed('  %s - %s\n' % (
+        self.write('  %s - %s\n' % (
             self._consts._payment_descriptions[payment_method], value))
         return self.totalized_value - self.payments_total
 
@@ -401,11 +394,11 @@ class Simple(object):
                                      "match the totalized value."))
         troco = self.payments_total - self.totalized_value
         if troco:
-            self.output.feed('Troco: %0.2f\n' % troco)
-        self.output.feed_line()
+            self.write('Troco: %0.2f\n' % troco)
+        self._feed_line()
         if message:
-            self.output.feed(message)
-        self.output.feed('\n')
+            self.write(message)
+        self.write('\n')
         self._reset_flags()
         return 0
 
@@ -433,8 +426,8 @@ class Simple(object):
 
     def summarize(self):
         self._check()
-        self.output.feed('LEITURA X\n')
-        self.output.feed_line()
+        self.write('LEITURA X\n')
+        self._feed_line()
         self.till_closed = False
         self._save_state()
 
@@ -448,27 +441,27 @@ class Simple(object):
                 "Reduce Z was already sent today, try again tomorrow")
         self.till_closed = True
         self._save_state()
-        self.output.feed("REDUÇÃO Z\n")
-        self.output.feed_line()
+        self.write("REDUÇÃO Z\n")
+        self._feed_line()
 
     def till_add_cash(self, value):
-        self.output.feed('SUPRIMENTO: %s\n' % value)
-        self.output.feed_line()
+        self.write('SUPRIMENTO: %s\n' % value)
+        self._feed_line()
         self._check()
 
     def till_remove_cash(self, value):
-        self.output.feed('SANGRIA: %s\n' % value)
-        self.output.feed_line()
+        self.write('SANGRIA: %s\n' % value)
+        self._feed_line()
         self._check()
 
     def till_read_memory(self, start, end):
-        self.output.feed('LEITURA MF\n')
-        self.output.feed_line()
+        self.write('LEITURA MF\n')
+        self._feed_line()
         self._check()
 
     def till_read_memory_by_reductions(self, start, end):
-        self.output.feed('LEITURA MF\n')
-        self.output.feed_line()
+        self.write('LEITURA MF\n')
+        self._feed_line()
         self._check()
 
     def query_status(self):
@@ -536,27 +529,27 @@ class Simple(object):
         return None
 
     def payment_receipt_open(self, identifier, coo, method, value):
-        self.output.feed("    RECIBO DE PAGAMENTO coo=%s\n" % coo)
+        self.write("    RECIBO DE PAGAMENTO coo=%s\n" % coo)
 
     def payment_receipt_print(self, text):
         self._check()
-        self.output.feed(text)
+        self.write(text)
 
     def payment_receipt_close(self):
         self._check()
-        self.output.feed_line()
+        self._feed_line()
 
     def gerencial_report_open(self, gerencial_id=0):
         self._check()
-        self.output.feed('      RELATORIO GERENCIAL\n\n')
+        self.write('      RELATORIO GERENCIAL\n\n')
 
     def gerencial_report_print(self, text):
         self._check()
-        self.output.feed(text)
+        self.write(text)
 
     def gerencial_report_close(self):
         self._check()
-        self.output.feed_line()
+        self._feed_line()
 
     def get_firmware_version(self):
         return '1.1.1'
@@ -599,16 +592,16 @@ class Simple(object):
     def print_line(self, data):
         if self._is_centralized:
             data = data.center(self.max_characters)
-        self.output.feed(data + '\n')
+        self.write(data + '\n')
 
     def print_inline(self, data):
-        self.output.feed(data)
+        self.write(data)
 
     def print_barcode(self, code):
-        self.output.feed('=== BARCODE {} ===\n'.format(code))
+        self.write('=== BARCODE {} ===\n'.format(code))
 
     def print_qrcode(self, code):
-        self.output.feed('=== QRCODE {} ===\n'.format(code))
+        self.write('=== QRCODE {} ===\n'.format(code))
 
     def cut_paper(self):
-        self.output.feed('\n--- paper cut ---\n')
+        self.write('\n--- paper cut ---\n')
