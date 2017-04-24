@@ -269,7 +269,7 @@ class Simple(object):
     def write(self, data):
         if not self.output:
             self.output = OutputWindow(self)
-        self.write(data)
+        self.output.feed(data)
 
     #
     # ICouponPrinter implementation
