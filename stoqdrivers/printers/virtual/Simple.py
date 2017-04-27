@@ -32,8 +32,7 @@ from decimal import Decimal
 import json
 import os
 
-import gtk
-import pango
+from gi.repository import Gtk, Pango
 from kiwi.python import Settable
 from zope.interface import implements
 
@@ -97,36 +96,36 @@ class FakeConstants(BaseDriverConstants):
     ]
 
 
-class OutputWindow(gtk.Window):
+class OutputWindow(Gtk.Window):
 
     def __init__(self, printer):
         self._printer = printer
-        gtk.Window.__init__(self)
+        Gtk.Window.__init__(self)
         self.set_title(_("ECF Emulator"))
         self.set_size_request(380, 320)
         self.move(0, 0)
         self.set_deletable(False)
-        self.vbox = gtk.VBox(0, False)
+        self.vbox = Gtk.VBox(0, False)
         self.add(self.vbox)
 
         self._create_ui()
 
     def _create_ui(self):
-        sw = gtk.ScrolledWindow()
-        self.vbox.pack_start(sw, True, True)
-        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_ALWAYS)
+        sw = Gtk.ScrolledWindow()
+        self.vbox.pack_start(sw, True, True, 0)
+        sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.ALWAYS)
 
-        self.textview = gtk.TextView()
-        self.textview.modify_font(pango.FontDescription("Monospace 7"))
+        self.textview = Gtk.TextView()
+        self.textview.modify_font(Pango.FontDescription("Monospace 7"))
         sw.add(self.textview)
         self.buffer = self.textview.get_buffer()
 
-        buttonbox = gtk.HBox()
-        self.vbox.pack_start(buttonbox, False, False)
+        buttonbox = Gtk.HBox()
+        self.vbox.pack_start(buttonbox, False, False, 0)
 
-        self.b = gtk.ToggleButton(_("Turn off"))
+        self.b = Gtk.ToggleButton(_("Turn off"))
         self.b.set_active(True)
-        buttonbox.pack_start(self.b)
+        buttonbox.pack_start(self.b, True, True, 0)
         self.b.connect("toggled", self._on_onoff__toggled)
         self.show_all()
 

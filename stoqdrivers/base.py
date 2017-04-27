@@ -29,7 +29,7 @@ Generic base class implementation for all devices.
 
 import logging
 
-import gobject
+from gi.repository import GObject
 
 from stoqdrivers.configparser import StoqdriversConfig
 from stoqdrivers.enum import DeviceType
@@ -139,7 +139,7 @@ class BaseDevice:
         is coming from the serial port.   It is necessary that a gobject main
         loop is already running before calling this method.
         """
-        gobject.io_add_watch(self.get_port().fd, gobject.IO_IN,
+        GObject.io_add_watch(self.get_port().fd, GObject.IO_IN,
                              lambda fd, cond: func(self, cond))
 
     def set_port(self, port):
