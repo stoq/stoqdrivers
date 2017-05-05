@@ -63,7 +63,7 @@ class BaseDevice:
 
     def __init__(self, brand=None, model=None, device=None,
                  config_file=None, port=None, consts=None, product_id=None,
-                 vendor_id=None, interface=INTERFACE_SERIAL):
+                 vendor_id=None, interface=INTERFACE_SERIAL, baudrate=9600):
         if not self.device_dirname:
             raise ValueError("Subclasses must define the "
                              "`device_dirname' attribute")
@@ -75,6 +75,7 @@ class BaseDevice:
         self.model = model
         self.product_id = product_id
         self.vendor_id = vendor_id
+        self._baudrate = baudrate
         self._port = port
         self._driver_constants = consts
         self._load_configuration(config_file)
@@ -110,7 +111,7 @@ class BaseDevice:
 
         if self.interface == 'serial':
             if not self._port:
-                self._port = SerialPort(self.device)
+                self._port = SerialPort(self.device, self._baudrate)
             self._driver = driver_class(self._port, consts=self._driver_constants)
         elif self.interface == 'usb':
             self._driver = driver_class(self.vendor_id, self.product_id)
