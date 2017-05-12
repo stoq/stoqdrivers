@@ -14,7 +14,7 @@ Package: stoqdrivers
 Architecture: all
 Depends: ${misc:Depends}, ${python:Depends},
  python-zope.interface (>= 3.5.2) | python-zopeinterface (>= 3.2.1),
- python-serial (>= 2.2), python-kiwi (>= 1.9.41), python-qrcode (>= 4.0.1),
+ python-serial (>= 2.2), python-kiwi (>= 1.11.90), python-qrcode (>= 4.0.1),
  python-usb
 Homepage: http://www.stoq.com.br
 Description: Python fiscal printer (ECF) drivers
