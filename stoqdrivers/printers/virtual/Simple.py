@@ -112,6 +112,10 @@ class OutputWindow(Gtk.Window):
 
     def _create_ui(self):
         sw = Gtk.ScrolledWindow()
+        # FIXME: The overlay scrolling when a TextView is inside a
+        # ScrolledWindow is somewhat broken in a way that it would make it get
+        # a height of 0 when being displayed.
+        sw.set_property('overlay_scrolling', False)
         self.vbox.pack_start(sw, True, True, 0)
         sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.ALWAYS)
 
