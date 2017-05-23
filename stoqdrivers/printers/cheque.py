@@ -178,7 +178,7 @@ def test():
     # Hmmm, this is not the right way of to do, but... hmm, I just don't know
     # what kind of the cheque the user wants to test, so let me get anyone.
     banks = printer.get_banks()
-    bank = banks[banks.keys()[0]]
+    bank = banks[list(banks.keys())[0]]
     printer.print_cheque(bank, 6.66, "Henrique Romano", u"São Paulo")
 
 if __name__ == "__main__":

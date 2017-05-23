@@ -53,7 +53,7 @@ class BaseDriverConstants:
 
     @classmethod
     def get_items(cls):
-        return cls._constants.keys()
+        return list(cls._constants.keys())
 
     @classmethod
     def get_value(cls, identifier, default=_NoDefault):
