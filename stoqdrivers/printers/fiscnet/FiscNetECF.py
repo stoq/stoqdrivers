@@ -305,7 +305,7 @@ class FiscNetECF(SerialBase):
                 return datetime.date.today()
             else:
                 # "29/03/2007" -> datetime.date(2007, 3, 29)
-                d, m, y = map(int, retval[1:-1].split('/'))
+                d, m, y = list(map(int, retval[1:-1].split('/')))
                 return datetime.date(y, m, d)
         elif regtype == str:
             # '"string"' -> 'string'

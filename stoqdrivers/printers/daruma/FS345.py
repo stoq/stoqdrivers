@@ -759,7 +759,7 @@ class FS345(SerialBase):
         if dates[:6] == '000000':
             opening_date = datetime.date.today()
         else:
-            d, m, y = map(int, [dates[:2], dates[2:4], dates[4:6]])
+            d, m, y = list(map(int, [dates[:2], dates[2:4], dates[4:6]]))
             opening_date = datetime.date(2000 + y, m, d)
 
         identifier = self.send_command(CMD_GET_IDENTIFIER)

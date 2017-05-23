@@ -398,7 +398,7 @@ class FBII(SerialBase):
         reply = self._send_command('080A')
         # Data de abertura.
         date = reply.fields[0]
-        d, m, y = map(int, [date[:2], date[2:4], date[4:8]])
+        d, m, y = list(map(int, [date[:2], date[2:4], date[4:8]]))
         opening_date = datetime.date(y, m, d)
         # COO inicial.
         coupon_start = int(reply.fields[4])
