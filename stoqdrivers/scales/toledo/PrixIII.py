@@ -27,6 +27,7 @@
 Implementation of Toled Prix III driver.
 """
 
+from __future__ import print_function
 from zope.interface import implements
 
 from stoqdrivers.exceptions import InvalidReply
@@ -123,7 +124,7 @@ if __name__ == "__main__":
     r = PrixIII(port)
     data = r.read_data()
 
-    print "WEIGHT:", data.weight
-    print "PRICE BY KG:", data.price_per_kg
-    print "TOTAL PRICE:", data.total_price
-    print "CODE:", data.code
+    print("WEIGHT:", data.weight)
+    print("PRICE BY KG:", data.price_per_kg)
+    print("TOTAL PRICE:", data.total_price)
+    print("CODE:", data.code)

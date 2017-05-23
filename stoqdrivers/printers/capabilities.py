@@ -54,7 +54,7 @@ class capcheck(argcheck):
                 continue
             try:
                 capability.check_value(value)
-            except CapabilityError, e:
+            except CapabilityError as e:
                 raise CapabilityError("invalid value for '%s': %s" % (key, e))
 
 

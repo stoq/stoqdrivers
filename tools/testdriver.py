@@ -23,6 +23,7 @@
 ## Author(s): Johan Dahlin             <jdahlin@async.com.br>
 ##
 
+from __future__ import print_function
 import optparse
 import sys
 
@@ -72,10 +73,10 @@ def main(args):
         except ValueError:
             pass
         items.append(item)
-    print items
+    print(items)
     retval = cb(*items)
     if retval is not None:
-        print '%s returned:' % (command,)
+        print('%s returned:' % (command,))
         import pprint
         pprint.pprint(retval)
     return 0

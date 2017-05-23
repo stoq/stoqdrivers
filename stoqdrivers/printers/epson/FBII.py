@@ -657,7 +657,7 @@ class FBII(SerialBase):
         for i in range(20):
             try:
                 reply = self._send_command('050D', '0000', '%d' % (i + 1))
-            except DriverError, e:
+            except DriverError as e:
                 if e.code == 0x090C:  # Tipo de pagamento não definido
                     continue
                 else:

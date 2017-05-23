@@ -27,6 +27,7 @@
 Base class implementation for all the scales drivers.
 """
 
+from __future__ import print_function
 from stoqdrivers.scales.base import BaseScale
 
 #
@@ -42,12 +43,12 @@ class Scale(BaseScale):
 def test():
     scale = Scale()
 
-    print "Waiting for scale reply... "
+    print("Waiting for scale reply... ")
     data = scale.read_data()
-    print "...ok"
-    print "Weight: %.02f" % data.weight
-    print "Price per Kg: %.02f" % data.price_per_kg
-    print "Total price: %.02f" % data.total_price
+    print("...ok")
+    print("Weight: %.02f" % data.weight)
+    print("Price per Kg: %.02f" % data.price_per_kg)
+    print("Total price: %.02f" % data.total_price)
 
 if __name__ == "__main__":
     test()

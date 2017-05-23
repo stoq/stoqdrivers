@@ -27,6 +27,7 @@
 """
 A simple implementation of a virtual printer.
 """
+from __future__ import print_function
 import datetime
 from decimal import Decimal
 import json
@@ -481,7 +482,7 @@ class Simple(object):
 
     def get_payment_constant(self, payment):
         self._check()
-        print 'payment', payment
+        print('payment', payment)
 
     def get_payment_constants(self):
         self._check()

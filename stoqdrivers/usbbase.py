@@ -21,6 +21,7 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
 ## USA.
 
+from __future__ import print_function
 try:
     import usb.core
     import usb.util
@@ -74,7 +75,7 @@ class UsbBase(object):
                 self.device.detach_kernel_driver(0)
             except usb.core.USBError as e:
                 if check_driver is not None:
-                    print("Could not detatch kernel driver: {0}".format(str(e)))
+                    print(("Could not detatch kernel driver: {0}".format(str(e))))
 
         self.device.set_configuration()
         self.device.reset()

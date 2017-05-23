@@ -25,6 +25,7 @@
 ##              Henrique Romano  <henrique@async.com.br>
 ##
 
+from __future__ import print_function
 import logging
 
 from serial import Serial, EIGHTBITS, PARITY_NONE, STOPBITS_ONE
@@ -115,7 +116,7 @@ class SerialBase(object):
             c = self._port.read(1)
             if not c:
                 a += 1
-                print 'take %s' % a
+                print('take %s' % a)
                 continue
             a = 0
             if c == self.EOL_DELIMIT:

@@ -28,6 +28,7 @@
 FiscNet base driver implementation.
 """
 
+from __future__ import print_function
 import ConfigParser
 import datetime
 from decimal import Decimal
@@ -335,7 +336,7 @@ class FiscNetECF(SerialBase):
         try:
             retdict = self._send_command(
                 'LeNaoFiscal', CodNaoFiscal=code)
-        except DriverError, e:
+        except DriverError as e:
             if e.code != 8057:  # Not configured
                 raise
         else:
@@ -351,7 +352,7 @@ class FiscNetECF(SerialBase):
             self._send_command(
                 'DefineNaoFiscal', CodNaoFiscal=code, DescricaoNaoFiscal=name,
                 NomeNaoFiscal=name, TipoNaoFiscal=entrada)
-        except DriverError, e:
+        except DriverError as e:
             if e.code != 8036:
                 raise
 
@@ -359,7 +360,7 @@ class FiscNetECF(SerialBase):
         try:
             self._send_command(
                 'ExcluiNaoFiscal', CodNaoFiscal=code)
-        except DriverError, e:
+        except DriverError as e:
             if e.code != 8057:  # Not configured
                 raise
 
@@ -367,7 +368,7 @@ class FiscNetECF(SerialBase):
         try:
             retdict = self._send_command(
                 'LeMeioPagamento', CodMeioPagamentoProgram=code)
-        except DriverError, e:
+        except DriverError as e:
             if e.code != 8014:  # Not configured
                 raise
         else:
@@ -385,14 +386,14 @@ class FiscNetECF(SerialBase):
                 'DefineMeioPagamento',
                 CodMeioPagamentoProgram=code, DescricaoMeioPagamento=name,
                 NomeMeioPagamento=name, PermiteVinculado=vinculated)
-        except DriverError, e:
+        except DriverError as e:
             raise
 
     def _delete_payment_method(self, code):
         try:
             self._send_command(
                 'ExcluiMeioPagamento', CodMeioPagamentoProgram=code)
-        except DriverError, e:
+        except DriverError as e:
             if e.code != 8014:  # Not configured
                 raise
 
@@ -400,7 +401,7 @@ class FiscNetECF(SerialBase):
         try:
             retdict = self._send_command(
                 'LeAliquota', CodAliquotaProgramavel=code)
-        except DriverError, e:
+        except DriverError as e:
             if e.code != 8005:  # Not configured
                 raise
         else:
@@ -420,14 +421,14 @@ class FiscNetECF(SerialBase):
                 DescricaoAliquota='%2.2f%%' % value,
                 PercentualAliquota=value,
                 AliquotaICMS=not service)
-        except DriverError, e:
+        except DriverError as e:
             raise
 
     def _delete_tax_code(self, code):
         try:
             self._send_command(
                 'ExcluiAliquota', CodAliquotaProgramavel=code)
-        except DriverError, e:
+        except DriverError as e:
             if e.code != 8005:  # Not configured
                 raise
 
@@ -500,17 +501,17 @@ class FiscNetECF(SerialBase):
 
     def print_status(self):
         status = self._get_status()
-        print 'Flags'
+        print('Flags')
         for flag in reversed(_status_flags):
             if status & flag:
-                print flag, _flagnames[flag]
+                print(flag, _flagnames[flag])
 
-        print 'non-fiscal registers'
+        print('non-fiscal registers')
         for i in range(15):
             try:
-                print self._send_command(
-                    'LeNaoFiscal', CodNaoFiscal=i)
-            except DriverError, e:
+                print(self._send_command(
+                    'LeNaoFiscal', CodNaoFiscal=i))
+            except DriverError as e:
                 if e.code != 8057:
                     raise
 
@@ -655,7 +656,7 @@ class FiscNetECF(SerialBase):
                                LeituraSimplificada=True,
                                DataInicial=start,
                                DataFinal=end)
-        except DriverError, e:
+        except DriverError as e:
             if e.code == 8089:
                 return
 
@@ -697,7 +698,7 @@ class FiscNetECF(SerialBase):
             try:
                 retdict = self._send_command(
                     'LeAliquota', CodAliquotaProgramavel=reg)
-            except DriverError, e:
+            except DriverError as e:
                 if e.code == 8005:  # Aliquota nao carregada
                     continue
                 raise
@@ -730,7 +731,7 @@ class FiscNetECF(SerialBase):
             try:
                 retdict = self._send_command(
                     'LeMeioPagamento', CodMeioPagamentoProgram=reg)
-            except DriverError, e:
+            except DriverError as e:
                 if e.code == 8014:  # Meio de pagamento nao carregado
                     continue
                 raise

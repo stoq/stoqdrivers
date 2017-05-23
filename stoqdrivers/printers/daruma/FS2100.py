@@ -36,6 +36,7 @@ from stoqdrivers.printers.base import BaseDriverConstants
 from stoqdrivers.printers.daruma.FS345 import FS345, CMD_GET_TAX_CODES
 from stoqdrivers.enum import UnitType, TaxType
 from stoqdrivers.exceptions import DriverError
+from functools import reduce
 
 log = logging.getLogger('stoqdrivers.daruma')
 
@@ -137,7 +138,7 @@ class FS2100(FS345):
         for t in range(10):
             try:
                 retval = FS345.send_command(self, command, extra)
-            except DriverError, e:
+            except DriverError as e:
                 if e.code == 99 or e.code == 35:
                     log.debug('FS2100 >>> Error 99. Sleeping for 0.1')
                     time.sleep(0.1)

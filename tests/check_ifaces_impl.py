@@ -26,6 +26,7 @@
 ##
 """ This is a simple module to check if all the drivers implements properly
 its interfaces. """
+from __future__ import print_function
 from zope.interface.verify import verifyClass
 from zope.interface.exceptions import Invalid
 
@@ -37,13 +38,13 @@ from stoqdrivers.scales.base import get_supported_scales
 
 
 def _check_drivers(iface, brand, drivers):
-    print "\t- Checking %s devices:" % brand
+    print("\t- Checking %s devices:" % brand)
     for driver in drivers:
-        print "\t\t- %s\n" % driver.model_name,
+        print("\t\t- %s" % driver.model_name)
         try:
             verifyClass(iface, driver)
-        except Invalid, e:
-            print "ERROR: ", e
+        except Invalid as e:
+            print("ERROR: ", e)
 
 
 def _check_printers(iface):
@@ -53,17 +54,17 @@ def _check_printers(iface):
 
 
 def check_coupon_printers():
-    print "Checking Coupon Printers..."
+    print("Checking Coupon Printers...")
     _check_printers(ICouponPrinter)
 
 
 def check_cheque_printers():
-    print "Checking Cheque Printers..."
+    print("Checking Cheque Printers...")
     _check_printers(IChequePrinter)
 
 
 def check_scales():
-    print "Checking Scales..."
+    print("Checking Scales...")
     for brand, drivers in get_supported_scales().items():
         _check_drivers(IScale, brand, drivers)
 

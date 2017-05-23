@@ -98,7 +98,7 @@ class BaseDevice:
                                          self.brand, self.model)
         try:
             module = __import__(name, None, None, 'stoqdevices')
-        except ImportError, reason:
+        except ImportError as reason:
             raise CriticalError("Could not load driver %s %s: %s"
                                 % (self.brand.capitalize(),
                                    self.model.upper(), reason))

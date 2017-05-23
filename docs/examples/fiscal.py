@@ -26,6 +26,7 @@
 ##              Henrique Romano  <henrique@async.com.br>
 ##
 
+from __future__ import print_function
 from decimal import Decimal
 
 from stoqdrivers.printers.fiscal import FiscalPrinter
@@ -63,7 +64,7 @@ def example():
     printer.add_payment(PaymentMethodType.MONEY, Decimal('2.00'))
     printer.add_payment(PaymentMethodType.MONEY, Decimal('11.00'))
     coupon_id = printer.close()
-    print "+++ coupon %d created." % coupon_id
+    print("+++ coupon %d created." % coupon_id)
 
 if __name__ == "__main__":
     example()

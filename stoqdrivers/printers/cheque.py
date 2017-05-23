@@ -101,7 +101,7 @@ class BaseChequePrinter:
             items = dict(config.items(section))
             try:
                 bank = self._parse_bank(items)
-            except ConfigError, errmsg:
+            except ConfigError as errmsg:
                 raise ConfigError("In section `%s' of `%s': %s"
                                   % (section, filename, errmsg))
             self._banks[int(section)] = bank

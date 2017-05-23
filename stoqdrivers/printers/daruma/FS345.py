@@ -27,6 +27,7 @@
 """
 Daruma FS345 driver
 """
+from __future__ import print_function
 import datetime
 from decimal import Decimal
 import logging
@@ -177,7 +178,7 @@ class FS345(SerialBase):
             if retval.startswith(':E'):
                 try:
                     self.handle_error(retval, raw)
-                except DriverError, e:
+                except DriverError as e:
                     if e.code == 42:
                         self.send_command(CMD_GET_X)
                         continue
@@ -220,11 +221,11 @@ class FS345(SerialBase):
             raise HardwareFailure('Broken status reply')
 
         if verbose:
-            print '== STATUS =='
+            print('== STATUS ==')
 
             # Codes found on page 57-59
-            print 'Raw status code:', status
-            print 'Cashier drawer is', ifset(status[1], 3, 'closed', 'open')
+            print('Raw status code:', status)
+            print('Cashier drawer is', ifset(status[1], 3, 'closed', 'open'))
 
         if self.has_pending_reduce():
             raise PendingReduceZ(_('Pending Reduce Z'))
@@ -243,10 +244,10 @@ class FS345(SerialBase):
 
         if verbose:
             S3 = status[3]
-            print ifset(S3, 3, 'Maintenance', 'Operational'), 'mode'
-            print 'Authentication', ifset(S3, 2, 'disabled', 'enabled')
-            print 'Guillotine', ifset(S3, 1, 'disabled', 'enabled')
-            print 'Auto close CF?', ifset(S3, 0, 'no', 'yes')
+            print(ifset(S3, 3, 'Maintenance', 'Operational'), 'mode')
+            print('Authentication', ifset(S3, 2, 'disabled', 'enabled'))
+            print('Guillotine', ifset(S3, 1, 'disabled', 'enabled'))
+            print('Auto close CF?', ifset(S3, 0, 'no', 'yes'))
 
         if self.status_check(status, 6, 1):
             raise ReduceZError(_("readZ is already emitted"))
@@ -310,31 +311,31 @@ class FS345(SerialBase):
         self._check_status(verbose=True)
 
     def show_information(self):
-        print 'Model:', self.send_command(CMD_GET_MODEL)
-        print 'Firmware:', self.send_command(CMD_GET_FIRMWARE)
+        print('Model:', self.send_command(CMD_GET_MODEL))
+        print('Firmware:', self.send_command(CMD_GET_FIRMWARE))
         data = self.send_command(CMD_LAST_RECORD)
 
         tt = time.strptime(data[:12], '%d%m%y%H%M%S')
-        print 'Last record:', time.strftime('%c', tt)
-        print 'Configuration:', self.send_command(CMD_GET_CONFIGURATION)
+        print('Last record:', time.strftime('%c', tt))
+        print('Configuration:', self.send_command(CMD_GET_CONFIGURATION))
 
     def show_document_status(self):
-        print '== DOCUMENT STATUS =='
+        print('== DOCUMENT STATUS ==')
         value = self._get_document_status()
-        print 'ECF:', value[2:6]
+        print('ECF:', value[2:6])
         document_type = value[6]
         if document_type == CLOSED_COUPON:
-            print 'No open coupon'
+            print('No open coupon')
         elif document_type == OPENED_FISCAL_COUPON:
-            print 'Document is a coupon (%s)' % value[7:12]
+            print('Document is a coupon (%s)' % value[7:12])
         else:
-            print 'Document type:', value[6]
+            print('Document type:', value[6])
 
         tt = time.strptime(value[13:27], '%H%M%S%d%m%Y')
-        print 'Current date/time:', time.strftime('%c', tt)
+        print('Current date/time:', time.strftime('%c', tt))
 
-        print 'Sum', int(value[27:41]) / 100.0
-        print 'GT atual', value[41:59]
+        print('Sum', int(value[27:41]) / 100.0)
+        print('GT atual', value[41:59])
 
     def _get_document_status(self):
         status = self.send_command(CMD_GET_DOCUMENT_STATUS)
