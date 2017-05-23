@@ -587,7 +587,7 @@ class MP25(SerialBase):
         last_item = self._get_last_item_id()
         if item_id is None:
             item_id = last_item
-        elif item_id not in xrange(1, last_item + 2):
+        elif item_id not in range(1, last_item + 2):
             raise CancelItemError("There is no such item with ID %r"
                                   % item_id)
         self._send_command(CMD_CANCEL_ITEM, "%04d" % (item_id,))

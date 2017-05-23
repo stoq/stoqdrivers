@@ -131,7 +131,7 @@ class PlaybackPort:
 
     def write(self, bytes):
         n_bytes = len(bytes)
-        data = "".join([self._input.pop(0) for i in xrange(n_bytes)])
+        data = "".join([self._input.pop(0) for i in range(n_bytes)])
         if bytes != data:
             raise ValueError("Written data differs from the expected:\n"
                              "WROTE:    %r\n"

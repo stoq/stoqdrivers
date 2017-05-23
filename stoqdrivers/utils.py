@@ -60,13 +60,13 @@ def matrix2graphics(graphics_api, matrix, max_cols, multiplier=1, centralized=Tr
 
     sub_len = graphics_api / multiplier
 
-    for i in xrange(0, len(matrix), sub_len):
+    for i in range(0, len(matrix), sub_len):
         bytes_ = []
         sub = matrix[i:i + sub_len]
         if len(sub) < sub_len:
             sub.extend([[False] * len(matrix)] * (sub_len - len(sub)))
 
-        for j in xrange(len(matrix)):
+        for j in range(len(matrix)):
             bits = []
             for bit in sub:
                 bits.extend([bit[j]] * multiplier)
@@ -77,7 +77,7 @@ def matrix2graphics(graphics_api, matrix, max_cols, multiplier=1, centralized=Tr
                 bytes_.extend([bits2byte(bits)] * 3 * multiplier)
             elif graphics_api == GRAPHICS_24BITS:
                 splitted_bytes = []
-                for k in xrange(0, 24, 8):
+                for k in range(0, 24, 8):
                     splitted_bytes.append(bits2byte(bits[k: k + 8]))
                 bytes_.extend(splitted_bytes * multiplier)
             else:
