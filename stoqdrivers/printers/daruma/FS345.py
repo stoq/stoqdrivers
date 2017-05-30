@@ -27,7 +27,7 @@
 """
 Daruma FS345 driver
 """
-from __future__ import print_function
+
 import datetime
 from decimal import Decimal
 import logging

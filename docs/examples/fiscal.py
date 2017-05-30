@@ -26,7 +26,7 @@
 ##              Henrique Romano  <henrique@async.com.br>
 ##
 
-from __future__ import print_function
+
 from decimal import Decimal
 
 from stoqdrivers.printers.fiscal import FiscalPrinter

@@ -27,7 +27,7 @@
 Base class implementation for all the scales drivers.
 """
 
-from __future__ import print_function
+
 from stoqdrivers.scales.base import BaseScale
 
 #

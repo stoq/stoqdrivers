@@ -27,7 +27,7 @@
 Implementation of Toled Prix III driver.
 """
 
-from __future__ import print_function
+
 from zope.interface import implements
 
 from stoqdrivers.exceptions import InvalidReply

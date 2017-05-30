@@ -23,7 +23,7 @@
 ## Author(s): Johan Dahlin             <jdahlin@async.com.br>
 ##
 
-from __future__ import print_function
+
 import optparse
 import sys
 

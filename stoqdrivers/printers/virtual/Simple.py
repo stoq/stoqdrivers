@@ -27,7 +27,7 @@
 """
 A simple implementation of a virtual printer.
 """
-from __future__ import print_function
+
 import datetime
 from decimal import Decimal
 import json

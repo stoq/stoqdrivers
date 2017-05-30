@@ -26,7 +26,7 @@
 ##
 """ This is a simple module to check if all the drivers implements properly
 its interfaces. """
-from __future__ import print_function
+
 from zope.interface.verify import verifyClass
 from zope.interface.exceptions import Invalid
 

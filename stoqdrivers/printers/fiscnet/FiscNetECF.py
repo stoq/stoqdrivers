@@ -28,7 +28,7 @@
 FiscNet base driver implementation.
 """
 
-from __future__ import print_function
+
 import ConfigParser
 import datetime
 from decimal import Decimal

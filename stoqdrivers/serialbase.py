@@ -25,7 +25,7 @@
 ##              Henrique Romano  <henrique@async.com.br>
 ##
 
-from __future__ import print_function
+
 import logging
 
 from serial import Serial, EIGHTBITS, PARITY_NONE, STOPBITS_ONE
