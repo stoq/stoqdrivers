@@ -481,8 +481,8 @@ class _TestCoupon(object):
         self._device.gerencial_report_close()
 
     def test_read_memory(self):
-        start = datetime.date(year=2013, month=01, day=01)
-        end = datetime.date(year=2013, month=01, day=30)
+        start = datetime.date(year=2013, month=1, day=1)
+        end = datetime.date(year=2013, month=1, day=30)
         self._device.till_read_memory(start, end)
 
     def test_read_memory_by_reductions(self):

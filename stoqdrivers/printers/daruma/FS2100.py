@@ -40,8 +40,8 @@ from functools import reduce
 
 log = logging.getLogger('stoqdrivers.daruma')
 
-ENQ = 05
-ACK = 06
+ENQ = 5
+ACK = 6
 LF = 10
 CR = 13
 ESC = 27
