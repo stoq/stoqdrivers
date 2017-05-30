@@ -28,6 +28,8 @@
 import datetime
 from decimal import Decimal
 import logging
+import traceback
+import sys
 
 from kiwi.argcheck import number
 from kiwi.currency import currency
@@ -91,6 +93,7 @@ class FiscalPrinter(BasePrinter):
             self.setup()
             self._setup_complete = True
         except Exception:
+            log.error(''.join(traceback.format_exception(*sys.exc_info())))
             self._setup_complete = False
 
     def setup_complete(self):
@@ -106,7 +109,7 @@ class FiscalPrinter(BasePrinter):
         log.info('setup()')
         self._driver.setup()
 
-    @capcheck(basestring, basestring, basestring)
+    @capcheck(str, str, str)
     def identify_customer(self, customer_name, customer_address, customer_id):
         log.info('identify_customer(customer_name=%r, '
                  'customer_address=%r, customer_id=%r)' % (
@@ -129,8 +132,8 @@ class FiscalPrinter(BasePrinter):
 
         return self._driver.coupon_open()
 
-    @capcheck(basestring, basestring, Decimal, str, Decimal, unit,
-              Decimal, Decimal, basestring)
+    @capcheck(str, str, Decimal, str, Decimal, unit,
+              Decimal, Decimal, str)
     def add_item(self, item_code, item_description, item_price, taxcode,
                  items_quantity=Decimal("1.0"), unit=UnitType.EMPTY,
                  discount=Decimal("0.0"), surcharge=Decimal("0.0"),
@@ -183,7 +186,7 @@ class FiscalPrinter(BasePrinter):
         self.totalized_value = result
         return result
 
-    @capcheck(basestring, Decimal, basestring)
+    @capcheck(str, Decimal, str)
     def add_payment(self, payment_method, payment_value, description=''):
         log.info("add_payment(method=%r, value=%r, description=%r)" % (
             payment_method, payment_value, description))
@@ -216,7 +219,7 @@ class FiscalPrinter(BasePrinter):
 
         return self._driver.coupon_cancel_item(item_id)
 
-    @capcheck(basestring)
+    @capcheck(str)
     def close(self, promotional_message=''):
         log.info('coupon_close(promotional_message=%r)' % (
             promotional_message))

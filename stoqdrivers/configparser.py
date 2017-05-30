@@ -28,7 +28,7 @@
 Useful routines when parsing the configuration file
 """
 import os
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 
 from stoqdrivers.exceptions import ConfigError
 from stoqdrivers.translation import stoqdrivers_gettext

@@ -117,24 +117,24 @@ class Capability:
 
     def check_value(self, value):
         if self.max_len:
-            if not isinstance(value, basestring):
+            if not isinstance(value, str):
                 raise CapabilityError("the value must be a string")
-            if len(value) > self.max_len:
+            if len(value) > (self.max_len or float('inf')):
                 raise CapabilityError("the value can't be greater than %d "
                                       "characters" % self.max_len)
-            elif len(value) < self.min_len:
+            elif len(value) < (self.min_len or float('-inf')):
                 raise CapabilityError("the value can't be less than %d "
                                       "characters" % self.min_len)
             return
         elif not (self.max_size and self.min_size):
             return
 
-        if not isinstance(value, (float, int, long)):
+        if not isinstance(value, (float, int)):
             raise CapabilityError("the value must be float, integer or long")
 
-        if value > self.max_size:
+        if value > (self.max_size or float('inf')):
             raise CapabilityError("the value can't be greater than %r"
                                   % self.max_size)
-        elif value < self.min_size:
+        elif value < (self.min_size or float('-inf')):
             raise CapabilityError("the value can't be less than %r"
                                   % self.min_size)

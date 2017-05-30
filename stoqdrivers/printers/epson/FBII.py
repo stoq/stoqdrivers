@@ -46,6 +46,7 @@ from stoqdrivers.exceptions import (DriverError, PrinterError, CommandError,
 from stoqdrivers.enum import TaxType, UnitType
 from stoqdrivers.printers.base import BaseDriverConstants
 from stoqdrivers.translation import stoqdrivers_gettext
+from stoqdrivers.utils import str2bytes
 
 ACK = '\x06'
 STX = '\x02'
@@ -144,9 +145,9 @@ class Reply(object):
         assert self.string[-1] == ETX, 'ETX'
 
         # Retira statuses
-        self.printer_status = struct.unpack('>H', self.pop(2))[0]
+        self.printer_status = struct.unpack('>H', str2bytes(self.pop(2)))[0]
         assert self.pop() == FLD, 'FLD 1'
-        self.fiscal_status = struct.unpack('>H', self.pop(2))[0]
+        self.fiscal_status = struct.unpack('>H', str2bytes(self.pop(2)))[0]
         assert self.pop() == FLD, 'FLD 2'
 
         # reserved

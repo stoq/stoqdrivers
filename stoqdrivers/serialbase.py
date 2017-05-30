@@ -34,6 +34,7 @@ from zope.interface import implementer
 from stoqdrivers.interfaces import ISerialPort
 from stoqdrivers.exceptions import DriverError
 from stoqdrivers.translation import stoqdrivers_gettext
+from stoqdrivers.utils import str2bytes, bytes2str
 
 _ = stoqdrivers_gettext
 
@@ -98,11 +99,15 @@ class SerialBase(object):
         return self.readline()
 
     def write(self, data):
+        # pyserial is expecting bytes but we work with str in stoqdrivers
+        data = str2bytes(data)
         log.debug(">>> %r (%d bytes)" % (data, len(data)))
         self._port.write(data)
 
     def read(self, n_bytes):
-        return self._port.read(n_bytes)
+        # stoqdrivers is expecting str but pyserial will reply with bytes
+        data = self._port.read(n_bytes)
+        return bytes2str(data)
 
     def readline(self):
         out = ''
@@ -113,7 +118,7 @@ class SerialBase(object):
                 raise DriverError(_("Timeout communicating with fiscal "
                                     "printer"))
 
-            c = self._port.read(1)
+            c = self.read(1)
             if not c:
                 a += 1
                 print('take %s' % a)

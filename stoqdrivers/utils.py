@@ -27,6 +27,7 @@
 Functions for general use.
 """
 
+import codecs
 import unicodedata
 
 GRAPHICS_8BITS = 8
@@ -43,11 +44,39 @@ def encode_text(text, encoding):
     @type text:        str
     @returns:          converted text
     """
-    if not isinstance(text, unicode):
-        return text
     if encoding == "ascii":
         text = unicodedata.normalize("NFKD", text)
-    return text.encode(encoding, "ignore")
+    # If we use text.encode we will get this sometimes:
+    # TypeError: 'abicomp' encoder returned 'str' instead of 'bytes';
+    #   use codecs.encode() to encode to arbitrary types
+    text = codecs.encode(text, encoding, "ignore")
+    # Only do the bellow conversion if the encoding above worked
+    if isinstance(text, bytes):
+        # Use bytes2str instead of decode or otherwise we would encode
+        # the bytes in unicode. This way we will still keep them in the
+        # encoding that we want (since SerialBase.write will do the reversal
+        # operation, str2bytes) even though we will get some strange
+        # characters in the "unicode version" of the string
+        text = bytes2str(text)
+    return text
+
+
+def decode_text(text, encoding):
+    """Decode the text using the given encoding."""
+    bytes_ = str2bytes(text)
+    decoded_text = codecs.decode(bytes_, encoding, "ignore")
+    # If the  decoding above failed return the original string
+    if isinstance(text, bytes):
+        return text
+    return decoded_text
+
+
+def str2bytes(text):
+    return bytes(ord(i) for i in text)
+
+
+def bytes2str(data):
+    return ''.join(chr(i) for i in data)
 
 
 def bits2byte(bits):

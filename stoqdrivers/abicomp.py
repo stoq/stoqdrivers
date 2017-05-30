@@ -27,71 +27,71 @@
 # This module implements the ABICOMP codec for python
 
 TABLE = {
-    u'À': '\xa1',
-    u'Á': '\xa2',
-    u'Â': '\xa3',
-    u'Ã': '\xa4',
-    u'Ä': '\xa5',
-    u'Ç': '\xa6',
-    u'È': '\xa7',
-    u'É': '\xa8',
-    u'Ê': '\xa9',
-    u'Ë': '\xaa',
-    u'Ì': '\xab',
-    u'Í': '\xac',
-    u'Î': '\xad',
-    u'Ï': '\xae',
-    u'Ñ': '\xaf',
+    'À': b'\xa1',
+    'Á': b'\xa2',
+    'Â': b'\xa3',
+    'Ã': b'\xa4',
+    'Ä': b'\xa5',
+    'Ç': b'\xa6',
+    'È': b'\xa7',
+    'É': b'\xa8',
+    'Ê': b'\xa9',
+    'Ë': b'\xaa',
+    'Ì': b'\xab',
+    'Í': b'\xac',
+    'Î': b'\xad',
+    'Ï': b'\xae',
+    'Ñ': b'\xaf',
 
-    u'Ò': '\xb0',
-    u'Ó': '\xb1',
-    u'Ô': '\xb2',
-    u'Õ': '\xb3',
-    u'Ö': '\xb4',
-    u'Œ': '\xb5',
-    u'Ù': '\xb6',
-    u'Ú': '\xb7',
-    u'Û': '\xb8',
-    u'Ü': '\xb9',
-    u'Ÿ': '\xba',
-    u'˝': '\xbb',
-    u'£': '\xbc',
-    u'ʻ': '\xbd',
-    u'°': '\xbe',
+    'Ò': b'\xb0',
+    'Ó': b'\xb1',
+    'Ô': b'\xb2',
+    'Õ': b'\xb3',
+    'Ö': b'\xb4',
+    'Œ': b'\xb5',
+    'Ù': b'\xb6',
+    'Ú': b'\xb7',
+    'Û': b'\xb8',
+    'Ü': b'\xb9',
+    'Ÿ': b'\xba',
+    '˝': b'\xbb',
+    '£': b'\xbc',
+    'ʻ': b'\xbd',
+    '°': b'\xbe',
 
-    u'¡': '\xc0',
-    u'à': '\xc1',
-    u'á': '\xc2',
-    u'â': '\xc3',
-    u'ã': '\xc4',
-    u'ä': '\xc5',
-    u'ç': '\xc6',
-    u'è': '\xc7',
-    u'é': '\xc8',
-    u'ê': '\xc9',
-    u'ë': '\xca',
-    u'ì': '\xcb',
-    u'í': '\xcc',
-    u'î': '\xcd',
-    u'ï': '\xce',
-    u'ñ': '\xcf',
+    '¡': b'\xc0',
+    'à': b'\xc1',
+    'á': b'\xc2',
+    'â': b'\xc3',
+    'ã': b'\xc4',
+    'ä': b'\xc5',
+    'ç': b'\xc6',
+    'è': b'\xc7',
+    'é': b'\xc8',
+    'ê': b'\xc9',
+    'ë': b'\xca',
+    'ì': b'\xcb',
+    'í': b'\xcc',
+    'î': b'\xcd',
+    'ï': b'\xce',
+    'ñ': b'\xcf',
 
-    u'ò': '\xd0',
-    u'ó': '\xd1',
-    u'ô': '\xd2',
-    u'õ': '\xd3',
-    u'ö': '\xd4',
-    u'œ': '\xd5',
-    u'ù': '\xd6',
-    u'ú': '\xd7',
-    u'û': '\xd8',
-    u'ü': '\xd9',
-    u'ÿ': '\xda',
-    u'ß': '\xdb',
-    u'ª': '\xdc',
-    u'º': '\xdd',
-    u'¿': '\xde',
-    u'±': '\xdf',
+    'ò': b'\xd0',
+    'ó': b'\xd1',
+    'ô': b'\xd2',
+    'õ': b'\xd3',
+    'ö': b'\xd4',
+    'œ': b'\xd5',
+    'ù': b'\xd6',
+    'ú': b'\xd7',
+    'û': b'\xd8',
+    'ü': b'\xd9',
+    'ÿ': b'\xda',
+    'ß': b'\xdb',
+    'ª': b'\xdc',
+    'º': b'\xdd',
+    '¿': b'\xde',
+    '±': b'\xdf',
 }
 RTABLE = dict([(v, k) for k, v in TABLE.items()])
 
@@ -104,7 +104,7 @@ def encode(input):
     @returns: encoded text
     @rtype: str
     """
-    return [TABLE.get(c) or str(c) for c in input]
+    return [TABLE.get(c) or c.encode() for c in input]
 
 
 def decode(input):
@@ -115,7 +115,9 @@ def decode(input):
     @returns: decoded text
     @rtype: unicode
     """
-    return [RTABLE.get(c) or unicode(c) for c in input]
+    # Iterating over bytes produces a sequence of integers
+    bytes_ = [(c, bytes([c])) for c in input]
+    return [RTABLE.get(b) or chr(i) for i, b in bytes_]
 
 
 def register_codec():
@@ -124,9 +126,9 @@ def register_codec():
     class Codec(codecs.Codec):
         def encode(self, input, errors='strict'):
             if not input:
-                return "", 0
+                return b"", 0
             output = encode(input)
-            return "".join(output), len(output)
+            return b"".join(output), len(output)
 
         def decode(self, input, errors='strict'):
             if not input:
@@ -154,10 +156,11 @@ def register_codec():
 def test():
     register_codec()
     all = u''.join(TABLE.keys())
-    assert all == unicode(all.encode('abicomp'), 'abicomp')
+    assert all == all.encode('abicomp').decode('abicomp')
 
     mixed = u'não dîz'
-    assert mixed == unicode(mixed.encode('abicomp'), 'abicomp')
+    assert mixed == mixed.encode('abicomp').decode('abicomp')
+
 
 if __name__ == '__main__':
     test()

@@ -29,7 +29,7 @@ FiscNet base driver implementation.
 """
 
 
-import ConfigParser
+import configparser
 import datetime
 from decimal import Decimal
 import logging
@@ -55,6 +55,7 @@ from stoqdrivers.printers.cheque import BaseChequePrinter, BankConfiguration
 from stoqdrivers.printers.base import BaseDriverConstants
 from stoqdrivers.translation import stoqdrivers_gettext
 from stoqdrivers.serialbase import SerialBase
+from stoqdrivers.utils import bytes2str, encode_text, decode_text
 
 _ = stoqdrivers_gettext
 
@@ -169,13 +170,13 @@ class FiscNetECF(SerialBase):
         SerialBase.__init__(self, port)
         self._consts = consts or FiscNetConstants
         self._command_id = 0
-        config = ConfigParser.RawConfigParser()
+        config = configparser.RawConfigParser()
         has_conf = config.read([os.path.expanduser('~/.stoq/stoqdrivers.conf')])
         if has_conf:
             try:
                 self.CASH_SUPPLY = config.get('fiscnet', 'cash_supply')
                 self.CASH_REMOVAL = config.get('fiscnet', 'cash_removal')
-            except ConfigParser.NoOptionError:
+            except configparser.NoOptionError:
                 log.info("Option not found, check stoqdrivers.conf")
         else:
             log.info("file: stoqdrivers.conf not found")
@@ -228,7 +229,9 @@ class FiscNetECF(SerialBase):
         for param, value in sorted(params.items()):
             if isinstance(value, Decimal):
                 value = ('%.03f' % value).replace('.', ',')
-            elif isinstance(value, basestring):
+            elif isinstance(value, bytes):
+                value = '"%s"' % bytes2str(value)
+            elif isinstance(value, str):
                 value = '"%s"' % value
             elif isinstance(value, bool):
                 if value is False:
@@ -466,27 +469,19 @@ class FiscNetECF(SerialBase):
         return taxes
 
     def _configure_printer(self):
-        self._define_tax_name(0,
-                              self.CASH_SUPPLY.encode(self.coupon_printer_charset), entrada=True)
-        self._define_tax_name(1,
-                              self.CASH_REMOVAL.encode(self.coupon_printer_charset), entrada=False)
+        enc = lambda text: encode_text(text, self.coupon_printer_charset)
+
+        self._define_tax_name(0, enc(self.CASH_SUPPLY), entrada=True)
+        self._define_tax_name(1, enc(self.CASH_REMOVAL), entrada=False)
         for code in range(2, 15):
             self._delete_tax_name(code)
 
-        self._define_payment_method(0,
-                                    u'Cheque'.encode(self.coupon_printer_charset))
-        self._define_payment_method(1,
-                                    u'Boleto'.encode(self.coupon_printer_charset))
-        self._define_payment_method(2,
-                                    u'Cartão credito'.encode(self.coupon_printer_charset),
-                                    vinculated=True)
-        self._define_payment_method(3,
-                                    u'Cartão debito'.encode(self.coupon_printer_charset),
-                                    vinculated=True)
-        self._define_payment_method(4,
-                                    u'Financeira'.encode(self.coupon_printer_charset))
-        self._define_payment_method(5,
-                                    u'Vale compra'.encode(self.coupon_printer_charset))
+        self._define_payment_method(0, enc('Cheque'))
+        self._define_payment_method(1, enc('Boleto'))
+        self._define_payment_method(2, enc('Cartão credito'), vinculated=True)
+        self._define_payment_method(3, enc('Cartão debito'), vinculated=True)
+        self._define_payment_method(4, enc('Financeira'))
+        self._define_payment_method(5, enc('Vale compra'))
         for code in range(6, 15):
             self._delete_payment_method(code)
 
@@ -738,7 +733,8 @@ class FiscNetECF(SerialBase):
 
             code = retdict['CodMeioPagamentoProgram']
             name = retdict['NomeMeioPagamento']
-            constants.append((code, name.decode(self.coupon_printer_charset)))
+            name = decode_text(name, self.coupon_printer_charset)
+            constants.append((code, name))
 
         return constants
 
@@ -785,7 +781,7 @@ class FiscNetECF(SerialBase):
                            COO=coo, Valor=value)
 
     def payment_receipt_print(self, text):
-        text = text.encode(self.coupon_printer_charset)
+        text = encode_text(text, self.coupon_printer_charset)
         for line in text.split('\n'):
             line = line.replace('\\', '\\\\')  # Vespague sucks
             self._send_command('ImprimeTexto', TextoLivre=line)
@@ -800,7 +796,7 @@ class FiscNetECF(SerialBase):
         self._send_command('AbreGerencial', CodGerencial=gerencial_id)
 
     def gerencial_report_print(self, text):
-        text = text.encode(self.coupon_printer_charset)
+        text = encode_text(text, self.coupon_printer_charset)
         for line in text.split('\n'):
             line = line.replace('\\', '\\\\')  # Vespague sucks
             self._send_command('ImprimeTexto', TextoLivre=line)

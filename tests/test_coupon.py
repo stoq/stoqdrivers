@@ -120,7 +120,8 @@ class PlaybackPort:
 
     def __init__(self, datafile):
         self._input = []
-        self._output = ''
+        self._output = b''
+        self._datafile = datafile
         self._load_data(datafile)
 
     def setDTR(self):
@@ -129,13 +130,16 @@ class PlaybackPort:
     def getDSR(self):
         return True
 
-    def write(self, bytes):
-        n_bytes = len(bytes)
-        data = "".join([self._input.pop(0) for i in range(n_bytes)])
-        if bytes != data:
+    def write(self, bytes_):
+        n_bytes = len(bytes_)
+        data = bytes(self._input[:n_bytes])
+        self._input = bytes(self._input[n_bytes:])
+
+        if bytes_ != data:
             raise ValueError("Written data differs from the expected:\n"
-                             "WROTE:    %r\n"
-                             "RECORDED: %r\n" % (data, bytes))
+                             "FILE:     %s\n"
+                             "EXPECTED: %r\n"
+                             "GOT:      %r\n" % (self._datafile, data, bytes_))
 
     def read(self, n_bytes=1):
         data = self._output[:n_bytes]
@@ -145,35 +149,36 @@ class PlaybackPort:
         return data
 
     def _convert_data(self, data):
-        data = data.replace('\\n', '\n')
-        data = data.replace('\\r', '\r')
-        data = data.replace('\\t', '\t')
-        data = data.replace('\\\\', '\\')
-        data = data.split('\\x')
+        data = data.replace(b'\\n', b'\n')
+        data = data.replace(b'\\r', b'\r')
+        data = data.replace(b'\\t', b'\t')
+        data = data.replace(b'\\\\', b'\\')
+        data = data.split(b'\\x')
         if len(data) == 1:
             data = data[0]
         else:
-            n = ''
+            n = b''
             for p in data:
                 if len(p) <= 1:
                     n += p
                 else:
                     try:
-                        data = p[:2].decode('hex')
+                        data = bytes([int(p[:2], 16)])
                     except:
                         data = p[:2]
                     n += data + p[2:]
             data = n
+
         return data
 
     def _load_data(self, datafile):
-        fd = open(datafile, "r")
+        fd = open(datafile, "rb")
         for n, line in enumerate(fd.readlines()):
             data = self._convert_data(line[2:-1])
 
-            if line.startswith("W"):
+            if line.startswith(b"W"):
                 self._input.extend(data)
-            elif line.startswith("R"):
+            elif line.startswith(b"R"):
                 self._output += data
             else:
                 raise TypeError("Unrecognized entry type at %s:%d: %r"

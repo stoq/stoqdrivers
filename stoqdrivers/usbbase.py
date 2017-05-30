@@ -30,6 +30,7 @@ except ImportError:
     has_usb = False
 
 from stoqdrivers.exceptions import USBDriverError
+from stoqdrivers.utils import str2bytes
 
 # Based on python-escpos's escpos.printer.Usb:
 #
@@ -94,7 +95,7 @@ class UsbBase(object):
         """
         if not self.device:
             self.open()
-        self.device.write(self.out_ep, data, self.timeout)
+        self.device.write(self.out_ep, str2bytes(data), self.timeout)
         # FIXME: we cant keep opening/closing the device, otherwise it gets
         # *really* slow to print.
         #self.close()

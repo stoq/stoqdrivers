@@ -51,6 +51,7 @@ from stoqdrivers.printers.capabilities import Capability
 from stoqdrivers.printers.base import BaseDriverConstants
 from stoqdrivers.enum import TaxType, UnitType
 from stoqdrivers.translation import stoqdrivers_gettext
+from stoqdrivers.utils import bytes2str, str2bytes, encode_text
 
 _ = stoqdrivers_gettext
 
@@ -270,6 +271,16 @@ def dec2bin(n, trim=-1):
             a = ("0" * (trim - len(a))) + a
     return a
 
+
+def _rbytes2str(data):
+    if isinstance(data, tuple):
+        data = list(data)
+        return tuple(_rbytes2str(b) for b in data)
+    elif isinstance(data, bytes):
+        return bytes2str(data)
+    else:
+        return data
+
 #
 # Driver implementation
 #
@@ -322,11 +333,13 @@ class MP25(SerialBase):
         """
 
         command = chr(self.CMD_PROTO) + command
-        return struct.pack('<bH%dsH' % len(command),
-                           STX,
-                           len(command) + 2,
-                           command,
-                           sum([ord(i) for i in command]))
+        packet = struct.pack(
+            '<bH%dsH' % len(command),
+            STX,
+            len(command) + 2,
+            str2bytes(command),
+            sum([ord(i) for i in command]))
+        return bytes2str(packet)
 
     def _read_reply(self, size):
         a = 0
@@ -378,7 +391,7 @@ class MP25(SerialBase):
 
         format = self.reply_format % fmt
         reply = self._read_reply(struct.calcsize(format))
-        retval = struct.unpack(format, reply)
+        retval = _rbytes2str(struct.unpack(format, str2bytes(reply)))
 
         if raw:
             return retval
@@ -499,7 +512,7 @@ class MP25(SerialBase):
             if ord(c) == 0x03:
                 break
 
-            data += unicode(c, self.coupon_printer_charset)
+            data += encode_text(c, self.coupon_printer_charset)
 
         return data
 
@@ -710,7 +723,7 @@ class MP25(SerialBase):
 
     def get_tax_constants(self):
         status = self._read_register(self.registers.TOTALIZERS)
-        status = struct.unpack('>H', status)[0]
+        status = struct.unpack('>H', str2bytes(status))[0]
 
         length, data = self._send_command(CMD_READ_TAXCODES, response='b32s')
 
@@ -765,7 +778,7 @@ class MP25(SerialBase):
 
         length, names = self._send_command(CMD_READ_TAXCODES, response='b32s')
         status = self._read_register(self.registers.TOTALIZERS)
-        status = struct.unpack('>H', status)[0]
+        status = struct.unpack('>H', str2bytes(status))[0]
         values = self._send_command(CMD_READ_TOTALIZERS, response='219s')
 
         taxes = []

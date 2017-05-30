@@ -50,6 +50,7 @@ from stoqdrivers.exceptions import (DriverError, PendingReduceZ,
                                     CouponOpenError, CancelItemError,
                                     CloseCouponError)
 from stoqdrivers.translation import stoqdrivers_gettext
+from stoqdrivers.utils import encode_text, decode_text
 
 abicomp.register_codec()
 
@@ -519,7 +520,9 @@ class FS345(SerialBase):
                               "%- 84s%- 84s%- 84s" % (customer_name,
                                                       customer_address,
                                                       customer_document))
-        message = message.encode(self.coupon_printer_charset)
+        # NOTE: Do not try to encode the message again. It was already
+        # encoded by printers.fiscal before. By doing that we would be
+        # encoding it twice.
         try:
             self.send_command(CMD_CLOSE_COUPON, message + '\xff')
         except DriverError:
@@ -555,7 +558,7 @@ class FS345(SerialBase):
             if const[2] == '\xff':
                 continue
 
-            const = const.decode(self.coupon_printer_charset)
+            const = decode_text(const, self.coupon_printer_charset)
             constants.append((char, const.strip()))
 
         return constants
@@ -620,7 +623,7 @@ class FS345(SerialBase):
                 break
             data += line
 
-        data = unicode(data, 'cp860')
+        data = encode_text(data, 'cp860')
         return (ret, data)
 
     def till_read_memory_by_reductions(self, start, end):
@@ -717,7 +720,7 @@ class FS345(SerialBase):
             if method[2] == '\xff':
                 continue
 
-            name = method[1:].strip().decode(self.coupon_printer_charset)
+            name = decode_text(method[1:].strip(), self.coupon_printer_charset)
             methods.append((method_letter[i], name))
 
         return methods

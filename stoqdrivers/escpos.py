@@ -21,6 +21,8 @@
 ## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
 ## USA.
 
+from stoqdrivers.utils import encode_text
+
 # Based on python-escpos's escpos.escpos.Escpos:
 #
 # https://github.com/python-escpos/python-escpos/blob/master/src/escpos/escpos.py
@@ -29,86 +31,86 @@
 # Basic Characters
 #
 
-ESC = b'\x1b'  # Escape
-GS = b'\x1d'  # Group Separator
+ESC = '\x1b'  # Escape
+GS = '\x1d'  # Group Separator
 
 #
 # Charcodes
 #
 
 CHARCODES = {
-    'USA': ['cp437', ESC + b'\x74\x00'],            # USA: Standard Europe
-    'JIS': ['cp932', ESC + b'\x74\x01'],            # Japanese Katakana
-    'MULTILINGUAL': ['cp850', ESC + b'\x74\x02'],   # Multilingual
-    'PORTUGUESE': ['cp860', ESC + b'\x74\x03'],     # Portuguese
-    'CA_FRENCH': ['cp863', ESC + b'\x74\x04'],      # Canadian-French
-    'NORDIC': ['cp865', ESC + b'\x74\x05'],         # Nordic
-    'WEST_EUROPE': ['latin_1', ESC + b'\x74\x06'],  # Simplified Kanji, Hirakana
-    'GREEK': ['cp737', ESC + b'\x74\x07'],          # Simplified Kanji
-    'HEBREW': ['cp862', ESC + b'\x74\x08'],         # Simplified Kanji
-    'WPC1252': ['cp1252', ESC + b'\x74\x11'],       # Western European Windows Code Set
-    'CIRILLIC2': ['cp866', ESC + b'\x74\x12'],      # Cirillic #2
-    'LATIN2': ['cp852', ESC + b'\x74\x13'],         # Latin 2
-    'EURO': ['cp858', ESC + b'\x74\x14'],           # Euro
-    'THAI42': ['cp874', ESC + b'\x74\x15'],         # Thai character code 42
-    'THAI11': ['cp874', ESC + b'\x74\x16'],         # Thai character code 11
-    'THAI13': ['cp874', ESC + b'\x74\x17'],         # Thai character code 13
-    'THAI14': ['cp874', ESC + b'\x74\x18'],         # Thai character code 14
-    'THAI16': ['cp874', ESC + b'\x74\x19'],         # Thai character code 16
-    'THAI17': ['cp874', ESC + b'\x74\x1a'],         # Thai character code 17
-    'THAI18': ['cp874', ESC + b'\x74\x1b'],         # Thai character code 18
+    'USA': ['cp437', ESC + '\x74\x00'],            # USA: Standard Europe
+    'JIS': ['cp932', ESC + '\x74\x01'],            # Japanese Katakana
+    'MULTILINGUAL': ['cp850', ESC + '\x74\x02'],   # Multilingual
+    'PORTUGUESE': ['cp860', ESC + '\x74\x03'],     # Portuguese
+    'CA_FRENCH': ['cp863', ESC + '\x74\x04'],      # Canadian-French
+    'NORDIC': ['cp865', ESC + '\x74\x05'],         # Nordic
+    'WEST_EUROPE': ['latin_1', ESC + '\x74\x06'],  # Simplified Kanji, Hirakana
+    'GREEK': ['cp737', ESC + '\x74\x07'],          # Simplified Kanji
+    'HEBREW': ['cp862', ESC + '\x74\x08'],         # Simplified Kanji
+    'WPC1252': ['cp1252', ESC + '\x74\x11'],       # Western European Windows Code Set
+    'CIRILLIC2': ['cp866', ESC + '\x74\x12'],      # Cirillic #2
+    'LATIN2': ['cp852', ESC + '\x74\x13'],         # Latin 2
+    'EURO': ['cp858', ESC + '\x74\x14'],           # Euro
+    'THAI42': ['cp874', ESC + '\x74\x15'],         # Thai character code 42
+    'THAI11': ['cp874', ESC + '\x74\x16'],         # Thai character code 11
+    'THAI13': ['cp874', ESC + '\x74\x17'],         # Thai character code 13
+    'THAI14': ['cp874', ESC + '\x74\x18'],         # Thai character code 14
+    'THAI16': ['cp874', ESC + '\x74\x19'],         # Thai character code 16
+    'THAI17': ['cp874', ESC + '\x74\x1a'],         # Thai character code 17
+    'THAI18': ['cp874', ESC + '\x74\x1b'],         # Thai character code 18
 }
 
 #
 # Font Commands
 #
 
-FONT_A = ESC + b'M0'
-FONT_B = ESC + b'M1'
+FONT_A = ESC + 'M0'
+FONT_B = ESC + 'M1'
 
 #
 # Text
 #
 
-TXT_ALIGN_LT = ESC + b'a\x00'  # Left justification
-TXT_ALIGN_CT = ESC + b'a\x01'  # Centering
+TXT_ALIGN_LT = ESC + 'a\x00'  # Left justification
+TXT_ALIGN_CT = ESC + 'a\x01'  # Centering
 
-TXT_BOLD_OFF = ESC + b'E\x00'  # Bold font OFF
-TXT_BOLD_ON = ESC + b'E\x01'  # Bold font ON
+TXT_BOLD_OFF = ESC + 'E\x00'  # Bold font OFF
+TXT_BOLD_ON = ESC + 'E\x01'  # Bold font ON
 
-DOUBLE_HEIGHT_ON = ESC + b'G\x01'
-DOUBLE_HEIGHT_OFF = ESC + b'G\x00'
+DOUBLE_HEIGHT_ON = ESC + 'G\x01'
+DOUBLE_HEIGHT_OFF = ESC + 'G\x00'
 
 
 #
 # Barcode
 #
 
-BARCODE_HEIGHT = GS + b'h'  # Barcode Height [1-255]
-BARCODE_WIDTH = GS + b'w'  # Barcode Width  [2-6]
+BARCODE_HEIGHT = GS + 'h'  # Barcode Height [1-255]
+BARCODE_WIDTH = GS + 'w'  # Barcode Width  [2-6]
 
-BARCODE_FONT_A = GS + b'f' + b'\x00'  # Font A for HRI barcode chars
-BARCODE_FONT_B = GS + b'f' + b'\x01'  # Font B for HRI barcode chars
+BARCODE_FONT_A = GS + 'f' + '\x00'  # Font A for HRI barcode chars
+BARCODE_FONT_B = GS + 'f' + '\x01'  # Font B for HRI barcode chars
 
-BARCODE_TXT_OFF = GS + b'H' + b'\x00'  # HRI barcode chars OFF
-BARCODE_TXT_ABV = GS + b'H' + b'\x01'  # HRI barcode chars above
-BARCODE_TXT_BLW = GS + b'H' + b'\x02'  # HRI barcode chars below
-BARCODE_TXT_BTH = GS + b'H' + b'\x03'  # HRI both above and below
+BARCODE_TXT_OFF = GS + 'H' + '\x00'  # HRI barcode chars OFF
+BARCODE_TXT_ABV = GS + 'H' + '\x01'  # HRI barcode chars above
+BARCODE_TXT_BLW = GS + 'H' + '\x02'  # HRI barcode chars below
+BARCODE_TXT_BTH = GS + 'H' + '\x03'  # HRI both above and below
 
-BARCODE_CODE93 = GS + b'k' + b'H'  # Use a CODE93 Barcode
+BARCODE_CODE93 = GS + 'k' + 'H'  # Use a CODE93 Barcode
 
 #
 # Line Feed
 #
 
-LINE_FEED_RESET = ESC + b'2'
-LINE_FEED_SET = ESC + b'3'
+LINE_FEED_RESET = ESC + '2'
+LINE_FEED_SET = ESC + '3'
 
 #
 # Misc
 #
 
-PAPER_FULL_CUT = GS + b'V\x00'  # Full Paper Cut
+PAPER_FULL_CUT = GS + 'V\x00'  # Full Paper Cut
 
 
 class EscPosMixin(object):
@@ -196,13 +198,9 @@ class EscPosMixin(object):
         if not text:
             return
 
-        # Make sure the text is unicode
-        if not isinstance(text, unicode):
-            text = unicode(text)
-
         # Encode the text with the correct codepage
         if self.codepage:
-            text = text.encode(self.codepage)
+            text = encode_text(text, self.codepage)
 
         # Then, finally write the text
         self.write(self.default_font)
@@ -233,7 +231,8 @@ class EscPosMixin(object):
         self.write(BARCODE_TXT_OFF)
 
         # Then write the code
-        self.write(BARCODE_CODE93 + chr(len(code)) + code.encode())
+        self.write(BARCODE_CODE93 + chr(len(code)) +
+                   encode_text(code, self.codepage))
 
     def print_qrcode(self, code):
         """ Prints the QR code """

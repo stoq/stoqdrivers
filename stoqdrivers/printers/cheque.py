@@ -25,7 +25,7 @@
 ##               Johan Dahlin     <jdahlin@async.com.br>
 ##
 
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 import datetime
 
 from zope.interface.exceptions import DoesNotImplement
@@ -154,7 +154,7 @@ class ChequePrinter(BasePrinter):
         self.info("get_banks")
         return self._driver.get_banks()
 
-    @argcheck(object, number, basestring, basestring, datetime.datetime)
+    @argcheck(object, number, str, str, datetime.datetime)
     def print_cheque(self, bank, value, thirdparty, city, date=None):
         if date is None:
             date = datetime.datetime.now()

@@ -29,11 +29,4 @@ import gettext
 
 
 def stoqdrivers_gettext(message):
-    is_unicode = False
-    if isinstance(message, unicode):
-        message = str(message)
-        is_unicode = True
-    retval = gettext.dgettext('stoqdrivers', message)
-    if is_unicode:
-        retval = unicode(retval, 'utf-8')
-    return retval
+    return gettext.dgettext('stoqdrivers', message)
