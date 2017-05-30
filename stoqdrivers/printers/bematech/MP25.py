@@ -37,7 +37,7 @@ import struct
 
 from kiwi.currency import currency
 from kiwi.python import Settable
-from zope.interface import implements
+from zope.interface import implementer
 
 from stoqdrivers.serialbase import SerialBase
 from stoqdrivers.exceptions import (DriverError, OutofPaperError, PrinterError,
@@ -275,8 +275,8 @@ def dec2bin(n, trim=-1):
 #
 
 
+@implementer(ICouponPrinter)
 class MP25(SerialBase):
-    implements(ICouponPrinter)
     CMD_PROTO = 0x1c
 
     supported = True

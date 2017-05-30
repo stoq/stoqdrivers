@@ -28,7 +28,7 @@ Implementation of Toled Prix III driver.
 """
 
 
-from zope.interface import implements
+from zope.interface import implementer
 
 from stoqdrivers.exceptions import InvalidReply
 from stoqdrivers.interfaces import IScale, IScaleInfo
@@ -41,12 +41,12 @@ PRICE_PRECISION = 2
 QUANTITY_PRECISION = 3
 
 
+@implementer(IScaleInfo)
 class PackagePrt4:
     """ This class implements a parser for the 4a protocol of Toledo Prix III
 
     This protocol requires the user to press the print button.
     """
-    implements(IScaleInfo)
 
     SIZE = 25
 
@@ -68,13 +68,13 @@ class PackagePrt4:
         self.total_price = float(data[18:24]) / (10 ** PRICE_PRECISION)
 
 
+@implementer(IScaleInfo)
 class PackagePrt1:
     """ This class implements a parser for the protocol prt1 of Toledo Prix III
 
     this protocol does not require any interaction from the user. The driver
     queries the scale for the weight, and the scale replies
     """
-    implements(IScaleInfo)
     SIZE = 7
 
     def __init__(self, raw_data):
@@ -92,11 +92,10 @@ class PackagePrt1:
         self.weight = float(data[1:6]) / (10 ** QUANTITY_PRECISION)
 
 
+@implementer(IScale)
 class PrixIII(SerialBase):
     CMD_PREFIX = "\x05"
     EOL_DELIMIT = chr(ETX)
-
-    implements(IScale)
 
     model_name = "Toledo Prix III"
 

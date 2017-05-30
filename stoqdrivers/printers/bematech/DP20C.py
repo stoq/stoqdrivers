@@ -29,7 +29,7 @@ Bematech DP20C driver
 
 import datetime
 
-from zope.interface import implements
+from zope.interface import implementer
 
 from stoqdrivers.interfaces import IChequePrinter
 from stoqdrivers.printers.cheque import BaseChequePrinter
@@ -37,12 +37,11 @@ from stoqdrivers.printers.capabilities import Capability
 from stoqdrivers.serialbase import SerialBase
 
 
+@implementer(IChequePrinter)
 class DP20C(SerialBase, BaseChequePrinter):
     CMD_PREFIX = '\x1B'
     CMD_SUFFIX = '\x0D'
     CMD_SETUP_COORDINATES = '\xAA'
-
-    implements(IChequePrinter)
 
     model_name = "Bematech DP20C"
     cheque_printer_charset = "cp850"

@@ -15,15 +15,16 @@
 ## but WITHOUT ANY WARRANTY; without even the implied warranty of
 ## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ## GNU General Public License for more details.
-from zope.interface import implements
+
+from zope.interface import implementer
 
 from stoqdrivers.usbbase import UsbBase
 from stoqdrivers.escpos import EscPosMixin
 from stoqdrivers.interfaces import INonFiscalPrinter
 
 
+@implementer(INonFiscalPrinter)
 class SI150(UsbBase, EscPosMixin):
-    implements(INonFiscalPrinter)
 
     out_ep = 0x03
 

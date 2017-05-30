@@ -22,15 +22,15 @@
 ## Author(s): Stoq Team <stoq-devel@async.com.br>
 ##
 
-from zope.interface import implements
+from zope.interface import implementer
 
 from stoqdrivers.printers.bematech.MP2100TH import MP2100TH
 from stoqdrivers.interfaces import INonFiscalPrinter
 from stoqdrivers.utils import GRAPHICS_8BITS, GRAPHICS_24BITS
 
 
+@implementer(INonFiscalPrinter)
 class MP4200TH(MP2100TH):
-    implements(INonFiscalPrinter)
 
     supported = True
     model_name = "Bematech MP4200 TH"

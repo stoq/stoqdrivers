@@ -22,7 +22,7 @@
 ## Author(s): Stoq Team <stoq-devel@async.com.br>
 ##
 
-from zope.interface import implements
+from zope.interface import implementer
 
 from stoqdrivers.interfaces import INonFiscalPrinter
 from stoqdrivers.serialbase import SerialBase
@@ -42,8 +42,8 @@ DOUBLE_HEIGHT_ON = ESC + 'G\x01'
 DOUBLE_HEIGHT_OFF = ESC + 'G\x00'
 
 
+@implementer(INonFiscalPrinter)
 class I9(SerialBase):
-    implements(INonFiscalPrinter)
 
     supported = True
     model_name = "Elgin I9"

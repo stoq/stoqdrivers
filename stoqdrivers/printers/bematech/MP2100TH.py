@@ -23,7 +23,7 @@
 ##
 
 import qrcode
-from zope.interface import implements
+from zope.interface import implementer
 
 from stoqdrivers.interfaces import INonFiscalPrinter
 from stoqdrivers.serialbase import SerialBase
@@ -47,8 +47,8 @@ DOUBLE_HEIGHT_OFF = ESC + 'd0'
 DOUBLE_HEIGHT_ON = ESC + 'd1'
 
 
+@implementer(INonFiscalPrinter)
 class MP2100TH(SerialBase):
-    implements(INonFiscalPrinter)
 
     supported = True
     model_name = "Bematech MP2100 TH"

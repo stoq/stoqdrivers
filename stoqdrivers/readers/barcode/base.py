@@ -25,14 +25,14 @@
 ##
 
 from kiwi.python import namedAny
-from zope.interface import implements
+from zope.interface import implementer
 
 from stoqdrivers.interfaces import IBarcodeReader
 from stoqdrivers.serialbase import SerialBase
 
 
+@implementer(IBarcodeReader)
 class BaseBarcodeReader(SerialBase):
-    implements(IBarcodeReader)
     # Should be defined in subclasses
     model_name = None
 

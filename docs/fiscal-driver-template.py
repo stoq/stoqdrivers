@@ -23,7 +23,7 @@
 import datetime
 from decimal import Decimal
 from kiwi.python import Settable
-from zope.interface import implements
+from zope.interface import implementer
 
 from stoqdrivers.enum import TaxType
 from stoqdrivers.interfaces import ICouponPrinter
@@ -34,8 +34,8 @@ from stoqdrivers.translation import stoqdrivers_gettext
 _ = stoqdrivers_gettext
 
 
+@implementer(ICouponPrinter)
 class TemplateDriver(SerialBase):
-    implements(ICouponPrinter)
 
     supported = True
     model_name = "Template Driver"

@@ -30,7 +30,7 @@ from decimal import Decimal
 import os
 import unittest
 
-from zope.interface import implements
+from zope.interface import implementer
 
 
 import stoqdrivers
@@ -49,11 +49,11 @@ from stoqdrivers.serialbase import SerialPort
 RECORDER_DATA_DIR = "data"
 
 
+@implementer(ISerialPort)
 class LogSerialPort:
     """ A decorator for the SerialPort object expected by the driver to test,
     responsible for log all the bytes read/written.
     """
-    implements(ISerialPort)
 
     def __init__(self, port):
         self._port = port
@@ -115,8 +115,8 @@ class LogSerialPort:
         fd.close()
 
 
+@implementer(ISerialPort)
 class PlaybackPort:
-    implements(ISerialPort)
 
     def __init__(self, datafile):
         self._input = []

@@ -39,7 +39,7 @@ import os
 from kiwi.currency import currency
 from kiwi.python import Settable
 from serial import PARITY_EVEN
-from zope.interface import implements
+from zope.interface import implementer
 
 from stoqdrivers.enum import PaymentMethodType, TaxType, UnitType
 from stoqdrivers.exceptions import (DriverError, PendingReduceZ,
@@ -121,8 +121,8 @@ _RETVAL_VALUE_RE = re.compile(r"^\s*=\s*([^\s;]*)")
 _RETVAL_ESCAPE_RE = re.compile(r"\\(.)")
 
 
+@implementer(IChequePrinter, ICouponPrinter)
 class FiscNetECF(SerialBase):
-    implements(IChequePrinter, ICouponPrinter)
 
     log_domain = 'FiscNet'
 
@@ -809,8 +809,8 @@ class FiscNetECF(SerialBase):
         self._send_command('EncerraDocumento')
 
 
+@implementer(IChequePrinter)
 class FiscNetChequePrinter(FiscNetECF, BaseChequePrinter):
-    implements(IChequePrinter)
 
     def __init__(self, port, consts=None):
         FiscNetECF.__init__(self, port, consts)

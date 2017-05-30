@@ -34,7 +34,7 @@ from decimal import Decimal
 
 from kiwi.currency import currency
 from kiwi.python import Settable
-from zope.interface import implements
+from zope.interface import implementer
 
 from stoqdrivers.serialbase import SerialBase
 from stoqdrivers.interfaces import ICouponPrinter
@@ -215,9 +215,8 @@ class FBIIConstants(BaseDriverConstants):
 # The driver implementation
 #
 
+@implementer(ICouponPrinter)
 class FBII(SerialBase):
-
-    implements(ICouponPrinter)
 
     supported = True
     identify_customer_at_end = True

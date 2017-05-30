@@ -35,7 +35,7 @@ import os
 
 from gi.repository import Gtk, Pango
 from kiwi.python import Settable
-from zope.interface import implements
+from zope.interface import implementer
 
 from stoqdrivers.enum import PaymentMethodType, TaxType, UnitType
 from stoqdrivers.exceptions import (CouponTotalizeError, PaymentAdditionError,
@@ -150,8 +150,8 @@ class OutputWindow(Gtk.Window):
         self.textview.scroll_mark_onscreen(mark)
 
 
+@implementer(ICouponPrinter, INonFiscalPrinter)
 class Simple(object):
-    implements(ICouponPrinter, INonFiscalPrinter)
 
     model_name = "Virtual Printer"
     coupon_printer_charset = "utf-8"

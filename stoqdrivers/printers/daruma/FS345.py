@@ -35,7 +35,7 @@ import time
 
 from kiwi.currency import currency
 from kiwi.python import Settable
-from zope.interface import implements
+from zope.interface import implementer
 
 from stoqdrivers import abicomp
 from stoqdrivers.serialbase import SerialBase
@@ -149,10 +149,9 @@ class FS345Constants(BaseDriverConstants):
     }
 
 
+@implementer(ICouponPrinter)
 class FS345(SerialBase):
     log_domain = 'fs345'
-
-    implements(ICouponPrinter)
 
     supported = True
     model_name = "Daruma FS 345"

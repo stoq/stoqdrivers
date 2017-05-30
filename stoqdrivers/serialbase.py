@@ -29,7 +29,7 @@
 import logging
 
 from serial import Serial, EIGHTBITS, PARITY_NONE, STOPBITS_ONE
-from zope.interface import implements
+from zope.interface import implementer
 
 from stoqdrivers.interfaces import ISerialPort
 from stoqdrivers.exceptions import DriverError
@@ -40,8 +40,8 @@ _ = stoqdrivers_gettext
 log = logging.getLogger('stoqdrivers.serial')
 
 
+@implementer(ISerialPort)
 class VirtualPort:
-    implements(ISerialPort)
 
     def getDSR(self):
         return True
@@ -56,8 +56,8 @@ class VirtualPort:
         return ''
 
 
+@implementer(ISerialPort)
 class SerialPort(Serial):
-    implements(ISerialPort)
 
     def __init__(self, device, baudrate=9600):
         # WARNING: Never change these default options, some drivers are based

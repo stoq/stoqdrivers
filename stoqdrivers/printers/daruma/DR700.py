@@ -22,7 +22,7 @@
 ## Author(s): Stoq Team <stoq-devel@async.com.br>
 ##
 
-from zope.interface import implements
+from zope.interface import implementer
 
 from stoqdrivers.interfaces import INonFiscalPrinter
 from stoqdrivers.serialbase import SerialBase
@@ -46,8 +46,8 @@ SET_BOLD = ESC + 'E'
 UNSET_BOLD = ESC + 'F'
 
 
+@implementer(INonFiscalPrinter)
 class DR700(SerialBase):
-    implements(INonFiscalPrinter)
 
     supported = True
     model_name = "Daruma DR 700"

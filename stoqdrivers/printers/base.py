@@ -27,7 +27,7 @@
 Generic base class implementation for all printers
 """
 
-from zope.interface import providedBy, implements
+from zope.interface import providedBy, implementer
 from kiwi.python import namedAny
 
 from stoqdrivers.interfaces import (ICouponPrinter,
@@ -45,8 +45,8 @@ _ = stoqdrivers_gettext
 _NoDefault = object()
 
 
+@implementer(IDriverConstants)
 class BaseDriverConstants:
-    implements(IDriverConstants)
 
     # Must be defined on subclasses
     _constants = None

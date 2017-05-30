@@ -31,7 +31,7 @@ import datetime
 from decimal import Decimal
 import time
 
-from zope.interface import implements
+from zope.interface import implementer
 
 from stoqdrivers.serialbase import SerialBase
 from stoqdrivers.interfaces import (IChequePrinter,
@@ -258,9 +258,8 @@ class CouponItem:
 # The driver implementation
 #
 
+@implementer(ICouponPrinter, IChequePrinter)
 class EP375(SerialBase, BaseChequePrinter):
-
-    implements(ICouponPrinter, IChequePrinter)
 
     model_name = "Dataregis 375 EP"
     cheque_printer_charset = "ascii"
