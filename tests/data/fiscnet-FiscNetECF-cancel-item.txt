@@ -64,11 +64,11 @@ W {0;LeAliquota;CodAliquotaProgramavel=15;}
 R {0;8005;NomeErro="ErroCMDAliquotaNaoCarregada" Circunstancia="Aliquota nao carregada";}
 W {0;LeInteiro;NomeInteiro="Indicadores";}
 R {0;0;ValorInteiro=14400;}
-W {0;AbreCupomFiscal;EnderecoConsumidor="Async" NomeConsumidor="Henrique Romano" IdConsumidor="1234567890";}
+W {0;AbreCupomFiscal;EnderecoConsumidor="Async" IdConsumidor="1234567890" NomeConsumidor="Henrique Romano";}
 R {0;0;;}
 W {0;LeInteiro;NomeInteiro="Indicadores";}
 R {0;0;ValorInteiro=15424;}
-W {0;VendeItem;CodProduto="987654" Quantidade=1,000 CodAliquota=-4 PrecoUnitario=10,000 Unidade="  " NomeProduto="Monitor LG 775N";}
+W {0;VendeItem;CodAliquota=-4 CodProduto="987654" NomeProduto="Monitor LG 775N" PrecoUnitario=10,000 Quantidade=1,000 Unidade="  ";}
 R {0;0;;}
 W {0;LeInteiro;NomeInteiro="ContadorDocUltimoItemVendido";}
 R {0;0;ValorInteiro=1;}
@@ -80,7 +80,7 @@ W {0;CancelaItemFiscal;NumItem=1;}
 R {0;8086;NomeErro="ErroCMDCancelamentoInvalido" Circunstancia="Item ja cancelado.";}
 W {0;LeInteiro;NomeInteiro="Indicadores";}
 R {0;0;ValorInteiro=15424;}
-W {0;VendeItem;CodProduto="987654" Quantidade=1,000 CodAliquota=-4 PrecoUnitario=10,000 Unidade="  " NomeProduto="Monitor LG 775N";}
+W {0;VendeItem;CodAliquota=-4 CodProduto="987654" NomeProduto="Monitor LG 775N" PrecoUnitario=10,000 Quantidade=1,000 Unidade="  ";}
 R {0;0;;}
 W {0;LeInteiro;NomeInteiro="ContadorDocUltimoItemVendido";}
 R {0;0;ValorInteiro=2;}

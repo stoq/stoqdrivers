@@ -96,11 +96,11 @@ W {0;LeMeioPagamento;CodMeioPagamentoProgram=15;}
 R {0;8014;NomeErro="ErroCMDFormaPagamentoIndefinida" Circunstancia="Meio de pagamento invalido (fora da faixa).";}
 W {0;LeInteiro;NomeInteiro="Indicadores";}
 R {0;0;ValorInteiro=14400;}
-W {0;AbreCupomFiscal;EnderecoConsumidor="Async" NomeConsumidor="Henrique Romano" IdConsumidor="1234567890";}
+W {0;AbreCupomFiscal;EnderecoConsumidor="Async" IdConsumidor="1234567890" NomeConsumidor="Henrique Romano";}
 R {0;0;;}
 W {0;LeInteiro;NomeInteiro="Indicadores";}
 R {0;0;ValorInteiro=15424;}
-W {0;VendeItem;CodProduto="987654" Quantidade=1,000 CodAliquota=-4 PrecoUnitario=10,000 Unidade="  " NomeProduto="Monitor LG 775N";}
+W {0;VendeItem;CodAliquota=-4 CodProduto="987654" NomeProduto="Monitor LG 775N" PrecoUnitario=10,000 Quantidade=1,000 Unidade="  ";}
 R {0;0;;}
 W {0;LeInteiro;NomeInteiro="ContadorDocUltimoItemVendido";}
 R {0;0;ValorInteiro=1;}
@@ -116,7 +116,7 @@ W {0;EncerraDocumento;TextoPromocional="";}
 R {0;0;;}
 W {0;LeInteiro;NomeInteiro="COO";}
 R {0;0;ValorInteiro=308;}
-W {0;AbreCreditoDebito;CodMeioPagamento=2 COO=308 Valor=10,000;}
+W {0;AbreCreditoDebito;COO=308 CodMeioPagamento=2 Valor=10,000;}
 R {0;0;;}
 W {0;ImprimeTexto;TextoLivre="Stoq payment receipt";}
 R {0;0;;}

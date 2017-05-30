@@ -64,7 +64,7 @@ W {0;LeAliquota;CodAliquotaProgramavel=15;}
 R {0;8005;NomeErro="ErroCMDAliquotaNaoCarregada" Circunstancia="Aliquota nao carregada";}
 W {0;LeInteiro;NomeInteiro="Indicadores";}
 R {0;0;ValorInteiro=14336;}
-W {0;AbreCupomFiscal;EnderecoConsumidor="Async" NomeConsumidor="Henrique Romano" IdConsumidor="1234567890";}
+W {0;AbreCupomFiscal;EnderecoConsumidor="Async" IdConsumidor="1234567890" NomeConsumidor="Henrique Romano";}
 R {0;0;;}
 W {0;LeIndicador;NomeIndicador="DocumentoAberto";}
 R {0;0;ValorNumericoIndicador=1 ValorTextoIndicador="1";}

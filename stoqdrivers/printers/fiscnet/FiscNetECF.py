@@ -225,7 +225,7 @@ class FiscNetECF(SerialBase):
     def _send_command(self, command, **params):
         # Page 38-39
         parameters = []
-        for param, value in params.items():
+        for param, value in sorted(params.items()):
             if isinstance(value, Decimal):
                 value = ('%.03f' % value).replace('.', ',')
             elif isinstance(value, basestring):

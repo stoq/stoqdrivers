@@ -62,5 +62,5 @@ W {0;LeAliquota;CodAliquotaProgramavel=14;}
 R {0;8005;NomeErro="ErroCMDAliquotaNaoCarregada" Circunstancia="Aliquota nao carregada";}
 W {0;LeAliquota;CodAliquotaProgramavel=15;}
 R {0;8005;NomeErro="ErroCMDAliquotaNaoCarregada" Circunstancia="Aliquota nao carregada";}
-W {0;EmiteLeituraMF;ReducaoInicial=1 ReducaoFinal=10 LeituraSimplificada=t;}
+W {0;EmiteLeituraMF;LeituraSimplificada=t ReducaoFinal=10 ReducaoInicial=1;}
 R {0;0;;}
