@@ -33,10 +33,6 @@ class NonFiscalPrinter(BasePrinter):
                  *args, **kwargs):
         BasePrinter.__init__(self, brand, model, device, config_file, *args,
                              **kwargs)
-        self.set_condensed()
-        self.descentralize()
-        self.unset_bold()
-        self.unset_double_height()
 
     @property
     def max_characters(self):

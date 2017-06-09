@@ -56,6 +56,10 @@ class DR700(SerialBase):
 
     def __init__(self, port, consts=None):
         SerialBase.__init__(self, port)
+        self.set_condensed()
+        self.descentralize()
+        self.unset_bold()
+        self.unset_double_height()
 
     def centralize(self):
         self.write(CENTRALIZE)

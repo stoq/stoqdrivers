@@ -68,6 +68,9 @@ class MP2100TH(SerialBase):
     def __init__(self, port, consts=None):
         SerialBase.__init__(self, port)
         self.set_condensed()
+        self.descentralize()
+        self.unset_bold()
+        self.unset_double_height()
 
     #
     #  INonFiscalPrinter

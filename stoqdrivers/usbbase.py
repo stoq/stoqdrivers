@@ -95,4 +95,6 @@ class UsbBase(object):
         if not self.device:
             self.open()
         self.device.write(self.out_ep, data, self.timeout)
-        self.close()
+        # FIXME: we cant keep opening/closing the device, otherwise it gets
+        # *really* slow to print.
+        #self.close()
