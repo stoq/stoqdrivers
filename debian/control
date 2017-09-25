@@ -11,12 +11,14 @@ Vcs-Browser: https://github.com/stoq/stoqdrivers/
 Standards-Version: 3.9.3
 X-Python3-Version: >= 3.4
 
-Package: stoqdrivers
+Package: python3-stoqdrivers
 Architecture: all
 Depends: ${misc:Depends}, ${python:Depends},
  python3-zope.interface (>= 3.5.2) | python3-zopeinterface (>= 3.2.1),
  python3-serial (>= 2.2), python3-kiwi (>= 3.0), python3-qrcode (>= 4.0.1),
  python3-usb
+Breaks: stoq (< 2.1.90)
+Replaces: stoqdrivers
 Homepage: http://www.stoq.com.br
 Description: Python fiscal printer (ECF) drivers
  This package provices device drivers
