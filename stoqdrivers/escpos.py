@@ -129,7 +129,7 @@ class EscPosMixin(object):
     #: The maximum number of characters that fit a barcode
     max_barcode_characters = 27
 
-    def __init__(self, columns=32, charcode=None):
+    def __init__(self, columns=32, charcode='MULTILINGUAL'):
         """
         Initialize ESCPOS Printer
 

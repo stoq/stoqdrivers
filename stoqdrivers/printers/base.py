@@ -176,11 +176,14 @@ def get_usb_printer_devices():
         # printers
         if device.bDeviceClass == 7:
             return True
-        for configuration in device:
-            for interface in configuration:
-                if interface.bInterfaceClass == 7:
-                    return True
-        return False
+        try:
+            for configuration in device:
+                for interface in configuration:
+                    if interface.bInterfaceClass == 7:
+                        return True
+            return False
+        except Exception:
+            pass
     return list(usb.core.find(find_all=True, custom_match=is_printer))
 
 
