@@ -106,7 +106,7 @@ class OutputWindow(Gtk.Window):
         self.set_size_request(380, 320)
         self.move(0, 0)
         self.set_deletable(False)
-        self.vbox = Gtk.VBox(0, False)
+        self.vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.add(self.vbox)
 
         self._create_ui()
@@ -128,7 +128,7 @@ class OutputWindow(Gtk.Window):
         buttonbox = Gtk.HBox()
         self.vbox.pack_start(buttonbox, False, False, 0)
 
-        self.b = Gtk.ToggleButton(_("Turn off"))
+        self.b = Gtk.ToggleButton.new_with_label(_("Turn off"))
         self.b.set_active(True)
         buttonbox.pack_start(self.b, True, True, 0)
         self.b.connect("toggled", self._on_onoff__toggled)
