@@ -672,7 +672,7 @@ class FS345(SerialBase):
 
     def get_crz(self):
         registries = self._get_registers()
-        return int(registries[39:42])
+        return int(registries[38:42])
 
     def get_tax_constants(self):
         tax_codes = self.send_command(CMD_GET_TAX_CODES)[1:]
@@ -767,9 +767,9 @@ class FS345(SerialBase):
             serial=identifier[1:9],
             serial_id=int(identifier[13:17]),
             coupon_start=int(registries[:6]),
-            coupon_end=int(registries[7:12]),
-            cro=int(registries[35:38]),
-            crz=int(registries[39:42]),  # FIXME: this is being fetched before the actual
+            coupon_end=int(registries[6:12]),
+            cro=int(registries[34:38]),
+            crz=int(registries[38:42]),  # FIXME: this is being fetched before the actual
             # reduction, so it will offset by one.
             coo=int(registries[6:12]),
             period_total=period_total,
