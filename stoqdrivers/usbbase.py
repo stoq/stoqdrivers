@@ -44,13 +44,13 @@ class UsbBase(object):
     def __init__(self, vendor_id, product_id, interface=0,
                  timeout=0, *args, **kwargs):
         assert has_usb
-        super(UsbBase, self).__init__(*args, **kwargs)
         self.device = None
         self.vendor_id = vendor_id
         self.product_id = product_id
         self.interface = interface
         self.timeout = timeout
         assert self.out_ep is not None
+        super(UsbBase, self).__init__(*args, **kwargs)
 
     def __del__(self):
         """Stop using any unnecessary resources upon destruction"""
@@ -67,7 +67,7 @@ class UsbBase(object):
         try:
             check_driver = self.device.is_kernel_driver_active(0)
         except NotImplementedError:
-            pass
+            check_driver = False
 
         if check_driver is None or check_driver:
             try:
