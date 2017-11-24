@@ -96,7 +96,7 @@ NAK = 21
 ACK = 6
 STX = 2
 
-RETRIES_BEFORE_TIMEOUT = 5
+RETRIES_BEFORE_TIMEOUT = 40
 CHARS_LIMIT = 492
 ALLOW_CANCEL_FISCAL_COUPON = 32
 
@@ -292,8 +292,8 @@ class MP25(SerialBase):
 
     def __init__(self, port, consts=None):
         self._consts = consts or MP25Constants
-        port.timeout = 2
-        port.writeTimeout = 5
+        port.timeout = 20
+        port.writeTimeout = 20
         SerialBase.__init__(self, port)
         # XXX: Seems that Bematech doesn't contains any variable with the
         # coupon remainder value, so I need to manage it by myself.
