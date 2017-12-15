@@ -67,6 +67,9 @@ class MP2100TH(SerialBase):
 
     def __init__(self, port, consts=None):
         SerialBase.__init__(self, port)
+
+        # Make sure the printer is in ESC/BEMA mode
+        self.write(GS + '\xF9\x20\x00')
         self.set_condensed()
         self.descentralize()
         self.unset_bold()
