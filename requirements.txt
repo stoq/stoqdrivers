@@ -3,7 +3,9 @@
 # needed to run stoqdrivers, they are processed by pip/easy_install
 #
 
-kiwi-gtk >= 1.11.90
+# FIXME: Reenable this once kiwi is released in pypi, otherwise
+# we wont be able to pip install inside jenkins
+#kiwi-gtk >= 3.0
 zope.interface >= 3.0
 pyserial >= 2.2
 pyusb
