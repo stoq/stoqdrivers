@@ -128,3 +128,11 @@ class SerialBase(object):
                 log.debug('<<< %r' % out)
                 return out
             out += c
+
+    def open(self):
+        if not self._port.is_open:
+            self._port.open()
+
+    def close(self):
+        if self._port.is_open:
+            self._port.close()
