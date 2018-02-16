@@ -135,4 +135,7 @@ class SerialBase(object):
 
     def close(self):
         if self._port.is_open:
+            # Flush whaterver is pending to write, since port.close() will close it
+            # *imediatally*, losing what was pending to write.
+            self._port.flush()
             self._port.close()
