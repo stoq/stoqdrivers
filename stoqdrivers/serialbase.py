@@ -92,6 +92,17 @@ class SerialBase(object):
     def fileno(self):
         return self._port.fileno()
 
+    def open(self):
+        if not self._port.is_open:
+            self._port.open()
+
+    def close(self):
+        if self._port.is_open:
+            # Flush whaterver is pending to write, since port.close() will close it
+            # *imediatally*, losing what was pending to write.
+            self._port.flush()
+            self._port.close()
+
     def writeline(self, data):
         self.write(self.CMD_PREFIX + data + self.CMD_SUFFIX)
         return self.readline()
