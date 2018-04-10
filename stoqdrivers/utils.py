@@ -87,7 +87,7 @@ def matrix2graphics(graphics_api, matrix, max_cols, multiplier=1, centralized=Tr
     if not graphics_api in [GRAPHICS_8BITS, GRAPHICS_24BITS]:
         raise ValueError("Graphics api %s not supported" % (graphics_api, ))
 
-    sub_len = graphics_api / multiplier
+    sub_len = int(graphics_api / multiplier)
 
     for i in range(0, len(matrix), sub_len):
         bytes_ = []
@@ -115,7 +115,7 @@ def matrix2graphics(graphics_api, matrix, max_cols, multiplier=1, centralized=Tr
         if centralized:
             diff = max_cols - len(bytes_)
             if diff:
-                bytes_ = ([0] * (diff / 2)) + bytes_
+                bytes_ = ([0] * int(diff / 2)) + bytes_
 
         divide_len_by = graphics_api / 8
-        yield ''.join(chr(b) for b in bytes_), len(bytes_) / divide_len_by
+        yield ''.join(chr(b) for b in bytes_), int(len(bytes_) / divide_len_by)
