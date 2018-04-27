@@ -124,7 +124,7 @@ class MP2100TH(SerialBase):
         qr = qrcode.QRCode(version=1, border=4)
         qr.add_data(code)
         self.write('\x00')
-        self._print_matrix(qr.get_matrix())
+        self.print_matrix(qr.get_matrix())
 
     def cut_paper(self):
         # FIXME: Ensure the paper is safely out of the paper-cutter before
@@ -149,11 +149,14 @@ class MP2100TH(SerialBase):
         # Print configuration
         self.write('\x1d\xf9\x29\x30')
 
-    def _print_matrix(self, matrix):
-        max_cols = self.GRAPHICS_MAX_COLS[self.GRAPHICS_API]
-        cmd = self.GRAPHICS_CMD[self.GRAPHICS_API]
+    def print_matrix(self, matrix, api=None, linefeed=True):
+        if api is None:
+            api = self.GRAPHICS_API
 
-        for line, line_len in matrix2graphics(self.GRAPHICS_API, matrix,
+        max_cols = self.GRAPHICS_MAX_COLS[api]
+        cmd = self.GRAPHICS_CMD[api]
+
+        for line, line_len in matrix2graphics(api, matrix,
                                               max_cols, self.GRAPHICS_MULTIPLIER):
             assert line_len <= max_cols
             n2 = 0
@@ -164,4 +167,5 @@ class MP2100TH(SerialBase):
                 n1 -= 256
 
             self.write(cmd % (chr(n1), chr(n2), line))
-            self.write(LINE_FEED)
+            if linefeed:
+                self.write(LINE_FEED)

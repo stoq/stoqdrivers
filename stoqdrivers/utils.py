@@ -72,6 +72,8 @@ def decode_text(text, encoding):
 
 
 def str2bytes(text):
+    if isinstance(text, bytes):
+        return text
     return bytes(ord(i) for i in text)
 
 
@@ -93,9 +95,9 @@ def matrix2graphics(graphics_api, matrix, max_cols, multiplier=1, centralized=Tr
         bytes_ = []
         sub = matrix[i:i + sub_len]
         if len(sub) < sub_len:
-            sub.extend([[False] * len(matrix)] * (sub_len - len(sub)))
+            sub.extend([[False] * len(matrix[0])] * (sub_len - len(sub)))
 
-        for j in range(len(matrix)):
+        for j in range(len(matrix[0])):
             bits = []
             for bit in sub:
                 bits.extend([bit[j]] * multiplier)
