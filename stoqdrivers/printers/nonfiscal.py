@@ -89,6 +89,10 @@ class NonFiscalPrinter(BasePrinter):
     def print_qrcode(self, code):
         self._driver.print_qrcode(code)
 
+    def print_matrix(self, data):
+        if hasattr(self._driver, 'print_matrix'):
+            self._driver.print_matrix(data)
+
     def cut_paper(self):
         self._driver.cut_paper()
 
