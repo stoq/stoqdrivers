@@ -78,7 +78,9 @@ class UsbBase(object):
                 if check_driver is not None:
                     print(("Could not detatch kernel driver: {0}".format(str(e))))
 
-        self.device.set_configuration()
+        # This was required at some point, but stopped working. Is this really necessary? Are we
+        # doing something wrong?
+        #self.device.set_configuration()
         self.device.reset()
 
     def close(self):
