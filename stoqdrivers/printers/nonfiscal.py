@@ -63,18 +63,22 @@ class NonFiscalPrinter(BasePrinter):
         self._driver.unset_double_height()
 
     def print_line(self, data):
-        self.print_inline(data + '\n')
+        if isinstance(data, str):
+            data = data.encode()
+        self.print_inline(data + b'\n')
 
     def print_inline(self, data):
+        if isinstance(data, str):
+            data = data.encode()
         start = 0
-        for tag in re.finditer('<\w+>', data):
+        for tag in re.finditer(b'<\w+>', data):
             # Text before the tag
             text = data[start: tag.start()]
             if text:
                 self._driver.print_inline(text)
             start = tag.end()
 
-            tag = tag.group()[1:-1]  # remove < and >
+            tag = tag.group()[1:-1].decode()  # remove < and >
             if hasattr(self, tag):
                 getattr(self, tag)()
 
@@ -92,6 +96,12 @@ class NonFiscalPrinter(BasePrinter):
     def print_matrix(self, data):
         if hasattr(self._driver, 'print_matrix'):
             self._driver.print_matrix(data)
+
+    def separator(self):
+        if hasattr(self._driver, 'separator'):
+            self._driver.separator()
+        else:
+            self._driver.print_line('-' * self.max_characters)
 
     def cut_paper(self):
         self._driver.cut_paper()

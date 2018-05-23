@@ -132,6 +132,13 @@ class MP2100TH(SerialBase):
         self.print_inline('\n' * 2)
         self.write(ESC + '\x6d')
 
+    def separator(self):
+        max_cols = self.GRAPHICS_MAX_COLS[self.GRAPHICS_API]
+        if self.GRAPHICS_API == GRAPHICS_8BITS:
+            # See matrix2graphics for more info on this
+            max_cols = max_cols // 3
+        self.print_matrix([[False] * max_cols, [False] * max_cols, [True] * max_cols])
+
     #
     #  Private
     #
@@ -158,7 +165,7 @@ class MP2100TH(SerialBase):
 
         for line, line_len in matrix2graphics(api, matrix,
                                               max_cols, self.GRAPHICS_MULTIPLIER):
-            assert line_len <= max_cols
+            assert line_len <= max_cols, (line_len, max_cols)
             n2 = 0
             n1 = line_len
             # line_len = n1 + n2 * 256
