@@ -106,6 +106,16 @@ class NonFiscalPrinter(BasePrinter):
     def cut_paper(self):
         self._driver.cut_paper()
 
+    def open_drawer(self):
+        if hasattr(self._driver, 'open_drawer'):
+            self._driver.open_drawer()
+
+    def is_drawer_open(self):
+        if hasattr(self._driver, 'is_drawer_open'):
+            self._driver.is_drawer_open()
+        else:
+            return False
+
     #
     # Context Managers
     #
