@@ -143,6 +143,8 @@ class OutputWindow(Gtk.Window):
             self._printer.set_off(True)
 
     def feed(self, text):
+        if isinstance(text, bytes):
+            text = text.decode()
         position = self.buffer.get_end_iter()
         self.buffer.insert(position, text)
 
