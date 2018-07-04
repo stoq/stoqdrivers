@@ -22,7 +22,6 @@
 ## Author(s): Stoq Team <stoq-devel@async.com.br>
 ##
 
-import contextlib
 import re
 
 from stoqdrivers.printers.base import BasePrinter
@@ -116,15 +115,10 @@ class NonFiscalPrinter(BasePrinter):
         else:
             return False
 
-    #
-    # Context Managers
-    #
-
-    @contextlib.contextmanager
     def open(self):
-        """Ensures the driver is opened and closed within a scope"""
         if hasattr(self._driver, 'open'):
             self._driver.open()
-        yield
+
+    def close(self):
         if hasattr(self._driver, 'close'):
             self._driver.close()
