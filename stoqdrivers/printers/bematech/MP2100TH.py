@@ -111,7 +111,7 @@ class MP2100TH(SerialBase):
 
     def print_barcode(self, code):
         # Change the height
-        self.write(GS + '\x68%s' % chr(120))
+        self.write(GS + '\x68%s' % chr(60))
         # Normal width
         self.write(GS + '\x77\x02')
         # No HRI (human readable information)
@@ -176,8 +176,17 @@ class MP2100TH(SerialBase):
         max_cols = self.GRAPHICS_MAX_COLS[api]
         cmd = self.GRAPHICS_CMD[api]
 
+        # Check that the given image fits properly with the api, and if not, try to increase the api
+        line, line_len = next(matrix2graphics(api, matrix, max_cols, self.GRAPHICS_MULTIPLIER))
+        if api == GRAPHICS_8BITS and line_len > max_cols:
+            api = GRAPHICS_24BITS
+            max_cols = self.GRAPHICS_MAX_COLS[api]
+            cmd = self.GRAPHICS_CMD[api]
+
         for line, line_len in matrix2graphics(api, matrix,
-                                              max_cols, self.GRAPHICS_MULTIPLIER):
+                                              max_cols, self.GRAPHICS_MULTIPLIER,
+                                              # Bematech already center it for us
+                                              centralized=False):
             assert line_len <= max_cols, (line_len, max_cols)
             n2 = 0
             n1 = line_len

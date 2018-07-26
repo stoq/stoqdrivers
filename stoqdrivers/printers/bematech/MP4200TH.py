@@ -24,9 +24,8 @@
 
 from zope.interface import implementer
 
-from stoqdrivers.printers.bematech.MP2100TH import MP2100TH
+from stoqdrivers.printers.bematech.MP2100TH import MP2100TH, ESC
 from stoqdrivers.interfaces import INonFiscalPrinter
-from stoqdrivers.utils import GRAPHICS_8BITS, GRAPHICS_24BITS
 
 
 @implementer(INonFiscalPrinter)
@@ -36,8 +35,5 @@ class MP4200TH(MP2100TH):
     model_name = "Bematech MP4200 TH"
     max_characters = 67
 
-    GRAPHICS_MAX_COLS = {
-        GRAPHICS_8BITS: 288,
-        # FIXME: What is a good value for 24bits? It is not in the manual
-        GRAPHICS_24BITS: 1023,
-    }
+    def cut_paper(self):
+        self.write(ESC + '\x6d')
