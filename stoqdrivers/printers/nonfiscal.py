@@ -111,7 +111,7 @@ class NonFiscalPrinter(BasePrinter):
 
     def is_drawer_open(self):
         if hasattr(self._driver, 'is_drawer_open'):
-            self._driver.is_drawer_open()
+            return self._driver.is_drawer_open()
         else:
             return False
 
