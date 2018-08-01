@@ -1,4 +1,10 @@
-stoqdrivers (1.4.2) UNRELEASED; urgency=medium
+stoqdrivers (1.5) xenial; urgency=medium
+
+  * Release 1.5
+
+ -- Ronaldo Maia <romaia@async.com.br>  Wed, 01 Aug 2018 16:12:51 -0300
+
+stoqdrivers (1.4.2) xenial; urgency=medium
 
   * Bugfix release 1.4.2
 
