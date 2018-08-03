@@ -102,6 +102,7 @@ def get_supported_printers(include_virtual=False):
         ('daruma', ['DR700', 'FS2100', 'FS345', 'FS600MFD']),
         ('dataregis', ['EP375', 'Quick']),
         ('elgin', ['I9', 'KFiscal']),
+        ('tanca', ['TP650']),
         ('epson', ['FBII', 'FBIII', 'TMT20']),
         ('fiscnet', ['FiscNetECF']),
         ('perto', ['Pay2023']),
