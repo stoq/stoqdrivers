@@ -33,7 +33,7 @@ class MP4200TH(MP2100TH):
 
     supported = True
     model_name = "Bematech MP4200 TH"
-    max_characters = 67
+    max_characters = 64
 
     def cut_paper(self):
         self.write(ESC + '\x6d')
