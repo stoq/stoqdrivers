@@ -1,3 +1,9 @@
+stoqdrivers (1.5.1) xenial; urgency=medium
+
+  * Bugfix release
+
+ -- Ronaldo Maia <romaia@async.com.br>  Tue, 14 Aug 2018 17:03:22 -0300
+
 stoqdrivers (1.5) xenial; urgency=medium
 
   * Release 1.5
