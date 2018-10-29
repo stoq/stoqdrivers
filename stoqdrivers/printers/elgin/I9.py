@@ -147,6 +147,7 @@ class I9(SerialBase):
         self.write('\x1d\x28\x6b\x03\x00%s%s%s' % (chr(49), chr(81), chr(48)))
 
     def cut_paper(self):
+        self.write('\n' * 3)
         self.write('\x1d\x56%s' % chr(48))
 
     def open_drawer(self):
