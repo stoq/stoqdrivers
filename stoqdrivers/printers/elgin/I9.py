@@ -28,6 +28,7 @@ from stoqdrivers.interfaces import INonFiscalPrinter
 from stoqdrivers.serialbase import SerialBase
 
 ESC = '\x1b'
+GS = '\x1d'
 
 NORMAL_MODE = ESC + 'M\x00'
 CONDENSED_MODE = ESC + 'M\x01'
@@ -147,3 +148,14 @@ class I9(SerialBase):
 
     def cut_paper(self):
         self.write('\x1d\x56%s' % chr(48))
+
+    def open_drawer(self):
+        m = '0'
+        t1 = '0'
+        t2 = '5'  # number of milliseconds to activate the electrical signal.
+        self.write(ESC + 'p' + m + t1 + t2)
+
+    def is_drawer_open(self):
+        self.write(GS + b'r2')
+        data = int(self.read(1)[0])
+        return data == 0
