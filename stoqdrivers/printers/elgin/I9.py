@@ -157,6 +157,6 @@ class I9(SerialBase):
         self.write(ESC + 'p' + m + t1 + t2)
 
     def is_drawer_open(self):
-        self.write(GS + b'r2')
-        data = int(self.read(1)[0])
+        self.write(GS + 'r2')
+        data = ord(self.read(1)[0])
         return data == 0
