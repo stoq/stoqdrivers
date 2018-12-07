@@ -311,12 +311,21 @@ class _TestCoupon(object):
         self._device.get_sintegra()
 
 
-class DarumaFS345(_TestCoupon, _BaseTest):
+class _BaseFiscalPrinterTest(_BaseTest):
+    def setUp(self):
+        _BaseTest.setUp(self)
+        payments = self._device.get_payment_constants()
+        assert len(payments) >= 1
+        self._payment_method = payments[0][0]
+        self._taxnone = self._device.get_tax_constant(TaxType.NONE)
+
+
+class DarumaFS345(_TestCoupon, _BaseFiscalPrinterTest):
     brand = 'daruma'
     model = 'FS345'
 
 
-class DarumaFS2100(_TestCoupon, _BaseTest):
+class DarumaFS2100(_TestCoupon, _BaseFiscalPrinterTest):
     brand = 'daruma'
     model = 'FS2100'
 
@@ -331,24 +340,24 @@ class DarumaFS2100(_TestCoupon, _BaseTest):
         return self._device.get_payment_receipt_identifier(u"Cartão Crédito")
 
 
-# XXX: This tests wore not done with a real printer, we used an emulator
-class BematechMP20(_TestCoupon, _BaseTest):
+# XXX: This tests were not done with a real printer, we used an emulator
+class BematechMP20(_TestCoupon, _BaseFiscalPrinterTest):
     brand = 'bematech'
     model = 'MP20'
 
 
-class BematechMP25FI(_TestCoupon, _BaseTest):
+class BematechMP25FI(_TestCoupon, _BaseFiscalPrinterTest):
     brand = 'bematech'
     model = 'MP25'
 
 
 # XXX: This tests wore not done with a real printer, we used an emulator
-class BematechMP2100(_TestCoupon, _BaseTest):
+class BematechMP2100(_TestCoupon, _BaseFiscalPrinterTest):
     brand = 'bematech'
     model = 'MP2100'
 
 
-class FiscNet(_TestCoupon, _BaseTest):
+class FiscNet(_TestCoupon, _BaseFiscalPrinterTest):
     brand = "fiscnet"
     model = "FiscNetECF"
 
@@ -361,11 +370,11 @@ class FiscNet(_TestCoupon, _BaseTest):
         return None
 
 
-class EpsonFBIII(_TestCoupon, _BaseTest):
+class EpsonFBIII(_TestCoupon, _BaseFiscalPrinterTest):
     brand = "epson"
     model = "FBIII"
 
 
-# class DataregisEP375(_TestCoupon, _BaseTest):
+# class DataregisEP375(_TestCoupon, _BaseFiscalPrinterTest):
 #     brand = "dataregis"
 #     model = "EP375"
