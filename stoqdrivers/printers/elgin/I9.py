@@ -159,4 +159,7 @@ class I9(SerialBase):
     def is_drawer_open(self):
         self.write(GS + 'r2')
         data = ord(self.read(1)[0])
-        return data == 0
+        if self.inverted_drawer:
+            return data != 0
+        else:
+            return data == 0

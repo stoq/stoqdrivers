@@ -149,8 +149,12 @@ class MP2100TH(SerialBase):
         # paper status
         self.write(ESC + 'b1')
         self.write(b'\x05')
-        data = ord(self.read(1)[0])
-        return (data & 4) != 4
+        out = self.read(1)
+        data = ord(out[0])
+        if self.inverted_drawer:
+            return (data & 4) == 4
+        else:
+            return (data & 4) != 4
 
     #
     #  Private

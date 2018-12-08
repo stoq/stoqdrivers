@@ -38,12 +38,12 @@ _ = stoqdrivers_gettext
 
 class StoqdriversConfig:
 
-    domain = 'stoqdrivers'
+    domain = 'stoq'
 
     def __init__(self, filename=None):
         """ filename is the name of the configuration file we're reading """
 
-        self.filename = filename or (self.domain + '.conf')
+        self.filename = filename or ('stoqdrivers.conf')
         self.config = ConfigParser()
         self._load_config()
 
@@ -64,7 +64,7 @@ class StoqdriversConfig:
         # 3) /etc/$filename
 
         # This is a bit hackish:
-        # $prefix / lib / $DOMAIN / lib / config.py
+        # $prefix / lib / $DOMAIN / lib / configparser.py
         #    -4      -3     -2      -1       0
         filename = os.path.abspath(__file__)
         stripped = filename.split(os.sep)[:-4]
@@ -75,8 +75,8 @@ class StoqdriversConfig:
         globetcpath = os.path.join(os.sep, 'etc', self.domain)
         if not (self._open_config(homepath) or self._open_config(etcpath) or
                 self._open_config(globetcpath)):
-            raise ConfigError(_("Config file not found in: `%s', `%s' and "
-                                "`%s'") % (homepath, etcpath, globetcpath))
+            raise ConfigError(_("Config file %s not found in: `%s', `%s' and "
+                                "`%s'") % (self.filename, homepath, etcpath, globetcpath))
 
     def has_section(self, section):
         return self.config.has_section(section)

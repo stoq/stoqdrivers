@@ -63,7 +63,8 @@ class BaseDevice:
 
     def __init__(self, brand=None, model=None, device=None,
                  config_file=None, port=None, consts=None, product_id=None,
-                 vendor_id=None, interface=INTERFACE_SERIAL, baudrate=9600):
+                 vendor_id=None, interface=INTERFACE_SERIAL, baudrate=9600,
+                 inverted_drawer=None):
         if not self.device_dirname:
             raise ValueError("Subclasses must define the "
                              "`device_dirname' attribute")
@@ -73,6 +74,7 @@ class BaseDevice:
         self.brand = brand
         self.device = device
         self.model = model
+        self.inverted_drawer = inverted_drawer
         self.product_id = product_id
         self.vendor_id = vendor_id
         self._baudrate = baudrate
@@ -81,19 +83,28 @@ class BaseDevice:
         self._load_configuration(config_file)
 
     def _load_configuration(self, config_file):
-        section_name = BaseDevice.typename_translate_dict[self.device_type]
-
-        if (not self.model or
-                not self.brand or
-                (self.interface == BaseDevice.INTERFACE_SERIAL and
-                 not self.device and not self._port)):
+        try:
             self.config = StoqdriversConfig(config_file)
-            if not self.config.has_section(section_name):
-                raise ConfigError(_("There is no section named `%s'!")
-                                  % section_name)
-            self.brand = self.config.get_option("brand", section_name)
-            self.device = self.config.get_option("device", section_name)
-            self.model = self.config.get_option("model", section_name)
+        except ConfigError as e:
+            log.info(e)
+            self.config = None
+        else:
+            # This allows overriding in the config file some or all of the
+            # data that was specified through the constructor
+            section_name = BaseDevice.typename_translate_dict[self.device_type]
+            for field in ['brand', 'device', 'model', 'inverted_drawer']:
+                try:
+                    setattr(self, field, self.config.get_option(field, section_name))
+                except ConfigError:
+                    # Field not found, ignore
+                    pass
+
+        # At this point, either we have the data needed to initialize the
+        # device or we will need to bail
+        if (not self.model or not self.brand or
+            (self.interface == BaseDevice.INTERFACE_SERIAL and
+             not self.device and not self._port)):
+            raise ConfigError("Device not specified in config or constructor, giving up")
 
         name = "stoqdrivers.%s.%s.%s" % (self.device_dirname,
                                          self.brand, self.model)
@@ -117,8 +128,16 @@ class BaseDevice:
             self._driver = driver_class(self.vendor_id, self.product_id)
         else:
             raise NotImplementedError('Interface not implemented')
-        log.info(("Config data: brand=%s,device=%s,model=%s"
-                  % (self.brand, self.device, self.model)))
+
+        log.info("Device class initialized: brand=%s,device=%s,model=%s"
+                 % (self.brand, self.device, self.model))
+
+        # This check is necessary but ugly because the configuration code
+        # doesn't understand booleans, and we don't want mismatches
+        if self.inverted_drawer in ("True", True):
+            log.info("Inverting drawer check logic")
+            self._driver.inverted_drawer = True
+
         self.check_interfaces()
 
     def get_model_name(self):

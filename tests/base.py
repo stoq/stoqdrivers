@@ -169,9 +169,13 @@ class _BaseTest(unittest.TestCase):
         else:
             self._port = PlaybackPort(filename)
 
+        kwargs = self.get_device_init_kwargs()
         self._device = self.device_class(brand=self.brand,
                                          model=self.model,
-                                         port=self._port)
+                                         port=self._port, **kwargs)
+
+    def get_device_init_kwargs(self):
+        return {}
 
     def _get_recorder_filename(self):
         testdir = os.path.join(os.path.dirname(stoqdrivers.__file__),

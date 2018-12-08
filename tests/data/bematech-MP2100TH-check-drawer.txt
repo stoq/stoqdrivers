@@ -5,4 +5,4 @@ W \x1bF
 W \x1bd0
 W \x1bb1
 W \x05
-R \x66
+R \x04

@@ -25,8 +25,12 @@
 ##
 
 from stoqdrivers.printers.nonfiscal import NonFiscalPrinter
+from stoqdrivers.configparser import StoqdriversConfig
 
 from tests.base import _BaseTest
+
+# Patch StoqdriversConfig to look for config files in tests/
+StoqdriversConfig.get_homepath = lambda self: "tests/"
 
 
 class _TestNonFiscalPrinter(object):
@@ -42,7 +46,10 @@ class _NonFiscalWithDrawerSupport(_TestNonFiscalPrinter, _BaseTest):
         self._device.open_drawer()
 
     def test_check_drawer(self):
-        self._device.is_drawer_open()
+        # The data files we are reading return 0x04 for the return value of the
+        # raw command. In the normal (i.e. not inverted_drawer) case, this
+        # indicates the drawer is closed.
+        self.assertEquals(self._device.is_drawer_open(), False)
 
 
 class BematechMP2100TH(_NonFiscalWithDrawerSupport, _BaseTest):
@@ -53,3 +60,25 @@ class BematechMP2100TH(_NonFiscalWithDrawerSupport, _BaseTest):
 class ElginI9(_NonFiscalWithDrawerSupport, _BaseTest):
     brand = 'elgin'
     model = 'I9'
+
+
+class BematechMP2100TH_InvertedDrawer(_NonFiscalWithDrawerSupport, _BaseTest):
+    brand = 'bematech'
+    model = 'MP2100TH'
+
+    def get_device_init_kwargs(self):
+        return {'config_file': "stoqdrivers-inverteddrawer.conf"}
+
+    def test_check_drawer(self):
+        self.assertEquals(self._device.is_drawer_open(), True)
+
+
+class ElginI9_InvertedDrawer(_NonFiscalWithDrawerSupport, _BaseTest):
+    brand = 'elgin'
+    model = 'I9'
+
+    def get_device_init_kwargs(self):
+        return {'config_file': "stoqdrivers-inverteddrawer.conf"}
+
+    def test_check_drawer(self):
+        self.assertEquals(self._device.is_drawer_open(), True)

@@ -82,6 +82,12 @@ class SerialBase(object):
     # used by readline()
     EOL_DELIMIT = '\r'
 
+    # Most serial printers allow connecting a cash drawer to them. You can then
+    # open the drawer, and also check its status. Some models, for instance,
+    # the Radiant drawers, use inverted logic to describe whether they are
+    # open, specified by this attribute, settable via BaseDevice config.
+    inverted_drawer = False
+
     def __init__(self, port):
         self._port = port
 
