@@ -70,6 +70,7 @@ class MP2100TH(SerialBase):
 
         # Make sure the printer is in ESC/BEMA mode
         self.write(GS + '\xF9\x20\x00')
+        self._setup_charset()
         self.set_condensed()
         self.descentralize()
         self.unset_bold()
@@ -140,9 +141,10 @@ class MP2100TH(SerialBase):
         self.print_matrix([[False] * max_cols, [False] * max_cols, [True] * max_cols])
 
     def open_drawer(self):
-        # 5 is the number of milliseconds to activate the electrical signal. On my tests, 3 was
-        # enought on the drawer we have. 2 did not open it
-        self.write(ESC + 'v5')
+        # This is the number of milliseconds to activate the electrical signal.
+        # In tests, 3 was enough for the drawer we have. 2 did not open it. We
+        # have an example of a drawer that requires 9, so using that for now.
+        self.write(ESC + 'v9')
 
     def is_drawer_open(self):
         # b1 is to enable the printer to report the drawer status, otherwise it will report the
