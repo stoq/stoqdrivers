@@ -24,6 +24,7 @@
 
 import qrcode
 from zope.interface import implementer
+from stoqdrivers.exceptions import InvalidReplyException
 
 from stoqdrivers.interfaces import INonFiscalPrinter
 from stoqdrivers.serialbase import SerialBase
@@ -152,7 +153,10 @@ class MP2100TH(SerialBase):
         self.write(ESC + 'b1')
         self.write(b'\x05')
         out = self.read(1)
-        data = ord(out[0])
+        try:
+            data = ord(out[0])
+        except IndexError:
+            raise InvalidReplyException
         if self.inverted_drawer:
             return (data & 4) == 4
         else:

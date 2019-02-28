@@ -46,6 +46,7 @@ class PrinterError(Exception):
 
 class DriverError(Exception):
     "Base exception for all printer errors"
+
     def __init__(self, error='', code=-1):
         if code != -1:
             error = '%d: %s' % (code, error)
@@ -151,3 +152,7 @@ class AlreadyTotalized(DriverError):
 
 class InvalidValue(DriverError):
     "The value specified is invalid or is not in the expected range"
+
+
+class InvalidReplyException(DriverError):
+    "Invalid reply exception raised"
