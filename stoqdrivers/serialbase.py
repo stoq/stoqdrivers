@@ -67,7 +67,7 @@ class SerialPort(Serial):
         # options are common to most of the drivers.
         Serial.__init__(self, device, baudrate=baudrate, bytesize=EIGHTBITS,
                         parity=PARITY_NONE, stopbits=STOPBITS_ONE, timeout=3,
-                        writeTimeout=0)
+                        write_timeout=3)
         self.setDTR(True)
         self.flushInput()
         self.flushOutput()
