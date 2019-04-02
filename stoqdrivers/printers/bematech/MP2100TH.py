@@ -54,6 +54,7 @@ class MP2100TH(SerialBase):
     supported = True
     model_name = "Bematech MP2100 TH"
     max_characters = 64
+    charset = 'cp850'
 
     GRAPHICS_API = GRAPHICS_8BITS
     GRAPHICS_MULTIPLIER = 1
@@ -64,6 +65,10 @@ class MP2100TH(SerialBase):
     GRAPHICS_CMD = {
         GRAPHICS_8BITS: ESC + '\x4b%s%s%s',
         GRAPHICS_24BITS: ESC + '\x2a\x21%s%s%s',
+    }
+    CHARSET_MAP = {
+        'cp850': '\x32',
+        'utf8': '\x38',
     }
 
     def __init__(self, port, consts=None):
@@ -106,7 +111,7 @@ class MP2100TH(SerialBase):
         self.write(DOUBLE_HEIGHT_OFF)
 
     def print_line(self, data):
-        self.write(data + '\n')
+        self.write(data + b'\n')
 
     def print_inline(self, data):
         self.write(data)
@@ -166,9 +171,10 @@ class MP2100TH(SerialBase):
     #  Private
     #
 
-    def _setup_charset(self, charset='\x32'):
+    def _setup_charset(self, charset='cp850'):
+        self.charset = charset
         # Set charset - \x38 - Unicode \x32 - cp850
-        self.write('\x1d\xf9\x37%s' % charset)
+        self.write('\x1d\xf9\x37%s' % self.CHARSET_MAP[charset])
 
     def _setup_commandset(self, commset='\x30'):
         # ESC/BEMA = 0x30

@@ -34,6 +34,11 @@ class NonFiscalPrinter(BasePrinter):
                              **kwargs)
 
     @property
+    def charset(self):
+        # The driver might not have defined a charset, or it might be None
+        return getattr(self._driver, 'charset', 'utf8') or 'utf8'
+
+    @property
     def max_characters(self):
         return self._driver.max_characters
 
@@ -63,12 +68,12 @@ class NonFiscalPrinter(BasePrinter):
 
     def print_line(self, data):
         if isinstance(data, str):
-            data = data.encode()
+            data = data.encode(self.charset)
         self.print_inline(data + b'\n')
 
     def print_inline(self, data):
         if isinstance(data, str):
-            data = data.encode()
+            data = data.encode(self.charset)
         start = 0
         for tag in re.finditer(b'<\w+>', data):
             # Text before the tag

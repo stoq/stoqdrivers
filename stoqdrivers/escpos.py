@@ -34,31 +34,23 @@ from stoqdrivers.utils import encode_text
 ESC = '\x1b'  # Escape
 GS = '\x1d'  # Group Separator
 
-#
-# Charcodes
-#
 
-CHARCODES = {
-    'USA': ['cp437', ESC + '\x74\x00'],            # USA: Standard Europe
-    'JIS': ['cp932', ESC + '\x74\x01'],            # Japanese Katakana
-    'MULTILINGUAL': ['cp850', ESC + '\x74\x02'],   # Multilingual
-    'PORTUGUESE': ['cp860', ESC + '\x74\x03'],     # Portuguese
-    'CA_FRENCH': ['cp863', ESC + '\x74\x04'],      # Canadian-French
-    'NORDIC': ['cp865', ESC + '\x74\x05'],         # Nordic
-    'WEST_EUROPE': ['latin_1', ESC + '\x74\x06'],  # Simplified Kanji, Hirakana
-    'GREEK': ['cp737', ESC + '\x74\x07'],          # Simplified Kanji
-    'HEBREW': ['cp862', ESC + '\x74\x08'],         # Simplified Kanji
-    'WPC1252': ['cp1252', ESC + '\x74\x11'],       # Western European Windows Code Set
-    'CIRILLIC2': ['cp866', ESC + '\x74\x12'],      # Cirillic #2
-    'LATIN2': ['cp852', ESC + '\x74\x13'],         # Latin 2
-    'EURO': ['cp858', ESC + '\x74\x14'],           # Euro
-    'THAI42': ['cp874', ESC + '\x74\x15'],         # Thai character code 42
-    'THAI11': ['cp874', ESC + '\x74\x16'],         # Thai character code 11
-    'THAI13': ['cp874', ESC + '\x74\x17'],         # Thai character code 13
-    'THAI14': ['cp874', ESC + '\x74\x18'],         # Thai character code 14
-    'THAI16': ['cp874', ESC + '\x74\x19'],         # Thai character code 16
-    'THAI17': ['cp874', ESC + '\x74\x1a'],         # Thai character code 17
-    'THAI18': ['cp874', ESC + '\x74\x1b'],         # Thai character code 18
+CHARSET_CMD = {
+    'cp850': ESC + '\x74\x02',   # Multilingual
+
+    'cp437': ESC + '\x74\x00',            # USA: Standard Europe
+    'cp932': ESC + '\x74\x01',            # Japanese Katakana
+    'cp860': ESC + '\x74\x03',     # Portuguese
+    'cp863': ESC + '\x74\x04',      # Canadian-French
+    'cp865': ESC + '\x74\x05',         # Nordic
+    'latin1': ESC + '\x74\x06',  # Simplified Kanji, Hirakana
+    'cp737': ESC + '\x74\x07',          # Simplified Kanji
+    'cp862': ESC + '\x74\x08',         # Simplified Kanji
+    'cp1252': ESC + '\x74\x11',       # Western European Windows Code Set
+    'cp866': ESC + '\x74\x12',      # Cirillic #2
+    'cp852': ESC + '\x74\x13',         # Latin 2
+    'cp858': ESC + '\x74\x14',           # Euro
+
 }
 
 #
@@ -117,9 +109,6 @@ class EscPosMixin(object):
     #: How many line feeds should be done before cutting the paper
     cut_line_feeds = 4
 
-    #: Which charcode to be used as default
-    charcode = None
-
     #: The default font
     default_font = FONT_B
 
@@ -129,32 +118,25 @@ class EscPosMixin(object):
     #: The maximum number of characters that fit a barcode
     max_barcode_characters = 27
 
-    def __init__(self, columns=32, charcode='MULTILINGUAL'):
+    def __init__(self, charset='cp850'):
         """
         Initialize ESCPOS Printer
 
-        :param columns: Number of text columns on the printer (Default: 32)
+        :param charset: the charset that the printer will be setup to use.
         """
-        self.columns = columns
-        self.set_charcode(charcode)
+        self.set_charset(charset)
 
-    def set_charcode(self, code):
+    def set_charset(self, charset):
         """
-        Set character code table
+        Set character set table
 
         Send the control command to the printer and will encode any text sent
-        to printing with the selected charcode.
+        to printing with the selected charset.
 
-        :param code: Name of the charcode (e.g.: 'latin1')
+        :param charset: Name of the charset (e.g.: 'latin1' or 'cp850')
         """
-        if code is None:
-            self.codepage = None
-            return
-
-        # Normalize everything to uppercase
-        codepage, charcode = CHARCODES[code.upper()]
-        self.codepage = codepage
-        self.write(charcode)
+        self.charset = charset
+        self.write(CHARSET_CMD[self.charset])
 
     #
     # INonFiscalPrinter Methods
@@ -190,7 +172,7 @@ class EscPosMixin(object):
 
     def print_line(self, text):
         """ Performs a line break to the given text. """
-        self.print_inline(text + '\n')
+        self.print_inline(text + b'\n')
 
     def print_inline(self, text):
         """ Print a given text in a unique line. """
@@ -198,10 +180,7 @@ class EscPosMixin(object):
         if not text:
             return
 
-        # Encode the text with the correct codepage
-        if self.codepage:
-            text = encode_text(text, self.codepage)
-
+        assert isinstance(text, bytes), text
         # Then, finally write the text
         self.write(self.default_font)
         self.write(text)
@@ -232,7 +211,7 @@ class EscPosMixin(object):
 
         # Then write the code
         self.write(BARCODE_CODE93 + chr(len(code)) +
-                   encode_text(code, self.codepage))
+                   encode_text(code, self.charset))
 
     def print_qrcode(self, code):
         """ Prints the QR code """
@@ -264,5 +243,5 @@ class EscPosMixin(object):
 
     def cut_paper(self):
         """ Performs a paper cutting. """
-        self.print_inline('\n' * self.cut_line_feeds)
+        self.print_inline(b'\n' * self.cut_line_feeds)
         self.write(PAPER_FULL_CUT)
