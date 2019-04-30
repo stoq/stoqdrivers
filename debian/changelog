@@ -1,3 +1,9 @@
+stoqdrivers (1.7.2) xenial; urgency=medium
+
+  * Release 1.7.2
+
+ -- Ronaldo Maia <romaia@async.com.br>  Tue, 30 Apr 2019 10:45:41 -0300
+
 stoqdrivers (1.7.1) xenial; urgency=medium
 
   * Release 1.7.1
