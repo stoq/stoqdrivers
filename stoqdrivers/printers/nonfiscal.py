@@ -105,7 +105,7 @@ class NonFiscalPrinter(BasePrinter):
         if hasattr(self._driver, 'separator'):
             self._driver.separator()
         else:
-            self._driver.print_line('-' * self.max_characters)
+            self._driver.print_line(b'-' * self.max_characters)
 
     def cut_paper(self):
         self._driver.cut_paper()
