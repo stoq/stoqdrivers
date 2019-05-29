@@ -83,7 +83,7 @@ class I9(SerialBase):
         self.write(DOUBLE_HEIGHT_OFF)
 
     def print_line(self, data):
-        self.write(data + '\n')
+        self.write(data + b'\n')
 
     def print_inline(self, data):
         self.write(data)

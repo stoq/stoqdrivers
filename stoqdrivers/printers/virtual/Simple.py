@@ -598,7 +598,7 @@ class Simple(object):
     def print_line(self, data):
         if self._is_centralized:
             data = data.center(self.max_characters)
-        self.write(data + '\n')
+        self.write(data + b'\n')
 
     def print_inline(self, data):
         self.write(data)
