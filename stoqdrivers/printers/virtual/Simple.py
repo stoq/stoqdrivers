@@ -49,6 +49,10 @@ from stoqdrivers.translation import stoqdrivers_gettext
 
 _ = stoqdrivers_gettext
 
+# Global state of the printer. Even if we create multiple instances of the printer during runtime
+# (which should not happen), all of them will share the same state.
+_printer_off = False
+
 
 class CouponItem:
     def __init__(self, id, quantity, value):
@@ -98,9 +102,10 @@ class FakeConstants(BaseDriverConstants):
 
 
 class OutputWindow(Gtk.Window):
+    _instance = None
 
-    def __init__(self, printer):
-        self._printer = printer
+    def __init__(self):
+        self._printer = None
         Gtk.Window.__init__(self)
         self.set_title(_("ECF Emulator"))
         self.set_size_request(380, 320)
@@ -110,6 +115,16 @@ class OutputWindow(Gtk.Window):
         self.add(self.vbox)
 
         self._create_ui()
+
+    @classmethod
+    def get_instance(cls):
+        if cls._instance:
+            return cls._instance
+        cls._instance = cls()
+        return cls._instance
+
+    def set_printer(self, printer):
+        self._printer = printer
 
     def _create_ui(self):
         sw = Gtk.ScrolledWindow()
@@ -135,6 +150,7 @@ class OutputWindow(Gtk.Window):
         self.show_all()
 
     def _on_onoff__toggled(self, button):
+        assert self._printer
         if button.get_active():
             self.b.set_label(_("Turn off"))
             self._printer.set_off(False)
@@ -165,9 +181,6 @@ class Simple(object):
     def __init__(self, port, consts=None):
         self._consts = consts or FakeConstants()
         self._customer_document = None
-
-        self._off = False
-        self.output = None
 
         # Internal state
         self.till_closed = False
@@ -241,10 +254,11 @@ class Simple(object):
         fp.close()
 
     def set_off(self, off):
-        self._off = off
+        global _printer_off
+        _printer_off = off
 
     def _check(self):
-        if self._off:
+        if _printer_off:
             raise PrinterOfflineError
 
     def _reset_flags(self):
@@ -273,9 +287,9 @@ class Simple(object):
     #
 
     def write(self, data):
-        if not self.output:
-            self.output = OutputWindow(self)
-        self.output.feed(data)
+        output = OutputWindow.get_instance()
+        output.set_printer(self)
+        output.feed(data)
 
     #
     # ICouponPrinter implementation
@@ -596,11 +610,13 @@ class Simple(object):
         self._is_double_height = False
 
     def print_line(self, data):
+        self._check()
         if self._is_centralized:
             data = data.center(self.max_characters)
         self.write(data + b'\n')
 
     def print_inline(self, data):
+        self._check()
         self.write(data)
 
     def print_barcode(self, code):
