@@ -52,6 +52,7 @@ _ = stoqdrivers_gettext
 # Global state of the printer. Even if we create multiple instances of the printer during runtime
 # (which should not happen), all of them will share the same state.
 _printer_off = False
+_drawer_open = False
 
 
 class CouponItem:
@@ -141,12 +142,18 @@ class OutputWindow(Gtk.Window):
         self.buffer = self.textview.get_buffer()
 
         buttonbox = Gtk.HBox()
-        self.vbox.pack_start(buttonbox, False, False, 0)
+        self.vbox.pack_start(buttonbox, False, False, 3)
 
         self.b = Gtk.ToggleButton.new_with_label(_("Turn off"))
         self.b.set_active(True)
-        buttonbox.pack_start(self.b, True, True, 0)
+        buttonbox.pack_start(self.b, True, True, 3)
         self.b.connect("toggled", self._on_onoff__toggled)
+
+        self.drawer = Gtk.ToggleButton.new_with_label(_("Open drawer"))
+        self.drawer.set_active(True)
+        buttonbox.pack_start(self.drawer, True, True, 3)
+        self.drawer.connect("toggled", self._on_open_drawer__toggled)
+
         self.show_all()
 
     def _on_onoff__toggled(self, button):
@@ -157,6 +164,15 @@ class OutputWindow(Gtk.Window):
         else:
             self.b.set_label(_("Turn on"))
             self._printer.set_off(True)
+
+    def _on_open_drawer__toggled(self, button):
+        assert self._printer
+        if button.get_active():
+            self.drawer.set_label(_("Close drawer"))
+            self._printer.open_drawer()
+        else:
+            self.drawer.set_label(_("Open drawer"))
+            self._printer.close_drawer()
 
     def feed(self, text):
         if isinstance(text, bytes):
@@ -281,6 +297,19 @@ class Simple(object):
 
     def _feed_line(self):
         self.write(('-' * self.max_characters) + '\n')
+
+    def open_drawer(self):
+        global _drawer_open
+        _drawer_open = True
+        OutputWindow.get_instance().drawer.set_label(_("Close drawer"))
+
+    def close_drawer(self):
+        global _drawer_open
+        _drawer_open = False
+        OutputWindow.get_instance().drawer.set_label(_("Open drawer"))
+
+    def is_drawer_open(self):
+        return _drawer_open
 
     #
     #   SerialBase implementation
