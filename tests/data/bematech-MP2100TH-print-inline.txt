@@ -4,6 +4,5 @@ W \x1b\x0f
 W \x1ba\x00
 W \x1bF
 W \x1bd0
-W \x1bb1
-W \x05
-R \x05
+W Print 
+W inline\n

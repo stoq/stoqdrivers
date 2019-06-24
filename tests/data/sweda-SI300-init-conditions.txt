@@ -1,0 +1,6 @@
+W \x1bt\x02
+W \x1b!\x01
+W \x1ba\x00
+W \x1b!\x01
+W \x1b!\x01
+W Init: Condensed and descentralized\n

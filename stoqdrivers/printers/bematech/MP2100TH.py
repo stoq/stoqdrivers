@@ -2,7 +2,7 @@
 # vi:si:et:sw=4:sts=4:ts=4
 
 ##
-## Copyright (C) 2015 Async Open Source <http://www.async.com.br>
+## Copyright (C) 2015-2019 Stoq Tecnologia <http://stoq.com.br>
 ## All rights reserved
 ##
 ## This program is free software; you can redistribute it and/or modify
@@ -25,47 +25,33 @@
 import qrcode
 from zope.interface import implementer
 from stoqdrivers.exceptions import InvalidReplyException
+from stoqdrivers.escpos import EscPosMixin, ESC, GS
 
 from stoqdrivers.interfaces import INonFiscalPrinter
 from stoqdrivers.serialbase import SerialBase
-from stoqdrivers.utils import GRAPHICS_8BITS, GRAPHICS_24BITS, matrix2graphics
+from stoqdrivers.utils import GRAPHICS_8BITS
 
-# FIXME: probably all those commands should be defined on the
-# class itself to allow subclasses to overwrite them easily
-ESC = '\x1b'
-GS = '\x1d'
 SI = '\x0f'
-
-LINE_FEED = ESC + 'A\x00'
-CENTRALIZE = ESC + 'a\x01'
-DESCENTRALIZE = ESC + 'a\x00'
-CONDENSED_MODE = ESC + SI
-NORMAL_MODE = ESC + 'H'
-SET_BOLD = ESC + 'E'
-UNSET_BOLD = ESC + 'F'
-BARCODE_128 = GS + 'kn'
-DOUBLE_HEIGHT_OFF = ESC + 'd0'
-DOUBLE_HEIGHT_ON = ESC + 'd1'
 
 
 @implementer(INonFiscalPrinter)
-class MP2100TH(SerialBase):
+class MP2100TH(SerialBase, EscPosMixin):
+    TXT_BOLD_ON = ESC + 'E'
+    TXT_BOLD_OFF = ESC + 'F'
 
+    FONT_REGULAR = ESC + 'H'
+    FONT_CONDENSED = ESC + SI
+
+    DOUBLE_HEIGHT_OFF = ESC + 'd0'
+    DOUBLE_HEIGHT_ON = ESC + 'd1'
+    PAPER_FULL_CUT = ESC + '\x6d'
+
+    cut_line_feeds = 2
+    max_characters = 67
     supported = True
     model_name = "Bematech MP2100 TH"
-    max_characters = 64
     charset = 'cp850'
 
-    GRAPHICS_API = GRAPHICS_8BITS
-    GRAPHICS_MULTIPLIER = 1
-    GRAPHICS_MAX_COLS = {
-        GRAPHICS_8BITS: 576,
-        GRAPHICS_24BITS: 1728,
-    }
-    GRAPHICS_CMD = {
-        GRAPHICS_8BITS: ESC + '\x4b%s%s%s',
-        GRAPHICS_24BITS: ESC + '\x2a\x21%s%s%s',
-    }
     CHARSET_MAP = {
         'cp850': '\x32',
         'utf8': '\x38',
@@ -73,71 +59,19 @@ class MP2100TH(SerialBase):
 
     def __init__(self, port, consts=None):
         SerialBase.__init__(self, port)
-
         # Make sure the printer is in ESC/BEMA mode
         self.write(GS + '\xF9\x20\x00')
-        self._setup_charset()
-        self.set_condensed()
-        self.descentralize()
-        self.unset_bold()
-        self.unset_double_height()
+        EscPosMixin.__init__(self)
 
     #
     #  INonFiscalPrinter
     #
-
-    def centralize(self):
-        self.write(CENTRALIZE)
-
-    def descentralize(self):
-        self.write(DESCENTRALIZE)
-
-    def set_bold(self):
-        self.write(SET_BOLD)
-
-    def unset_bold(self):
-        self.write(UNSET_BOLD)
-
-    def set_condensed(self):
-        self.write(CONDENSED_MODE)
-
-    def unset_condensed(self):
-        self.write(NORMAL_MODE)
-
-    def set_double_height(self):
-        self.write(DOUBLE_HEIGHT_ON)
-
-    def unset_double_height(self):
-        self.write(DOUBLE_HEIGHT_OFF)
-
-    def print_line(self, data):
-        self.write(data + b'\n')
-
-    def print_inline(self, data):
-        self.write(data)
-
-    def print_barcode(self, code):
-        # Change the height
-        self.write(GS + '\x68%s' % chr(60))
-        # Normal width
-        self.write(GS + '\x77\x02')
-        # No HRI (human readable information)
-        self.write(GS + '\x48\x00')
-
-        cmd = GS + '\x6b\x49%s%s' % (chr(len(code)), code)
-        self.write(cmd)
 
     def print_qrcode(self, code):
         qr = qrcode.QRCode(version=1, border=4)
         qr.add_data(code)
         self.write('\x00')
         self.print_matrix(qr.get_matrix())
-
-    def cut_paper(self):
-        # FIXME: Ensure the paper is safely out of the paper-cutter before
-        #        executing the cut.
-        self.print_inline('\n' * 2)
-        self.write(ESC + '\x6d')
 
     def separator(self):
         max_cols = self.GRAPHICS_MAX_COLS[self.GRAPHICS_API]
@@ -167,14 +101,14 @@ class MP2100TH(SerialBase):
         else:
             return (data & 4) != 4
 
-    #
-    #  Private
-    #
-
-    def _setup_charset(self, charset='cp850'):
+    def set_charset(self, charset='cp850'):
         self.charset = charset
         # Set charset - \x38 - Unicode \x32 - cp850
         self.write('\x1d\xf9\x37%s' % self.CHARSET_MAP[charset])
+
+    #
+    #  Private
+    #
 
     def _setup_commandset(self, commset='\x30'):
         # ESC/BEMA = 0x30
@@ -184,33 +118,3 @@ class MP2100TH(SerialBase):
     def _print_configuration(self):
         # Print configuration
         self.write('\x1d\xf9\x29\x30')
-
-    def print_matrix(self, matrix, api=None, linefeed=True):
-        if api is None:
-            api = self.GRAPHICS_API
-
-        max_cols = self.GRAPHICS_MAX_COLS[api]
-        cmd = self.GRAPHICS_CMD[api]
-
-        # Check that the given image fits properly with the api, and if not, try to increase the api
-        line, line_len = next(matrix2graphics(api, matrix, max_cols, self.GRAPHICS_MULTIPLIER))
-        if api == GRAPHICS_8BITS and line_len > max_cols:
-            api = GRAPHICS_24BITS
-            max_cols = self.GRAPHICS_MAX_COLS[api]
-            cmd = self.GRAPHICS_CMD[api]
-
-        for line, line_len in matrix2graphics(api, matrix,
-                                              max_cols, self.GRAPHICS_MULTIPLIER,
-                                              # Bematech already center it for us
-                                              centralized=False):
-            assert line_len <= max_cols, (line_len, max_cols)
-            n2 = 0
-            n1 = line_len
-            # line_len = n1 + n2 * 256
-            while n1 >= 256:
-                n2 += 1
-                n1 -= 256
-
-            self.write(cmd % (chr(n1), chr(n2), line))
-            if linefeed:
-                self.write(LINE_FEED)

@@ -3,4 +3,4 @@ W \x1bM1
 W \x1ba\x00
 W \x1bE\x00
 W \x1d!\x00
-W \x1bp005
+W Init: Condensed and descentralized\n

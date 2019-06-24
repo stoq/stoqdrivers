@@ -22,7 +22,7 @@ class LogSerialPort:
         self._port = port
         self._bytes = []
         self._last = None
-        self._buffer = ''
+        self._buffer = b''
 
     def setDTR(self):
         return self._port.setDTR()
@@ -74,7 +74,7 @@ class LogSerialPort:
             self._bytes.append(('R', self._buffer))
         fd = open(filename, "w")
         for type, line in self._bytes:
-            fd.write("%s %s\n" % (type, repr(line)[1:-1]))
+            fd.write("%s %s\n" % (type, repr(line)[2:-1]))
         fd.close()
 
 
@@ -164,7 +164,7 @@ class _BaseTest(unittest.TestCase):
         if not os.path.exists(filename):
             # Change this path to the serial port and set the baudrate used by
             # fiscal printer when recreating the tests.
-            real_port = SerialPort('/tmp/stoq-ecf', baudrate=9600)
+            real_port = SerialPort('/tmp/stoq-ecf', baudrate=115200)
             self._port = LogSerialPort(real_port)
         else:
             self._port = PlaybackPort(filename)

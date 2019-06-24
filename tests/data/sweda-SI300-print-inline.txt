@@ -1,0 +1,7 @@
+W \x1bt\x02
+W \x1b!\x01
+W \x1ba\x00
+W \x1b!\x01
+W \x1b!\x01
+W Print 
+W inline\n

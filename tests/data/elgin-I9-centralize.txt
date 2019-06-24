@@ -1,0 +1,9 @@
+W \x1bt\x02
+W \x1bM1
+W \x1ba\x00
+W \x1bE\x00
+W \x1d!\x00
+W \x1ba\x01
+W Centralized\n
+W \x1ba\x00
+W Descentralized\n

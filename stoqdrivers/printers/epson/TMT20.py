@@ -19,15 +19,16 @@
 from zope.interface import implementer
 
 from stoqdrivers.usbbase import UsbBase
-from stoqdrivers.escpos import EscPosMixin
+from stoqdrivers.escpos import EscPosMixin, GS
 from stoqdrivers.interfaces import INonFiscalPrinter
 
 
 @implementer(INonFiscalPrinter)
 class TMT20(UsbBase, EscPosMixin):
+    DOUBLE_HEIGHT_ON = GS + '!' + '\x01'
+    DOUBLE_HEIGHT_OFF = GS + '!' + '\x00'
 
     out_ep = 0x01
 
     supported = True
     model_name = "Epson TM-T20"
-    max_characters = 64
