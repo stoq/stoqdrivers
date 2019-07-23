@@ -157,7 +157,7 @@ class EscPosMixin(object):
     def unset_double_height(self):
         self.write(self.DOUBLE_HEIGHT_OFF)
 
-    def print_line(self, text):
+    def print_line(self, text: bytes):
         """ Performs a line break to the given text. """
         self.print_inline(text + b'\n')
 
@@ -182,12 +182,12 @@ class EscPosMixin(object):
             # Python 3 ready.
             length = int(len(code) / 2)
             self.print_barcode(code[:length])
-            self.print_line('')
+            self.print_line(b'')
             self.print_barcode(code[length:])
             return
 
         # Set Width and Height
-        self.write(self.BARCODE_HEIGHT + chr(80))
+        self.write(self.BARCODE_HEIGHT + chr(30))
         self.write(self.BARCODE_WIDTH + chr(2))
 
         # Other settings

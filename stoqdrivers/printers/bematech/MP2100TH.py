@@ -106,6 +106,22 @@ class MP2100TH(SerialBase, EscPosMixin):
         # Set charset - \x38 - Unicode \x32 - cp850
         self.write('\x1d\xf9\x37%s' % self.CHARSET_MAP[charset])
 
+    def print_barcode(self, code):
+        """Print a barcode
+
+        Instead of using command GS + 'kH', which is defined on escpos mixin,
+        this printer uses the command GS + 'kI'
+        """
+        # Change the height
+        self.write(self.BARCODE_HEIGHT + chr(30))
+        # Normal width
+        self.write(self.BARCODE_WIDTH + chr(2))
+        # No HRI (human readable information)
+        self.write(self.BARCODE_TXT_OFF)
+
+        cmd = GS + 'kI%s%s' % (chr(len(code)), code)
+        self.write(cmd)
+
     #
     #  Private
     #
