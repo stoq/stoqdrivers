@@ -74,7 +74,7 @@ class _TestNonFiscalPrinter(object):
         self._device.print_line(' Normal')
 
     def test_barcode(self):
-        self._device.print_barcode('123456789')
+        self._device.print_barcode('123456789123456789123456789123456789123456789')
 
     def test_qrcode(self):
         self._device.print_qrcode('This is a qr code')
