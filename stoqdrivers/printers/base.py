@@ -106,6 +106,7 @@ def get_supported_printers(include_virtual=False):
         ('epson', ['FBII', 'FBIII', 'TMT20']),
         ('fiscnet', ['FiscNetECF']),
         ('perto', ['Pay2023']),
+        ('snbc', ['BKC310']),
         ('sweda', ['SI150']),
     ]
     if include_virtual:

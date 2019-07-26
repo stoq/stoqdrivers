@@ -233,7 +233,8 @@ class EscPosMixin(object):
         self.print_inline(b'\n' * self.cut_line_feeds)
         self.write(self.PAPER_FULL_CUT)
 
-    def print_matrix(self, matrix, api=None, linefeed=True):
+    def print_matrix(self, matrix, api=None, linefeed=True, multiplier=None):
+        multiplier = multiplier or self.GRAPHICS_MULTIPLIER
         if api is None:
             api = self.GRAPHICS_API
 
@@ -241,7 +242,7 @@ class EscPosMixin(object):
         cmd = self.GRAPHICS_CMD[api]
 
         # Check that the given image fits properly with the api, and if not, try to increase the api
-        line, line_len = next(matrix2graphics(api, matrix, max_cols, self.GRAPHICS_MULTIPLIER))
+        line, line_len = next(matrix2graphics(api, matrix, max_cols, multiplier))
         if api == GRAPHICS_8BITS and line_len > max_cols:
             api = GRAPHICS_24BITS
             max_cols = self.GRAPHICS_MAX_COLS[api]
@@ -250,7 +251,7 @@ class EscPosMixin(object):
         # Change the space between lines to 0
         self.write(ESC + '3\x00')
         for line, line_len in matrix2graphics(api, matrix,
-                                              max_cols, self.GRAPHICS_MULTIPLIER,
+                                              max_cols, multiplier,
                                               centralized=False):
             assert line_len <= max_cols, (line_len, max_cols)
             n2 = 0

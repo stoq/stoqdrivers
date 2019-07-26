@@ -68,11 +68,11 @@ class SI300(SerialBase, EscPosMixin):
         mode = self._text_mode & ~(2 ** self.FLAG_DOUBLE_HEIGHT)
         self._set_text_mode(mode)
 
-    def print_matrix(self, matrix, api=None, linefeed=True):
+    def print_matrix(self, matrix, api=None, linefeed=True, multiplier=None):
         # Unset condensed to prevent blank spaces between lines
         was_condensed = self._text_mode & (2 ** self.FLAG_CONDENSED)
         self.unset_condensed()
-        super().print_matrix(matrix, api, linefeed)
+        super().print_matrix(matrix, api, linefeed, multiplier=multiplier)
         # Reset the previous state if necessary
         if was_condensed:
             self.set_condensed()
