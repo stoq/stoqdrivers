@@ -1,3 +1,9 @@
+stoqdrivers (1.7.4) xenial; urgency=medium
+
+  * Release 1.7.4
+
+ -- Fabricio C Zuardi <fcz@laptop39>  Wed, 31 Jul 2019 12:00:02 -0300
+
 stoqdrivers (1.7.3) xenial; urgency=medium
 
   * Release 1.7.3
