@@ -3,9 +3,29 @@ image: cprov/stoq:candidate
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
+stages:
+  - test
+  - build
+
 before_script:
-  - python3 -V
+  # Install tools to create debian packages
+  - apt update
+  - apt --yes install devscripts debhelper python3-all
 
 test:
+  stage: test
   script:
     - make check
+
+generate_deb:
+  stage: build
+  script:
+    - rm -rf dist
+    - make deb
+
+  artifacts:
+    paths:
+      - dist/*.deb
+
+  only:
+  - master
