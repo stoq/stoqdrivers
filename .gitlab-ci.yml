@@ -1,0 +1,11 @@
+image: cprov/stoq:candidate
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
+before_script:
+  - python3 -V
+
+test:
+  script:
+    - make check
