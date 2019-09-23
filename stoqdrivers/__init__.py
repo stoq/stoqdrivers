@@ -25,7 +25,7 @@
 ##              Johan Dahlin <henrique@async.com.br>
 ##
 
-__version__ = (1, 7, 4)
+__version__ = (1, 8, 0)
 
 from kiwi.environ import Library
 
