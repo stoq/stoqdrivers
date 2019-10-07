@@ -20,12 +20,13 @@ import qrcode
 from zope.interface import implementer
 
 from stoqdrivers.utils import GRAPHICS_24BITS
+from stoqdrivers.usbbase import UsbBase
+from stoqdrivers.escpos import EscPosMixin
 from stoqdrivers.interfaces import INonFiscalPrinter
-from stoqdrivers.printers.epson.TMT20 import TMT20
 
 
 @implementer(INonFiscalPrinter)
-class BKC310(TMT20):
+class BKC310(UsbBase, EscPosMixin):
     out_ep = 0x02
     cut_line_feeds = 0
 
