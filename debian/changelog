@@ -1,3 +1,9 @@
+stoqdrivers (1.8.1) xenial; urgency=medium
+
+  * Release 1.8.1
+
+ -- Fabricio C Zuardi <fcz@laptop39>  Tue, 08 Oct 2019 11:55:44 -0300
+
 stoqdrivers (1.8.0) xenial; urgency=medium
 
   * Release 1.8.0
