@@ -17,15 +17,20 @@ test:
   script:
     - make check
 
-generate_deb:
+.create_deb:
   stage: build
   script:
     - rm -rf dist
     - make deb
-
   artifacts:
     paths:
       - dist/*.deb
 
+create_deb_master:
+  extends: .create_deb
   only:
-  - master
+    - master
+
+create_deb_manual:
+  extends: .create_deb
+  when: manual
