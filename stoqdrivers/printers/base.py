@@ -1,44 +1,44 @@
 # -*- Mode: Python; coding: iso-8859-1 -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
-##
-## Stoqdrivers
-## Copyright (C) 2005 Async Open Source <http://www.async.com.br>
-## All rights reserved
-##
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
-## (at your option) any later version.
-##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-## USA.
-##
-## Author(s): Henrique Romano             <henrique@async.com.br>
-##
+#
+# Stoqdrivers
+# Copyright (C) 2005 Async Open Source <http://www.async.com.br>
+# All rights reserved
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+# USA.
+#
+# Author(s): Henrique Romano             <henrique@async.com.br>
+#
 """
 Generic base class implementation for all printers
 """
 
 from zope.interface import providedBy, implementer
-from kiwi.python import namedAny
 
+from stoqdrivers.base import BaseDevice
+from stoqdrivers.enum import DeviceType
 from stoqdrivers.interfaces import (ICouponPrinter,
                                     IDriverConstants,
                                     IChequePrinter,
                                     INonFiscalPrinter)
-from stoqdrivers.base import BaseDevice
 from stoqdrivers.serialbase import SerialBase
-from stoqdrivers.usbbase import UsbBase
-from stoqdrivers.enum import DeviceType
 from stoqdrivers.translation import stoqdrivers_gettext
+from stoqdrivers.usbbase import UsbBase
+from stoqdrivers.utils import get_obj_from_module
 
 _ = stoqdrivers_gettext
 
@@ -72,9 +72,9 @@ class BasePrinter(BaseDevice):
 
     def check_interfaces(self):
         driver_interfaces = providedBy(self._driver)
-        if (not ICouponPrinter in driver_interfaces
-                and not IChequePrinter in driver_interfaces
-                and not INonFiscalPrinter in driver_interfaces):
+        if (ICouponPrinter not in driver_interfaces
+                and IChequePrinter not in driver_interfaces
+                and INonFiscalPrinter not in driver_interfaces):
             raise TypeError("The driver `%r' doesn't implements a valid "
                             "interface" % self._driver)
 
@@ -115,12 +115,8 @@ def get_supported_printers(include_virtual=False):
     for brand, module_names in config:
         result[brand] = []
         for module_name in module_names:
-            try:
-                obj = namedAny("stoqdrivers.printers.%s.%s.%s"
-                               % (brand, module_name, module_name))
-            except AttributeError:
-                raise ImportError("Can't find class %s for module %s"
-                                  % (module_name, module_name))
+            full_module_name = "stoqdrivers.printers.%s.%s" % (brand, module_name)
+            obj = get_obj_from_module(full_module_name, obj_name=module_name)
             if not hasattr(obj, 'supported'):
                 continue
             result[brand].append(obj)
@@ -148,7 +144,7 @@ def get_supported_printers_by_iface(interface, protocol=None,
         None: object,
     }[protocol]
 
-    if not interface in (ICouponPrinter, IChequePrinter, INonFiscalPrinter):
+    if interface not in (ICouponPrinter, IChequePrinter, INonFiscalPrinter):
         raise TypeError("Interface specified (`%r') is not a valid "
                         "printer interface" % interface)
     all_printers_supported = get_supported_printers(include_virtual=include_virtual)
