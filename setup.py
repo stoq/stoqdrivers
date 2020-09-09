@@ -3,9 +3,7 @@
 # Setup file for StoqDrivers
 # Code by Async Open Source <http://www.async.com.br>
 
-from kiwi.dist import setup, listpackages, listfiles
-
-from stoqdrivers import __version__
+from setuptools import setup, find_packages
 
 
 with open('requirements.txt') as f:
@@ -14,7 +12,7 @@ with open('requirements.txt') as f:
 
 setup(
     name="stoqdrivers",
-    version=".".join(map(str, __version__)),
+    version="1.8.1",
     author="Async Open Source",
     author_email="stoq-devel@async.com.br",
     description="Python fiscal printer (ECF) drivers",
@@ -25,7 +23,6 @@ setup(
                       "FiscNET protocol."),
     url="http://www.stoq.com.br",
     license="GNU LGPL 2.1 (see COPYING)",
-    packages=listpackages('stoqdrivers'),
-    data_files=[("$datadir/conf", listfiles("stoqdrivers/conf", "*.ini"))],
+    packages=find_packages(exclude=['tests']),
     install_requires=install_requires,
 )

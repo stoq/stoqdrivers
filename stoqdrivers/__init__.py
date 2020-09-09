@@ -25,11 +25,14 @@
 ##              Johan Dahlin <henrique@async.com.br>
 ##
 
-__version__ = (1, 8, 1)
+import pkg_resources
 
 from kiwi.environ import Library
 
-__all__ = ["library"]
+_version = pkg_resources.get_distribution("stoqdrivers").version
+__version__ = tuple(int(n) for n in _version.split('.'))
+
+__all__ = ["library", "__version__"]
 
 library = Library("stoqdrivers", root="..")
 library.enable_translation()

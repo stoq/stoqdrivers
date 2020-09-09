@@ -10,7 +10,8 @@ stages:
 before_script:
   # Install tools to create debian packages
   - apt update
-  - apt --yes install devscripts debhelper python3-all
+  - apt --yes install devscripts debhelper python3-all python3-setuptools
+  - python3 setup.py develop
 
 test:
   stage: test
