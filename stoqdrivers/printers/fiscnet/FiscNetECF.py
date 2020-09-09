@@ -1,29 +1,29 @@
 # -*- Mode: Python; coding: utf-8 -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
-##
-## Stoqdrivers
-## Copyright (C) 2009 Async Open Source <http://www.async.com.br>
-## All rights reserved
-##
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
-## (at your option) any later version.
-##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-## USA.
-##
-## Author(s):   Henrique Romano <henrique@async.com.br>
-##              Johan Dahlin <henrique@async.com.br>
-##
+#
+# Stoqdrivers
+# Copyright (C) 2009 Async Open Source <http://www.async.com.br>
+# All rights reserved
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+# USA.
+#
+# Author(s):   Henrique Romano <henrique@async.com.br>
+#              Johan Dahlin <henrique@async.com.br>
+#
 """
 FiscNet base driver implementation.
 """
@@ -36,7 +36,6 @@ import logging
 import re
 import os
 
-from kiwi.python import Settable
 from serial import PARITY_EVEN
 from zope.interface import implementer
 
@@ -49,11 +48,12 @@ from stoqdrivers.exceptions import (DriverError, PendingReduceZ,
                                     InvalidState, PendingReadX,
                                     CloseCouponError, CouponNotOpenError)
 from stoqdrivers.interfaces import ICouponPrinter, IChequePrinter
+from stoqdrivers.printers.base import BaseDriverConstants
 from stoqdrivers.printers.capabilities import Capability
 from stoqdrivers.printers.cheque import BaseChequePrinter, BankConfiguration
-from stoqdrivers.printers.base import BaseDriverConstants
-from stoqdrivers.translation import stoqdrivers_gettext
+from stoqdrivers.printers.fiscal import SintegraData
 from stoqdrivers.serialbase import SerialBase
+from stoqdrivers.translation import stoqdrivers_gettext
 from stoqdrivers.utils import bytes2str, encode_text, decode_text
 
 _ = stoqdrivers_gettext
@@ -114,6 +114,7 @@ class FiscNetConstants(BaseDriverConstants):
         #         PaymentMethodType.FINANCIAL: '4',
         #         PaymentMethodType.GIFT_CERTIFICATE: '5,
     }
+
 
 _RETVAL_TOKEN_RE = re.compile(r"^\s*([^=\s;]+)")
 _RETVAL_QUOTED_VALUE_RE = re.compile(r"^\s*=\s*\"([^\"\\]*(?:\\.[^\"\\]*)*)\"")
@@ -383,13 +384,10 @@ class FiscNetECF(SerialBase):
             if not configure:
                 return
 
-        try:
-            self._send_command(
-                'DefineMeioPagamento',
-                CodMeioPagamentoProgram=code, DescricaoMeioPagamento=name,
-                NomeMeioPagamento=name, PermiteVinculado=vinculated)
-        except DriverError as e:
-            raise
+        self._send_command(
+            'DefineMeioPagamento',
+            CodMeioPagamentoProgram=code, DescricaoMeioPagamento=name,
+            NomeMeioPagamento=name, PermiteVinculado=vinculated)
 
     def _delete_payment_method(self, code):
         try:
@@ -416,15 +414,12 @@ class FiscNetECF(SerialBase):
             if not configure:
                 return
 
-        try:
-            self._send_command(
-                'DefineAliquota',
-                CodAliquotaProgramavel=code,
-                DescricaoAliquota='%2.2f%%' % value,
-                PercentualAliquota=value,
-                AliquotaICMS=not service)
-        except DriverError as e:
-            raise
+        self._send_command(
+            'DefineAliquota',
+            CodAliquotaProgramavel=code,
+            DescricaoAliquota='%2.2f%%' % value,
+            PercentualAliquota=value,
+            AliquotaICMS=not service)
 
     def _delete_tax_code(self, code):
         try:
@@ -756,7 +751,7 @@ class FiscNetECF(SerialBase):
         return self._read_register('VersaoSW', str)
 
     def get_sintegra(self):
-        data = Settable(
+        data = SintegraData(
             opening_date=self._read_register('DataAbertura', datetime.date),
             serial=self.get_serial(),
             serial_id=self._read_register('ECF', int),

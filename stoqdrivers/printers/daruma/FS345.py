@@ -33,14 +33,9 @@ from decimal import Decimal
 import logging
 import time
 
-from kiwi.python import Settable
 from zope.interface import implementer
 
 from stoqdrivers import abicomp
-from stoqdrivers.serialbase import SerialBase
-from stoqdrivers.interfaces import ICouponPrinter
-from stoqdrivers.printers.capabilities import Capability
-from stoqdrivers.printers.base import BaseDriverConstants
 from stoqdrivers.enum import TaxType, UnitType
 from stoqdrivers.exceptions import (DriverError, PendingReduceZ,
                                     HardwareFailure, ReduceZError,
@@ -48,6 +43,11 @@ from stoqdrivers.exceptions import (DriverError, PendingReduceZ,
                                     OutofPaperError, PrinterOfflineError,
                                     CouponOpenError, CancelItemError,
                                     CloseCouponError)
+from stoqdrivers.interfaces import ICouponPrinter
+from stoqdrivers.printers.base import BaseDriverConstants
+from stoqdrivers.printers.capabilities import Capability
+from stoqdrivers.printers.fiscal import SintegraData
+from stoqdrivers.serialbase import SerialBase
 from stoqdrivers.translation import stoqdrivers_gettext
 from stoqdrivers.utils import encode_text, decode_text
 
@@ -752,7 +752,7 @@ class FS345(SerialBase):
             opening_date = datetime.date(2000 + y, m, d)
 
         identifier = self.send_command(CMD_GET_IDENTIFIER)
-        return Settable(
+        return SintegraData(
             opening_date=opening_date,
             serial=identifier[1:9],
             serial_id=int(identifier[13:17]),

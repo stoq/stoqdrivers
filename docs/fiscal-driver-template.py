@@ -22,12 +22,12 @@
 
 import datetime
 from decimal import Decimal
-from kiwi.python import Settable
 from zope.interface import implementer
 
 from stoqdrivers.enum import TaxType
 from stoqdrivers.interfaces import ICouponPrinter
 from stoqdrivers.printers.capabilities import Capability
+from stoqdrivers.printers.fiscal import SintegraData
 from stoqdrivers.serialbase import SerialBase
 from stoqdrivers.translation import stoqdrivers_gettext
 
@@ -158,7 +158,7 @@ class TemplateDriver(SerialBase):
         taxes.append(('N', Decimal("0")))
         taxes.append(('F', Decimal("0")))
 
-        return Settable(
+        return SintegraData(
             opening_date=datetime.date(2000, 1, 1),
             serial=self._get_serial(),
             serial_id='001',

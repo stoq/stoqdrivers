@@ -32,18 +32,18 @@ import logging
 import struct
 from decimal import Decimal
 
-from kiwi.python import Settable
 from zope.interface import implementer
 
-from stoqdrivers.serialbase import SerialBase
-from stoqdrivers.interfaces import ICouponPrinter
+from stoqdrivers.enum import TaxType, UnitType
 from stoqdrivers.exceptions import (DriverError, PrinterError, CommandError,
                                     CommandParametersError, OutofPaperError,
                                     CancelItemError, AlmostOutofPaper,
                                     ItemAdditionError, CouponOpenError,
                                     CouponNotOpenError)
-from stoqdrivers.enum import TaxType, UnitType
+from stoqdrivers.interfaces import ICouponPrinter
 from stoqdrivers.printers.base import BaseDriverConstants
+from stoqdrivers.printers.fiscal import SintegraData
+from stoqdrivers.serialbase import SerialBase
 from stoqdrivers.translation import stoqdrivers_gettext
 from stoqdrivers.utils import str2bytes
 
@@ -414,7 +414,7 @@ class FBII(SerialBase):
         geral = ecf_totals.fields[0]
         total = Decimal(geral) / Decimal('1e2')
 
-        data = Settable(
+        data = SintegraData(
             opening_date=opening_date,
             serial=self.get_serial(),
             serial_id=serial_id,

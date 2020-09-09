@@ -1,31 +1,31 @@
 # -*- Mode: Python; coding: iso-8859-1 -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
-##
-## Stoqdrivers
-## Copyright (C) 2005-2007 Async Open Source <http://www.async.com.br>
-## All rights reserved
-##
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
-## (at your option) any later version.
-##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-## USA.
-##
-## Author(s):   Cleber Rodrigues      <cleber@globalred.com.br>
-##              Henrique Romano       <henrique@async.com.br>
-##              Johan Dahlin          <jdahlin@async.com.br>
-##              Ronaldo Maia          <romaia@async.com.br>
-##
+#
+# Stoqdrivers
+# Copyright (C) 2005-2007 Async Open Source <http://www.async.com.br>
+# All rights reserved
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+# USA.
+#
+# Author(s):   Cleber Rodrigues      <cleber@globalred.com.br>
+#              Henrique Romano       <henrique@async.com.br>
+#              Johan Dahlin          <jdahlin@async.com.br>
+#              Ronaldo Maia          <romaia@async.com.br>
+#
 """
 Bematech MP25 driver
 """
@@ -35,10 +35,9 @@ from decimal import Decimal
 import logging
 import struct
 
-from kiwi.python import Settable
 from zope.interface import implementer
 
-from stoqdrivers.serialbase import SerialBase
+from stoqdrivers.enum import TaxType, UnitType
 from stoqdrivers.exceptions import (DriverError, OutofPaperError, PrinterError,
                                     CommandError, CouponOpenError,
                                     HardwareFailure,
@@ -46,9 +45,10 @@ from stoqdrivers.exceptions import (DriverError, OutofPaperError, PrinterError,
                                     ItemAdditionError, CancelItemError,
                                     CouponTotalizeError, CouponNotOpenError)
 from stoqdrivers.interfaces import ICouponPrinter
-from stoqdrivers.printers.capabilities import Capability
 from stoqdrivers.printers.base import BaseDriverConstants
-from stoqdrivers.enum import TaxType, UnitType
+from stoqdrivers.printers.capabilities import Capability
+from stoqdrivers.printers.fiscal import SintegraData
+from stoqdrivers.serialbase import SerialBase
 from stoqdrivers.translation import stoqdrivers_gettext
 from stoqdrivers.utils import bytes2str, str2bytes, encode_text
 
@@ -179,7 +179,7 @@ class MP25Status(object):
         # 2: (PrinterError(_("Owner data (CGC/IE) not programmed on the printer"))),
         # FIXME: This shouldn't be commented. But it will break the tests.
         # Need to update the tests for all bematech printers
-        #1: (CommandError(_("Command not executed")))
+        # 1: (CommandError(_("Command not executed")))
     }
 
     st3_codes = {
@@ -697,9 +697,7 @@ class MP25(SerialBase):
         return self._consts
 
     def query_status(self):
-        #return '\x02\x05\x00\x1b#(f\x00'
-        query = self._create_packet(chr(CMD_READ_REGISTER) +
-                                    chr(self.registers.SERIAL))
+        query = self._create_packet(chr(CMD_READ_REGISTER) + chr(self.registers.SERIAL))
         return query
 
     def status_reply_complete(self, reply):
@@ -798,7 +796,7 @@ class MP25(SerialBase):
         taxes.append(('F', bcd2dec(values[126:133]) / Decimal(100), 'ICMS'))
         date = bcd2hex(opening_date[:6])
 
-        return Settable(
+        return SintegraData(
             opening_date=datetime.date(year=2000 + int(date[4:6]),
                                        month=int(date[2:4]),
                                        day=int(date[:2])),

@@ -25,6 +25,7 @@
 #              Henrique Romano  <henrique@async.com.br>
 #
 
+from collections import namedtuple
 import datetime
 from decimal import Decimal
 import logging
@@ -410,3 +411,7 @@ class FiscalPrinter(BasePrinter):
     @property
     def identify_customer_at_end(self):
         return self._driver.identify_customer_at_end
+
+
+SintegraData = namedtuple("SintegraData", "opening_date serial serial_id coupon_start coupon_end "
+                                          "crz cro coo period_total total taxes")

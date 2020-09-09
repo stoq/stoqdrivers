@@ -33,7 +33,6 @@ import json
 import os
 
 from gi.repository import Gtk, Pango
-from kiwi.python import Settable
 from zope.interface import implementer
 
 from stoqdrivers.enum import PaymentMethodType, TaxType, UnitType
@@ -44,6 +43,7 @@ from stoqdrivers.exceptions import (CouponTotalizeError, PaymentAdditionError,
 from stoqdrivers.interfaces import ICouponPrinter, INonFiscalPrinter
 from stoqdrivers.printers.base import BaseDriverConstants
 from stoqdrivers.printers.capabilities import Capability
+from stoqdrivers.printers.fiscal import SintegraData
 from stoqdrivers.translation import stoqdrivers_gettext
 
 _ = stoqdrivers_gettext
@@ -551,17 +551,17 @@ class Simple(object):
 
     def get_sintegra(self):
         self._check()
-        return Settable(opening_date=self.opening_date,
-                        serial=self.serial,
-                        serial_id=self.serial_id,
-                        coupon_start=self.coupon_start,
-                        coupon_end=self.coupon_end,
-                        cro=self.cro,
-                        crz=self.crz,
-                        coo=self.coo,
-                        period_total=self.period_total,
-                        total=self.total,
-                        taxes=self.taxes)
+        return SintegraData(opening_date=self.opening_date,
+                            serial=self.serial,
+                            serial_id=self.serial_id,
+                            coupon_start=self.coupon_start,
+                            coupon_end=self.coupon_end,
+                            cro=self.cro,
+                            crz=self.crz,
+                            coo=self.coo,
+                            period_total=self.period_total,
+                            total=self.total,
+                            taxes=self.taxes)
 
     def get_crz(self):
         return self.crz
