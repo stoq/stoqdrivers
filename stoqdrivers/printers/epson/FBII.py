@@ -1,28 +1,28 @@
 # -*- Mode: Python; coding: iso-8859-1 -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
-##
-## Stoqdrivers
-## Copyright (C) 2012 Async Open Source <http://www.async.com.br>
-## All rights reserved
-##
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
-## (at your option) any later version.
-##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-## USA.
-##
-## Author(s): Stoq Team <stoq-devel@async.com.br>
-##
+#
+# Stoqdrivers
+# Copyright (C) 2012 Async Open Source <http://www.async.com.br>
+# All rights reserved
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+# USA.
+#
+# Author(s): Stoq Team <stoq-devel@async.com.br>
+#
 """
 Epson FB II ECF driver
 """
@@ -32,7 +32,6 @@ import logging
 import struct
 from decimal import Decimal
 
-from kiwi.currency import currency
 from kiwi.python import Settable
 from zope.interface import implementer
 
@@ -68,6 +67,7 @@ def unescape(string):
     for i in SPECIAL_CHARS:
         string = string.replace(ESC + i, i)
     return string
+
 
 FIRST_COMMAND_ID = 0x81
 RETRIES_BEFORE_TIMEOUT = 5
@@ -166,7 +166,6 @@ class Reply(object):
 
         # FIXME: Maybe we need to de-escape the string
         self.fields = fields.split(FLD)
-        #for f in self.fields: print f
 
     def check_error(self):
         log.debug("reply_status %s" % self.reply_status)
@@ -302,7 +301,6 @@ class FBII(SerialBase):
 
     def _send_command(self, command, extension='0000', *args):
         cmd = self._get_package(command, extension, args)
-        #log.debug("> %s" % repr(cmd))
         self.write(cmd)
 
         # Printer should reply with an ACK imediataly
@@ -327,7 +325,7 @@ class FBII(SerialBase):
 
     def _parse_price(self, value):
         # Valor retirado da ECF (string) convertido para decimal.
-        return currency(value) / Decimal('1e2')
+        return Decimal(value) / Decimal('100')
 
     #
     # ICouponPrinter implementation
@@ -403,7 +401,7 @@ class FBII(SerialBase):
         # COO inicial.
         coupon_start = int(reply.fields[4])
 
-        #Número sequencial da ECF.
+        # Número sequencial da ECF.
         fiscal_data = self._send_command('0507')
         serial_id = int(fiscal_data.fields[8])
 
@@ -411,10 +409,10 @@ class FBII(SerialBase):
         ecf_totals = self._send_command('0906')
         # Totalizador venda bruta diária.
         value = ecf_totals.fields[1]
-        period_total = currency(value) / Decimal('1e2')
+        period_total = Decimal(value) / Decimal('1e2')
         # Total Geral.
         geral = ecf_totals.fields[0]
-        total = currency(geral) / Decimal('1e2')
+        total = Decimal(geral) / Decimal('1e2')
 
         data = Settable(
             opening_date=opening_date,
@@ -532,7 +530,7 @@ class FBII(SerialBase):
             raise DriverError(_("Attempt to cancel after emission of another "
                                 "DOC"))
 
-    def coupon_totalize(self, discount=currency(0), markup=currency(0),
+    def coupon_totalize(self, discount=Decimal(0), markup=Decimal(0),
                         taxcode=TaxType.NONE):
         if discount:
             extension = '0006'
@@ -551,7 +549,7 @@ class FBII(SerialBase):
             # Ainda precisamos pegar o subtotal, para retornar.
             reply = self._send_command('0A03')
             subtotal = reply.fields[0]
-        return currency(subtotal) / Decimal('1e2')
+        return Decimal(subtotal) / Decimal('1e2')
 
     def coupon_add_payment(self, payment_method, value, description=u""):
         desc = description[:40]
@@ -559,7 +557,7 @@ class FBII(SerialBase):
         reply = self._send_command('0A05', '0000', payment_method, str(value),
                                    desc, '')
         # Return the still missing value
-        return currency(reply.fields[0]) / Decimal('1e2')
+        return Decimal(reply.fields[0]) / Decimal('1e2')
 
     def coupon_close(self, message=""):
         if self._customer_document:
@@ -788,21 +786,3 @@ class FBII(SerialBase):
         self._define_tax_code("0500")
         self._define_tax_code("0300", service=True)
         self._define_tax_code("0900", service=True)
-
-
-if __name__ == '__main__':
-    from stoqdrivers.serialbase import SerialPort
-    #port = Serial('/dev/pts/5')
-    port = SerialPort('/dev/ttyUSB0')
-    p = FBII(port)
-
-#    p._send_command('0754', '0000') Desativar corte do papel
-
-#    p._setup_constants()
-#    constants = p.get_tax_constants()
-#    for i in constants:
-#        print i
-
-#    constants = p.get_payment_constants()
-#    for i in constants:
-#        print i

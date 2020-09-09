@@ -36,7 +36,6 @@ import logging
 import re
 import os
 
-from kiwi.currency import currency
 from kiwi.python import Settable
 from serial import PARITY_EVEN
 from zope.interface import implementer
@@ -580,8 +579,8 @@ class FiscNetECF(SerialBase):
         """Cancel the last non fiscal coupon or the last sale."""
         self._send_command('CancelaCupom')
 
-    def coupon_totalize(self, discount=currency(0),
-                        surcharge=currency(0), taxcode=TaxType.NONE):
+    def coupon_totalize(self, discount=Decimal(0),
+                        surcharge=Decimal(0), taxcode=TaxType.NONE):
         # The FISCnet protocol (the protocol used in this printer model)
         # doesn't have a command to totalize the coupon, so we just get
         # the discount/surcharge values and applied to the coupon.

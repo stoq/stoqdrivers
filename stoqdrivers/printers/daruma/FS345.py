@@ -1,29 +1,29 @@
 # -*- Mode: Python; coding: iso-8859-1 -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
-##
-## Stoqdrivers
-## Copyright (C) 2005-2007 Async Open Source <http://www.async.com.br>
-## All rights reserved
-##
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
-## (at your option) any later version.
-##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-## USA.
-##
-## Author(s):   Johan Dahlin     <jdahlin@async.com.br>
-##              Henrique Romano  <henrique@async.com.br>
-##
+#
+# Stoqdrivers
+# Copyright (C) 2005-2007 Async Open Source <http://www.async.com.br>
+# All rights reserved
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+# USA.
+#
+# Author(s):   Johan Dahlin     <jdahlin@async.com.br>
+#              Henrique Romano  <henrique@async.com.br>
+#
 """
 Daruma FS345 driver
 """
@@ -33,7 +33,6 @@ from decimal import Decimal
 import logging
 import time
 
-from kiwi.currency import currency
 from kiwi.python import Settable
 from zope.interface import implementer
 
@@ -237,8 +236,6 @@ class FS345(SerialBase):
             raise OutofPaperError(_('No paper'))
         if self.status_check(status, 2, 3):
             raise PrinterOfflineError(_("Offline"))
-        #if not self.status_check(status, 2, 2):
-        #     raise CommError(_("Peripheral is not connected to AUX"))
         if self.status_check(status, 2, 0):
             log.info('Almost out of paper')
 
@@ -251,11 +248,6 @@ class FS345(SerialBase):
 
         if self.status_check(status, 6, 1):
             raise ReduceZError(_("readZ is already emitted"))
-
-        # FIXME: I am not sure we should be doing this here. This method
-        # should only check the status, and not emit any other command.
-        #if self.needs_read_x(status):
-        #    self.send_command(CMD_GET_X)
 
         return status
 
@@ -485,7 +477,7 @@ class FS345(SerialBase):
         """Cancel the last non fiscal coupon or the last sale."""
         self.send_command(CMD_CANCEL_COUPON)
 
-    def coupon_totalize(self, discount=currency(0), surcharge=currency(0),
+    def coupon_totalize(self, discount=Decimal(0), surcharge=Decimal(0),
                         taxcode=TaxType.NONE):
         self._check_status()
         self._verify_coupon_open()
@@ -500,19 +492,17 @@ class FS345(SerialBase):
             mode = 1
         else:
             mode = 1
-            value = currency(0)
+            value = Decimal(0)
         # Page 33
         data = '%s%012d' % (mode, int(value * Decimal("1e2")))
         rv = self.send_command(CMD_TOTALIZE_COUPON, data)
-        return currency(rv) / Decimal("1e2")
+        return Decimal(rv) / Decimal("1e2")
 
     def coupon_close(self, message=''):
         self._check_status()
         self._verify_coupon_open()
 
-        if (self._customer_name or
-                self._customer_address or
-                self._customer_document):
+        if (self._customer_name or self._customer_address or self._customer_document):
             customer_name = self._customer_name or _("No client")
             customer_document = self._customer_document or _("No document")
             customer_address = self._customer_address or _("No address")
@@ -714,9 +704,6 @@ class FS345(SerialBase):
         method_letter = 'ABCDEFGHIJKLMNOP'
         for i in range(16):
             method = raw[i * 18:i * 18 + 18]
-            # XXX V = vinculavel. Why Only These????
-            #if method[0] == 'V':
-            #    methods.append((method_letter[i], method[1:].strip()))
             if method[2] == '\xff':
                 continue
 

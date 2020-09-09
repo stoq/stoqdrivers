@@ -35,7 +35,6 @@ from decimal import Decimal
 import logging
 import struct
 
-from kiwi.currency import currency
 from kiwi.python import Settable
 from zope.interface import implementer
 
@@ -615,7 +614,7 @@ class MP25(SerialBase):
             self.remainder_value = Decimal("0.0")
         return self.remainder_value
 
-    def coupon_totalize(self, discount=currency(0), markup=currency(0),
+    def coupon_totalize(self, discount=Decimal(0), markup=Decimal(0),
                         taxcode=TaxType.NONE):
 
         if discount:

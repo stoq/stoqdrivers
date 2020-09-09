@@ -1,29 +1,28 @@
 # -*- Mode: Python; coding: utf-8 -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
-##
-## Stoqdrivers
-## Copyright (C) 2005-2011 Async Open Source <http://www.async.com.br>
-## All rights reserved
-##
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
-## (at your option) any later version.
-##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-## USA.
-##
-## Author(s):   Stoq Team  <stoq-devel@async.com.br>
-##
-##
+#
+# Stoqdrivers
+# Copyright (C) 2005-2011 Async Open Source <http://www.async.com.br>
+# All rights reserved
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+# USA.
+#
+# Author(s):   Stoq Team  <stoq-devel@async.com.br>
+#
 """
 A simple implementation of a virtual printer.
 """
@@ -368,7 +367,7 @@ class Simple(object):
     def coupon_cancel_item(self, item_id):
         self._check()
         self._check_coupon_is_opened()
-        if not item_id in self._items:
+        if item_id not in self._items:
             raise CancelItemError(_("There is no item with this ID (%d)")
                                   % item_id)
         elif self.is_coupon_totalized:
@@ -379,9 +378,6 @@ class Simple(object):
 
     def coupon_cancel(self):
         self._check()
-        # FIXME: If we don't have a coupon open, verify that
-        #        we've opened at least one
-        #self._check_coupon_is_opened()
         self._feed_line()
         self.write('    Cupom Cancelado\n')
         self._feed_line()
@@ -389,8 +385,7 @@ class Simple(object):
 
     def coupon_totalize(self, discount=Decimal("0.0"),
                         surcharge=Decimal("0.0"), taxcode=TaxType.NONE):
-        # FIXME: API changed: discount/surcharge was percentage,
-        # now is currency.
+        # FIXME: API changed: discount/surcharge was percentage, now is Decimal.
         self._check()
         self._check_coupon_is_opened()
         if not self.items_quantity:
