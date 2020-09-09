@@ -29,50 +29,20 @@ from collections import namedtuple
 import datetime
 from decimal import Decimal
 import logging
+from numbers import Real
 import traceback
 import sys
 
-from kiwi.argcheck import number
-
 from stoqdrivers.exceptions import (CloseCouponError, PaymentAdditionError,
                                     AlreadyTotalized, InvalidValue)
-from stoqdrivers.enum import PaymentMethodType, TaxType, UnitType
+from stoqdrivers.enum import TaxType, UnitType
 from stoqdrivers.printers.base import BasePrinter
-from stoqdrivers.printers.capabilities import capcheck
 from stoqdrivers.utils import encode_text
 from stoqdrivers.translation import stoqdrivers_gettext
 
 _ = stoqdrivers_gettext
 
 log = logging.getLogger('stoqdrivers.fiscalprinter')
-
-#
-# Extra data types to argcheck
-#
-
-
-class taxcode(number):
-    @classmethod
-    def value_check(cls, name, value):
-        if value not in (TaxType.NONE, TaxType.ICMS, TaxType.SUBSTITUTION,
-                         TaxType.EXEMPTION):
-            raise ValueError("%s must be one of TaxType.* constants" % name)
-
-
-class unit(number):
-    @classmethod
-    def value_check(cls, name, value):
-        if value not in (UnitType.WEIGHT, UnitType.METERS, UnitType.LITERS,
-                         UnitType.EMPTY, UnitType.CUSTOM):
-            raise ValueError("%s must be one of UNIT_* constants" % name)
-
-
-class payment_method(number):
-    @classmethod
-    def value_check(cls, name, value):
-        if value not in (PaymentMethodType.MONEY, PaymentMethodType.CHECK,
-                         PaymentMethodType.CUSTOM):
-            raise ValueError("%s must be one of *_PM constants" % name)
 
 #
 # FiscalPrinter interface
@@ -109,8 +79,7 @@ class FiscalPrinter(BasePrinter):
         log.info('setup()')
         self._driver.setup()
 
-    @capcheck(str, str, str)
-    def identify_customer(self, customer_name, customer_address, customer_id):
+    def identify_customer(self, customer_name: str, customer_address: str, customer_id: str):
         log.info('identify_customer(customer_name=%r, '
                  'customer_address=%r, customer_id=%r)' % (
                      customer_name, customer_address, customer_id))
@@ -132,9 +101,7 @@ class FiscalPrinter(BasePrinter):
 
         return self._driver.coupon_open()
 
-    @capcheck(str, str, Decimal, str, Decimal, unit,
-              Decimal, Decimal, str)
-    def add_item(self, item_code, item_description, item_price, taxcode,
+    def add_item(self, item_code: str, item_description: str, item_price: Real, taxcode: TaxType,
                  items_quantity=Decimal("1.0"), unit=UnitType.EMPTY,
                  discount=Decimal("0.0"), surcharge=Decimal("0.0"),
                  unit_desc=""):
@@ -170,7 +137,6 @@ class FiscalPrinter(BasePrinter):
             item_price, taxcode, items_quantity, unit, discount, surcharge,
             unit_desc=self._format_text(unit_desc))
 
-    @capcheck(Decimal, Decimal, taxcode)
     def totalize(self, discount=Decimal(0), surcharge=Decimal(0),
                  taxcode=TaxType.NONE):
         log.info('totalize(discount=%r, surcharge=%r, taxcode=%r)' % (
@@ -186,8 +152,7 @@ class FiscalPrinter(BasePrinter):
         self.totalized_value = result
         return result
 
-    @capcheck(str, Decimal, str)
-    def add_payment(self, payment_method, payment_value, description=''):
+    def add_payment(self, payment_method: str, payment_value: Decimal, description=''):
         log.info("add_payment(method=%r, value=%r, description=%r)" % (
             payment_method, payment_value, description))
 
@@ -213,13 +178,11 @@ class FiscalPrinter(BasePrinter):
         log.info('cancel_last_coupon()')
         self._driver.cancel_last_coupon()
 
-    @capcheck(int)
-    def cancel_item(self, item_id):
+    def cancel_item(self, item_id: int):
         log.info('coupon_cancel_item(item_id=%r)' % (item_id,))
 
         return self._driver.coupon_cancel_item(item_id)
 
-    @capcheck(str)
     def close(self, promotional_message=''):
         log.info('coupon_close(promotional_message=%r)' % (
             promotional_message))
@@ -262,21 +225,18 @@ class FiscalPrinter(BasePrinter):
 
         return self._driver.close_till(previous_day)
 
-    @capcheck(Decimal)
-    def till_add_cash(self, add_cash_value):
+    def till_add_cash(self, add_cash_value: Decimal):
         log.info('till_add_cash(add_cash_value=%r)' % (add_cash_value,))
 
         return self._driver.till_add_cash(add_cash_value)
 
-    @capcheck(Decimal)
-    def till_remove_cash(self, remove_cash_value):
+    def till_remove_cash(self, remove_cash_value: Decimal):
         log.info('till_remove_cash(remove_cash_value=%r)' % (
             remove_cash_value,))
 
         return self._driver.till_remove_cash(remove_cash_value)
 
-    @capcheck(datetime.date, datetime.date)
-    def till_read_memory(self, start, end):
+    def till_read_memory(self, start: datetime.date, end: datetime.date):
         assert start <= end <= datetime.date.today(), (
             "start must be less then end and both must be less today")
         log.info('till_read_memory(start=%r, end=%r)' % (
@@ -284,8 +244,7 @@ class FiscalPrinter(BasePrinter):
 
         return self._driver.till_read_memory(start, end)
 
-    @capcheck(datetime.date, datetime.date)
-    def till_read_memory_to_serial(self, start, end):
+    def till_read_memory_to_serial(self, start: datetime.date, end: datetime.date):
         assert start <= end <= datetime.date.today(), (
             "start must be less then end and both must be less today")
         log.info('till_read_memory(start=%r, end=%r)' % (
@@ -293,8 +252,7 @@ class FiscalPrinter(BasePrinter):
 
         return self._driver.till_read_memory_to_serial(start, end)
 
-    @capcheck(int, int)
-    def till_read_memory_by_reductions(self, start, end):
+    def till_read_memory_by_reductions(self, start: int, end: int):
         assert end >= start > 0, ("start must be less then end "
                                   "and both must be positive")
         log.info('till_read_memory_by_reductions(start=%r, end=%r)' % (

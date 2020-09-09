@@ -1,61 +1,36 @@
 # -*- Mode: Python; coding: iso-8859-1 -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
-##
-## Stoqdrivers
-## Copyright (C) 2005 Async Open Source <http://www.async.com.br>
-## All rights reserved
-##
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
-## (at your option) any later version.
-##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-## USA.
-##
-## Author(s):   Henrique Romano <henrique@async.com.br>
-##
+#
+# Stoqdrivers
+# Copyright (C) 2005 Async Open Source <http://www.async.com.br>
+# All rights reserved
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+# USA.
+#
+# Author(s):   Henrique Romano <henrique@async.com.br>
+#
 """
 Driver Capability management.
 """
 
-from kiwi.argcheck import argcheck, number
+from numbers import Real
+from typing import Optional
 
 from stoqdrivers.exceptions import CapabilityError
-
-
-class capcheck(argcheck):
-    """ A extension for argcheck that validates a value with base in the driver
-    capabilities.  Note that the instance where this class is used as decorator
-    must have defined a get_capabilities  method that returns a dictionary with
-    the driver capabilities.
-    """
-
-    def extra_check(self, arg_names, types, cargs, kwargs):
-        keyvalues = zip(arg_names, cargs[1:])
-        kwargs = kwargs.copy()
-        kwargs.update(dict(keyvalues))
-        self._check_capabilities(cargs[0], **kwargs)
-
-    def _check_capabilities(self, inst, **kwargs):
-        caps = inst.get_capabilities()
-
-        for key, value in kwargs.items():
-            capability = caps.get(key)
-            if not capability:
-                continue
-            try:
-                capability.check_value(value)
-            except CapabilityError as e:
-                raise CapabilityError("invalid value for '%s': %s" % (key, e))
 
 
 class Capability:
@@ -63,9 +38,9 @@ class Capability:
     to validate a value with base in the capability limits.
     """
 
-    @argcheck(int, int, number, number, int, number)
-    def __init__(self, min_len=None, max_len=None, max_size=None,
-                 min_size=None, digits=None, decimals=None):
+    def __init__(self, min_len: Optional[int]=None, max_len: Optional[int]=None,
+                 max_size: Optional[Real]=None, min_size: Optional[Real]=None,
+                 digits: Optional[int]=None, decimals: Optional[Real]=None):
         """ Creates a new driver capability.  A driver capability can be
         represented basically by the max length of a string, the max digits
         number of a value or its minimum/maximum size.  With an instance of
@@ -73,15 +48,15 @@ class Capability:
         through the check_value method.  The Capability arguments are:
 
         @param min_len:    The minimum length of a string
-        @type min_len:     number
+        @type min_len:     int
         @param max_len:    The max length of a string
-        @type max_len:     number
+        @type max_len:     int
         @param max_size    The maximum size for a value
         @type max_size:    number
         @param min_size:   The minimum size for a value
         @type min_size:    number
         @param digits:     The number of digits that a number can have
-        @type digits:      number
+        @type digits:      int
         @param decimals:   If the max value for the capability is a float,
                            this parameter specifies the max precision
                            that the number can have.

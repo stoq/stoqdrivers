@@ -1,36 +1,37 @@
 # -*- Mode: Python; coding: utf-8 -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
-##
-## Stoqdrivers
-## Copyright (C) 2005 Async Open Source <http://www.async.com.br>
-## All rights reserved
-##
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
-## (at your option) any later version.
-##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-## USA.
-##
-## Author(s):    Henrique Romano  <henrique@async.com.br>
-##               Johan Dahlin     <jdahlin@async.com.br>
-##
+#
+# Stoqdrivers
+# Copyright (C) 2005 Async Open Source <http://www.async.com.br>
+# All rights reserved
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+# USA.
+#
+# Author(s):    Henrique Romano  <henrique@async.com.br>
+#               Johan Dahlin     <jdahlin@async.com.br>
+#
 
 from configparser import ConfigParser
 import datetime
+from numbers import Real
+from typing import Optional
 
 from zope.interface.exceptions import DoesNotImplement
 from zope.interface import providedBy
-from kiwi.argcheck import argcheck, number
 from kiwi.environ import environ
 
 from stoqdrivers.interfaces import IChequePrinter
@@ -45,8 +46,7 @@ _ = stoqdrivers_gettext
 class BankConfiguration:
     """ This class store and manage the Cheque elements positions for a bank.
     """
-    @argcheck(str, dict)
-    def __init__(self, name, items):
+    def __init__(self, name: str, items: dict):
         """ Create a new cheque configuration for the bank 'name'
 
         @param name:   The name of bank to which this configuration belongs to.
@@ -58,18 +58,15 @@ class BankConfiguration:
         """
         self.name, self._items = name, items
 
-    @argcheck(str)
-    def get_coordinate(self, name):
-        if not name in self._items:
+    def get_coordinate(self, name: str):
+        if name not in self._items:
             raise KeyError(name)
         return self._items[name]
 
-    @argcheck(str)
-    def get_x_coordinate(self, name):
+    def get_x_coordinate(self, name: str):
         return self.get_coordinate(name)[1]
 
-    @argcheck(str)
-    def get_y_coordinate(self, name):
+    def get_y_coordinate(self, name: str):
         return self.get_coordinate(name)[0]
 
 
@@ -107,19 +104,18 @@ class BaseChequePrinter:
             self._banks[int(section)] = bank
         return self._banks
 
-    @argcheck(dict)
-    def _parse_bank(self, items):
-        if not 'name' in items:
+    def _parse_bank(self, items: dict):
+        if 'name' not in items:
             raise ConfigError("There is no bank name defined")
         coordinates = {}
         bank_name = items.pop('name')
         for name in ('value', 'legal_amount', 'legal_amount2', 'city',
                      'thirdparty', 'year', 'day', 'month'):
-            if not name in items:
+            if name not in items:
                 raise ConfigError("The especification for `%s' was not found"
                                   % name)
             value = items.pop(name)
-            if not ',' in value:
+            if ',' not in value:
                 raise ConfigError("Invalid value format for `%s'" % name)
             x, y = value.split(',')
             x = int(x or 0)
@@ -138,7 +134,7 @@ class ChequePrinter(BasePrinter):
                  *args, **kwargs):
         BasePrinter.__init__(self, brand, model, device, config_file, *args,
                              **kwargs)
-        if not IChequePrinter in providedBy(self._driver):
+        if IChequePrinter not in providedBy(self._driver):
             raise DoesNotImplement("The driver %r doesn't implements the "
                                    "IChequePrinter interface" % self._driver)
         self._charset = self._driver.cheque_printer_charset
@@ -154,8 +150,8 @@ class ChequePrinter(BasePrinter):
         self.info("get_banks")
         return self._driver.get_banks()
 
-    @argcheck(object, number, str, str, datetime.datetime)
-    def print_cheque(self, bank, value, thirdparty, city, date=None):
+    def print_cheque(self, bank: object, value: Real, thirdparty: str,
+                     city: str, date: Optional[datetime.datetime]=None):
         if date is None:
             date = datetime.datetime.now()
         self.info('print_cheque')
@@ -172,14 +168,11 @@ class ChequePrinter(BasePrinter):
 #
 
 
-def test():
+if __name__ == "__main__":
     printer = ChequePrinter()
 
     # Hmmm, this is not the right way of to do, but... hmm, I just don't know
     # what kind of the cheque the user wants to test, so let me get anyone.
     banks = printer.get_banks()
     bank = banks[list(banks.keys())[0]]
-    printer.print_cheque(bank, 6.66, "Henrique Romano", u"São Paulo")
-
-if __name__ == "__main__":
-    test()
+    printer.print_cheque(bank, 6.66, "Henrique Romano", "São Paulo")
