@@ -31,8 +31,13 @@ import datetime
 from decimal import Decimal
 import json
 import os
+from unittest import mock
 
-from gi.repository import Gtk, Pango
+try:
+    from gi.repository import Gtk, Pango
+except ImportError:
+    Gtk = mock.Mock()
+    Pango = mock.Mock()
 from zope.interface import implementer
 
 from stoqdrivers.enum import PaymentMethodType, TaxType, UnitType

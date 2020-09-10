@@ -1,35 +1,39 @@
 # -*- Mode: Python; coding: iso-8859-1 -*-
 # vi:si:et:sw=4:sts=4:ts=4
 
-##
-## Stoqdrivers
-## Copyright (C) 2006 Async Open Source <http://www.async.com.br>
-## All rights reserved
-##
-## This program is free software; you can redistribute it and/or modify
-## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
-## (at your option) any later version.
-##
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-##
-## You should have received a copy of the GNU General Public License
-## along with this program; if not, write to the Free Software
-## Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
-## USA.
-##
-## Author(s): Henrique Romano             <henrique@async.com.br>
-##
+#
+# Stoqdrivers
+# Copyright (C) 2006 Async Open Source <http://www.async.com.br>
+# All rights reserved
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307,
+# USA.
+#
+# Author(s): Henrique Romano             <henrique@async.com.br>
+#
 """
 Generic base class implementation for all devices.
 """
 
 import logging
+from unittest import mock
 
-from gi.repository import GObject
+try:
+    from gi.repository import GObject
+except ImportError:
+    GObject = mock.Mock()
 
 from stoqdrivers.configparser import StoqdriversConfig
 from stoqdrivers.enum import DeviceType
@@ -159,8 +163,7 @@ class BaseDevice:
         is coming from the serial port.   It is necessary that a gobject main
         loop is already running before calling this method.
         """
-        GObject.io_add_watch(self.get_port().fd, GObject.IO_IN,
-                             lambda fd, cond: func(self, cond))
+        GObject.io_add_watch(self.get_port().fd, GObject.IO_IN, lambda fd, cond: func(self, cond))
 
     def set_port(self, port):
         self._driver.set_port(port)
