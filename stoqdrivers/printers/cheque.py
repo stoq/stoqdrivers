@@ -30,9 +30,9 @@ import datetime
 from numbers import Real
 from typing import Optional
 
+import pkg_resources
 from zope.interface.exceptions import DoesNotImplement
 from zope.interface import providedBy
-from kiwi.environ import environ
 
 from stoqdrivers.interfaces import IChequePrinter
 from stoqdrivers.exceptions import ConfigError
@@ -88,8 +88,8 @@ class BaseChequePrinter:
         configfile = self.__module__.split('.')[-2] + '.ini'
 
         config = ConfigParser()
-        filename = environ.get_resource_filename('stoqdrivers', 'conf',
-                                                 configfile)
+        resource_name = 'conf/%s' % configfile
+        filename = pkg_resources.resource_filename('stoqdrivers', resource_name)
         if not config.read(filename):
             return None
         for section in config.sections():
