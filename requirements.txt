@@ -7,3 +7,4 @@ zope.interface >= 3.0
 pyserial >= 2.2
 pyusb
 qrcode >= 4.0.1
+babel

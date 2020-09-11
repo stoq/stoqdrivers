@@ -1,8 +1,8 @@
 *.pyc
 .noseids
 .coverage
-locale
 nosetests.xml
 *.sw?
 dist/
 stoqdrivers.egg-info/
+*.mo

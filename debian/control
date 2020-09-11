@@ -15,7 +15,7 @@ Package: python3-stoqdrivers
 Architecture: all
 Depends: ${misc:Depends}, ${python:Depends},
  python3-zope.interface (>= 3.5.2) | python3-zopeinterface (>= 3.2.1),
- python3-serial (>= 2.2), python3-qrcode (>= 4.0.1), python3-usb
+ python3-serial (>= 2.2), python3-qrcode (>= 4.0.1), python3-usb, python3-babel
 Breaks: stoq (< 2.1.90), python-qrcode
 Replaces: stoqdrivers
 Homepage: http://www.stoq.com.br
