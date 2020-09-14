@@ -5,4 +5,4 @@ from stoqdrivers import __version__
 
 class TestStoqdrivers(unittest.TestCase):
     def test_package_version(self):
-        self.assertEquals(__version__, (1, 8, 1))
+        self.assertEquals(__version__, (2, 0, 0))
