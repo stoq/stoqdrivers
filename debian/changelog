@@ -2,7 +2,7 @@ stoqdrivers (2.0.0) focal; urgency=medium
 
   * Release 2.0.0
 
- -- Luiz Menezes <luiz@gritaria>  Mon, 14 Set 2020 18:01:44 -0300
+ -- Luiz Menezes <luiz@gritaria>  Mon, 14 Sep 2020 18:01:44 -0300
 
 stoqdrivers (1.8.1) xenial; urgency=medium
 
