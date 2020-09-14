@@ -3,8 +3,10 @@
 # needed to run stoqdrivers, they are processed by pip/easy_install
 #
 
-zope.interface >= 3.0
+babel
+pillow
 pyserial >= 2.2
 pyusb
-qrcode >= 4.0.1
-babel
+# temporary pin because tests are failing for qrcode==6
+qrcode ~= 5.3
+zope.interface >= 3.0

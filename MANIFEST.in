@@ -8,4 +8,4 @@ include debian/changelog debian/clean debian/compat debian/control
 include debian/copyright debian/pydist-overrides debian/rules debian/watch
 include requirements.txt
 recursive-include stoqdrivers/conf *.ini
-recursive-include locale *.po *.mo
+recursive-include */LC_MESSAGES *.po *.mo

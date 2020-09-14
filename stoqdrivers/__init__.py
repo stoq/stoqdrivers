@@ -48,6 +48,7 @@ def enable_translation(domain, root='..', enable_global=None):
     else:
         localedir = os.path.join(root, 'locale')
 
+    gettext.bindtextdomain(domain, localedir)
     # For libglade, but only on non-win32 systems
     if hasattr(locale, 'bindtextdomain'):
         locale.bindtextdomain(domain, localedir)

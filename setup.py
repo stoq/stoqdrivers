@@ -7,8 +7,8 @@ from setuptools import setup, find_packages
 
 
 with open('requirements.txt') as f:
-    install_requires = [l.strip() for l in f.readlines() if
-                        l.strip() and not l.startswith('#')]
+    install_requires = [lines.strip() for lines in f.readlines() if
+                        lines.strip() and not lines.startswith('#')]
 
 setup(
     name="stoqdrivers",
