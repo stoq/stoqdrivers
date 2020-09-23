@@ -103,7 +103,7 @@ def get_supported_printers(include_virtual=False):
         ('dataregis', ['EP375', 'Quick']),
         ('elgin', ['I9', 'KFiscal']),
         ('tanca', ['TP650']),
-        ('epson', ['FBII', 'FBIII', 'TMT20']),
+        ('epson', ['FBII', 'FBIII', 'TMT20', 'TMT70']),
         ('fiscnet', ['FiscNetECF']),
         ('perto', ['Pay2023']),
         ('snbc', ['BKC310']),
