@@ -66,5 +66,6 @@ def example():
     coupon_id = printer.close()
     print("+++ coupon %d created." % coupon_id)
 
+
 if __name__ == "__main__":
     example()

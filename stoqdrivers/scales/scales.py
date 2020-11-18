@@ -50,5 +50,6 @@ def test():
     print("Price per Kg: %.02f" % data.price_per_kg)
     print("Total price: %.02f" % data.total_price)
 
+
 if __name__ == "__main__":
     test()

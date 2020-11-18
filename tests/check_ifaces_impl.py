@@ -68,6 +68,7 @@ def check_scales():
     for brand, drivers in get_supported_scales().items():
         _check_drivers(IScale, brand, drivers)
 
+
 if __name__ == "__main__":
     check_coupon_printers()
     check_cheque_printers()

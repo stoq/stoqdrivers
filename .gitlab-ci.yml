@@ -8,15 +8,25 @@ stages:
   - build
 
 before_script:
-  # Install tools to create debian packages
   - apt update
-  - apt --yes install devscripts debhelper python3-all python3-setuptools
-  - python3 setup.py develop
+  - apt --yes install devscripts debhelper python3-all libcairo2-dev libgirepository1.0-dev python3-pip python3-virtualenv python3-venv libpq-dev swig pkg-config libpq-dev swig libjpeg8-dev zlib1g-dev
+  # Some tests assume the timezone is America/Sao_Paulo. We should properly mock the date generation
+  # to include the timezone
+  - ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
+  - dpkg-reconfigure --frontend noninteractive tzdata
+
+  - export LC_ALL=pt_BR.UTF-8
+    # Stoq is not installing correctly using pip outside of a venv
+  - python3 -m venv venv
+  - source venv/bin/activate
+  - pip install -U poetry pip setuptools
+  - poetry install -vvv
+  - poetry show
 
 test:
   stage: test
   script:
-    - make check
+    - poetry run make check
 
 .create_deb:
   stage: build

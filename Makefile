@@ -20,14 +20,17 @@ web: apidocs
 	mv $(WEBDOC_DIR)/stoqdrivers-tmp $(WEBDOC_DIR)/stoqdrivers
 	cp stoqdrivers.pickle $(WEBDOC_DIR)/stoqdrivers
 
-check: check-source-all
+lint:
+	flake8 .
+
+check: lint
 	@rm -f .noseids
 	$(TESTS_RUNNER) --failed $(TEST_PACKAGES)
 
 check-failed:
 	$(TESTS_RUNNER) --failed $(TEST_PACKAGES)
 
-coverage: check-source-all
+coverage: lint
 	$(TESTS_RUNNER) --with-coverage --with-xunit \
 	                --cover-package=$(PACKAGE) --cover-erase $(TEST_PACKAGES)
 

@@ -127,7 +127,7 @@ class PlaybackPort:
                 else:
                     try:
                         data = bytes([int(p[:2], 16)])
-                    except:
+                    except Exception:
                         data = p[:2]
                     n += data + p[2:]
             data = n
