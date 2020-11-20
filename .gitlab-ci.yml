@@ -22,6 +22,7 @@ before_script:
   - pip install -U poetry pip setuptools
   - poetry install -vvv
   - poetry show
+  - cp setup_old.py setup.py
 
 test:
   stage: test

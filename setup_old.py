@@ -12,7 +12,7 @@ with open('requirements.txt') as f:
 
 setup(
     name="stoqdrivers",
-    version="2.0.0",
+    version="2.0.1",
     author="Async Open Source",
     author_email="stoq-devel@async.com.br",
     description="Python fiscal printer (ECF) drivers",
