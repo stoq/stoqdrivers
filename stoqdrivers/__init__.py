@@ -31,9 +31,10 @@ import locale
 import os
 import platform
 
+from importlib_metadata import version
 import pkg_resources
 
-_version = pkg_resources.get_distribution("stoqdrivers").version
+_version = version("stoqdrivers")
 __version__ = tuple(int(n) for n in _version.split('.'))
 
 __all__ = ["library", "__version__"]
