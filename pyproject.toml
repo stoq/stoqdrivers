@@ -10,7 +10,6 @@ Pillow = "3.1.2"
 pyserial = "^2.2"
 qrcode = "~5.3"
 "zope.interface" = "^4.0"
-importlib-metadata = "^2.0.0"
 
 [tool.poetry.dev-dependencies]
 Babel = "^2.9.0"

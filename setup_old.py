@@ -6,9 +6,14 @@
 from setuptools import setup, find_packages
 
 
-with open('requirements.txt') as f:
-    install_requires = [lines.strip() for lines in f.readlines() if
-                        lines.strip() and not lines.startswith('#')]
+install_requires = [
+    "babel",
+    "pillow",
+    "pyserial >= 2.2",
+    "pyusb",
+    "qrcode ~= 5.3",
+    "zope.interface >= 3.0",
+]
 
 setup(
     name="stoqdrivers",

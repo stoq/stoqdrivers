@@ -33,7 +33,7 @@ test:
   stage: build
   script:
     - rm -rf dist
-    - make deb
+    - poetry run make deb
   artifacts:
     paths:
       - dist/*.deb
@@ -45,4 +45,5 @@ create_deb_master:
 
 create_deb_manual:
   extends: .create_deb
+  stage: test
   when: manual
