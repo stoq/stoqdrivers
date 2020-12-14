@@ -1,12 +1,12 @@
 [tool.poetry]
 name = "stoqdrivers"
-version = "2.0.1"
+version = "2.0.2"
 description = "Drivers for the retail sector."
 authors = ["Stoq Team <dev@stoq.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.5"
-Pillow = "3.1.2"
+Pillow = ">=3.1.2"
 pyserial = ">=2.2"
 qrcode = "~5.3"
 "zope.interface" = "^4.0"
