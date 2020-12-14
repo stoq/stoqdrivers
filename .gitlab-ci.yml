@@ -10,6 +10,7 @@ stages:
 before_script:
   - apt update
   - apt --yes install devscripts debhelper python3-all libcairo2-dev libgirepository1.0-dev python3-pip python3-virtualenv python3-venv libpq-dev swig pkg-config libpq-dev swig libjpeg8-dev zlib1g-dev
+  - apt --yes install  build-essential libssl-dev libffi-dev python3-dev
   # Some tests assume the timezone is America/Sao_Paulo. We should properly mock the date generation
   # to include the timezone
   - ln -sf /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
@@ -19,7 +20,8 @@ before_script:
     # Stoq is not installing correctly using pip outside of a venv
   - python3 -m venv venv
   - source venv/bin/activate
-  - pip install -U poetry pip setuptools
+  - pip install -U pip setuptools
+  - pip install -U poetry
   - poetry install -vvv
   - poetry show
   - cp setup_old.py setup.py
