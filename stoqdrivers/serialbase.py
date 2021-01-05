@@ -27,12 +27,12 @@
 
 
 import logging
-
+import socket
 from serial import Serial, EIGHTBITS, PARITY_NONE, STOPBITS_ONE
 from zope.interface import implementer
 
 from stoqdrivers.interfaces import ISerialPort
-from stoqdrivers.exceptions import DriverError
+from stoqdrivers.exceptions import DriverError, PrinterError
 from stoqdrivers.translation import stoqdrivers_gettext
 from stoqdrivers.utils import str2bytes, bytes2str
 
@@ -73,6 +73,73 @@ class SerialPort(Serial):
         self.flushOutput()
 
 
+# When we are printing NFCe danfe there is a hack that forces the reinitialization of the printer.
+# So this variable is used to check if we need to create a new socket or reuse the previous one.
+active_device = None
+
+
+class EthernetPort:
+    def __init__(self, address, port):
+        self.address = address
+        self.port = port
+        self._get_or_create_connection()
+
+    def _get_or_create_connection(self):
+        self.device = active_device or self._create_connection()
+
+    def _create_connection(self):
+        global active_device
+        try:
+            active_device = self.device = socket.create_connection(
+                (self.address, self.port), timeout=5)
+        except OSError:
+            raise PrinterError
+
+    def _check_device(self):
+        # The device can be None if flask starts without a printer on,
+        # when the printer is turned on, the stoqserver can reset
+        # the connection with the socket.
+        if not isinstance(self.device, socket.socket):
+            raise PrinterError
+
+    def write(self, data):
+        self._check_device()
+        try:
+            self.device.sendall(data)
+        except (ConnectionResetError, OSError):
+            self._create_connection()
+            self.device.sendall(data)
+
+    def read(self, n_bytes):
+        self._check_device()
+        try:
+            data = self.device.recv(n_bytes)
+        except (ConnectionResetError, socket.timeout):
+            raise PrinterError
+
+        return str2bytes(data)
+
+    def flush(self):
+        self._check_device()
+        f = self.device.makefile()
+        f.flush()
+
+    def open(self):
+        if not self.is_open():
+            try:
+                self.device.connect((self.address, self.port))
+            except OSError:
+                raise PrinterError
+
+    def close(self):
+        if self.is_open():
+            self.device.close()
+
+    def is_open(self):
+        self._check_device()
+        return not self.device.closed
+
+
 class SerialBase(object):
 
     # All commands will have this prefixed
@@ -89,7 +156,7 @@ class SerialBase(object):
     inverted_drawer = False
 
     def __init__(self, port):
-        self._port = port
+        self.set_port(port)
 
     def set_port(self, port):
         self._port = port

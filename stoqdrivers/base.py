@@ -39,7 +39,7 @@ from stoqdrivers.configparser import StoqdriversConfig
 from stoqdrivers.enum import DeviceType
 from stoqdrivers.exceptions import CriticalError, ConfigError
 from stoqdrivers.translation import stoqdrivers_gettext
-from stoqdrivers.serialbase import SerialPort
+from stoqdrivers.serialbase import SerialPort, EthernetPort
 
 _ = stoqdrivers_gettext
 
@@ -68,7 +68,7 @@ class BaseDevice:
     def __init__(self, brand=None, model=None, device=None,
                  config_file=None, port=None, consts=None, product_id=None,
                  vendor_id=None, interface=INTERFACE_SERIAL, baudrate=9600,
-                 inverted_drawer=None):
+                 inverted_drawer=None, device_name=None):
         if not self.device_dirname:
             raise ValueError("Subclasses must define the "
                              "`device_dirname' attribute")
@@ -84,6 +84,7 @@ class BaseDevice:
         self._baudrate = baudrate
         self._port = port
         self._driver_constants = consts
+        self._device_name = device_name
         self._load_configuration(config_file)
 
     def _load_configuration(self, config_file):
@@ -130,6 +131,11 @@ class BaseDevice:
             self._driver = driver_class(self._port, consts=self._driver_constants)
         elif self.interface == 'usb':
             self._driver = driver_class(self.vendor_id, self.product_id)
+        elif self.interface == 'ethernet':
+            if not self._port:
+                address, port = self._device_name.split(":")[1:]
+                self._port = EthernetPort(address, int(port))
+            self._driver = driver_class(self._port, consts=self._driver_constants)
         else:
             raise NotImplementedError('Interface not implemented')
 
