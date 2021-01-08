@@ -33,8 +33,8 @@ import platform
 
 import pkg_resources
 
-_version = "2.0.2"
-__version__ = tuple(int(n) for n in _version.split('.'))
+version = "2.0.2"
+__version__ = tuple(int(n) for n in version.split('.'))
 
 __all__ = ["library", "__version__"]
 
