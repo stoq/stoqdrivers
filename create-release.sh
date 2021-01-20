@@ -18,4 +18,4 @@ year=`date +%Y`
 month=`date +%m | sed "s/^0//"`
 day=`date +%d`
 
-sed -i "s/__version__ = .*/__version__ = ($major, $minor, $micro)/" stoqdrivers/__init__.py
+sed -i "s/version = .*/version = \"$major.$minor.$micro\"/" stoqdrivers/__init__.py
